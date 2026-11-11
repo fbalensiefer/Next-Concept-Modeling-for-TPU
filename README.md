@@ -4,7 +4,7 @@ A JAX/Flax implementation of [Next-Concept Modeling](https://arxiv.org/abs/2610.
 
 Project and manuscript author: **Fabian Balensiefer**. The underlying NCM method is due to Kumbong et al.
 
-**[Research paper (PDF)](output/pdf/ncm_systems_paper.pdf)** · [LaTeX source](paper/ncm_systems_paper.tex)
+**[Research paper (PDF)](output/pdf/ncm_systems_paper.pdf)**
 
 ## Implementation
 
