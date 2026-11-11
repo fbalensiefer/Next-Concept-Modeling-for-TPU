@@ -2,7 +2,7 @@
 
 A JAX/Flax implementation of [Next-Concept Modeling](https://arxiv.org/abs/2610.14162) for TPU-oriented execution. A multiscale residual vector quantizer encodes text into hierarchical codes, and a shared Transformer predicts each level's positions in parallel.
 
-Project and manuscript author: **Fabian Balensiefer**. The underlying NCM method is due to Kumbong et al.
+Project by Fabian Balensiefer. The underlying NCM method is due to Kumbong et al.
 
 **[Research paper (PDF)](output/pdf/ncm_systems_paper.pdf)**
 
