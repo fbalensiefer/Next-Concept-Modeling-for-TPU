@@ -1,0 +1,13 @@
+.venv/
+.venv*/
+__pycache__/
+.pytest_cache/
+*.egg-info/
+.DS_Store
+*.aux
+*.log
+*.out
+*.synctex.gz
+*.xdv
+/build/
+/dist/

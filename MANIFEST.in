@@ -1,0 +1,7 @@
+include LICENSE README.md CITATION.cff
+recursive-include src/ncm *.py
+recursive-include tests *.py
+recursive-include examples *.py
+recursive-include docs *.py *.svg
+recursive-include paper *.md *.tex *.json *.sha256
+recursive-include output/pdf *.pdf

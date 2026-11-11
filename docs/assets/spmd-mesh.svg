@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="770" viewBox="0 0 1440 770" role="img" aria-labelledby="title description">
+<title id="title">Partition data and weights; replicate codebook state</title>
+<desc id="description">An illustrative two by two dp and fsdp mesh. Data groups differ along dp; parameter shards differ along fsdp. Codebook embeddings, counts, and residual sums replicate after global aggregation.</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#53677d"/></marker></defs>
+<style>text{font-family:Arial,Helvetica,sans-serif} .title{font-size:36px;font-weight:700;fill:#10243a} .subtitle{font-size:20px;fill:#53677d} .label{font-size:22px;font-weight:700;fill:#10243a} .body{font-size:19px;fill:#53677d} .small{font-size:17px;fill:#53677d} .kicker{font-size:16px;font-weight:700;letter-spacing:2px;fill:#2563eb}</style>
+<rect x="0" y="0" width="1440" height="770" rx="0" fill="#f4f7fb" stroke="none"/>
+<text x="44" y="44" class="kicker" text-anchor="start">NEXT-CONCEPT MODELING FOR TPU</text>
+<text x="44" y="91" class="title" text-anchor="start">Partition data and weights; replicate codebook state</text>
+<text x="44" y="127" class="subtitle" text-anchor="start">NamedSharding contracts for batches, parameters, optimizer state, and functional EMA</text>
+<rect x="40" y="157" width="850" height="522" rx="14" fill="white" stroke="#d8e2ed"/>
+<text x="325" y="199" class="label" text-anchor="middle">fsdp = 0</text>
+<text x="662" y="199" class="label" text-anchor="middle">fsdp = 1</text>
+<text x="67" y="317" class="label" text-anchor="start">dp = 0</text>
+<rect x="168" y="227" width="307" height="181" rx="14" fill="#fafcff" stroke="#d8e2ed"/>
+<text x="186" y="260" class="label" text-anchor="start">Device (0, 0)</text>
+<rect x="184" y="277" width="275" height="32" rx="5" fill="#eaf8f4" stroke="none"/>
+<text x="196" y="300" class="small" text-anchor="start" style="fill:#087f75">Examples: group A</text>
+<rect x="184" y="319" width="275" height="32" rx="5" fill="#eaf1ff" stroke="none"/>
+<text x="196" y="342" class="small" text-anchor="start" style="fill:#2563eb">Weights / moments: shard 0</text>
+<text x="196" y="382" class="small" text-anchor="start" style="fill:#7251b5">E, C, S: replicated</text>
+<rect x="505" y="227" width="307" height="181" rx="14" fill="#fafcff" stroke="#d8e2ed"/>
+<text x="523" y="260" class="label" text-anchor="start">Device (0, 1)</text>
+<rect x="521" y="277" width="275" height="32" rx="5" fill="#eaf8f4" stroke="none"/>
+<text x="533" y="300" class="small" text-anchor="start" style="fill:#087f75">Examples: group A</text>
+<rect x="521" y="319" width="275" height="32" rx="5" fill="#eaf1ff" stroke="none"/>
+<text x="533" y="342" class="small" text-anchor="start" style="fill:#2563eb">Weights / moments: shard 1</text>
+<text x="533" y="382" class="small" text-anchor="start" style="fill:#7251b5">E, C, S: replicated</text>
+<text x="67" y="533" class="label" text-anchor="start">dp = 1</text>
+<rect x="168" y="443" width="307" height="181" rx="14" fill="#fafcff" stroke="#d8e2ed"/>
+<text x="186" y="476" class="label" text-anchor="start">Device (1, 0)</text>
+<rect x="184" y="493" width="275" height="32" rx="5" fill="#eaf8f4" stroke="none"/>
+<text x="196" y="516" class="small" text-anchor="start" style="fill:#087f75">Examples: group B</text>
+<rect x="184" y="535" width="275" height="32" rx="5" fill="#eaf1ff" stroke="none"/>
+<text x="196" y="558" class="small" text-anchor="start" style="fill:#2563eb">Weights / moments: shard 0</text>
+<text x="196" y="598" class="small" text-anchor="start" style="fill:#7251b5">E, C, S: replicated</text>
+<rect x="505" y="443" width="307" height="181" rx="14" fill="#fafcff" stroke="#d8e2ed"/>
+<text x="523" y="476" class="label" text-anchor="start">Device (1, 1)</text>
+<rect x="521" y="493" width="275" height="32" rx="5" fill="#eaf8f4" stroke="none"/>
+<text x="533" y="516" class="small" text-anchor="start" style="fill:#087f75">Examples: group B</text>
+<rect x="521" y="535" width="275" height="32" rx="5" fill="#eaf1ff" stroke="none"/>
+<text x="533" y="558" class="small" text-anchor="start" style="fill:#2563eb">Weights / moments: shard 1</text>
+<text x="533" y="598" class="small" text-anchor="start" style="fill:#7251b5">E, C, S: replicated</text>
+<rect x="916" y="157" width="484" height="522" rx="14" fill="white" stroke="#d8e2ed"/>
+<text x="944" y="202" class="label" text-anchor="start">EMA synchronization</text>
+<text x="944" y="241" class="body" text-anchor="start">Local assignments contribute counts</text>
+<text x="944" y="268" class="body" text-anchor="start">and residual sums across the data axis.</text>
+<rect x="946" y="295" width="196" height="53" rx="14" fill="#eaf8f4" stroke="#d8e2ed"/>
+<rect x="1163" y="295" width="207" height="53" rx="14" fill="#eaf8f4" stroke="#d8e2ed"/>
+<text x="1044" y="329" class="body" text-anchor="middle">counts c [K,V]</text>
+<text x="1267" y="329" class="body" text-anchor="middle">sums s [K,V,D]</text>
+<polyline points="1159,356 1159,398" fill="none" stroke="#53677d" stroke-width="2.3" marker-end="url(#arrow)"/>
+<text x="1159" y="430" class="label" text-anchor="middle">Reduce over dp exactly once</text>
+<polyline points="1159,447 1159,479" fill="none" stroke="#53677d" stroke-width="2.3" marker-end="url(#arrow)"/>
+<rect x="946" y="493" width="424" height="62" rx="14" fill="#f3effc" stroke="#d8e2ed"/>
+<text x="1158" y="532" class="small" text-anchor="middle" style="fill:#7251b5">Identical EMA update → replicated E, C, S</text>
+<text x="944" y="598" class="body" text-anchor="start">Global arrays: reductions are global.</text>
+<text x="944" y="627" class="body" text-anchor="start">Manual maps: use a bound-axis psum.</text>
+<text x="44" y="721" class="body" text-anchor="start">Illustrative 2 × 2 mesh. Verified with four virtual CPU devices; TPU and multi-host performance are unmeasured.</text>
+</svg>

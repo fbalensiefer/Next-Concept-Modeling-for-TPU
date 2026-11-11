@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-11",
+  "scope": "CPU software validation, not model-quality or TPU-performance evaluation",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "python": "3.12.16",
+  "jax": "0.10.2",
+  "jaxlib": "0.10.2",
+  "flax": "0.12.8",
+  "optax": "0.2.8",
+  "numpy": "2.5.4",
+  "suite_command": "python -m pytest -q",
+  "outcome": {
+    "passed": 11,
+    "failed": 0
+  },
+  "spmd_test": {
+    "backend": "cpu",
+    "virtual_devices": 4,
+    "mesh": {
+      "dp": 2,
+      "fsdp": 2
+    },
+    "training_comparison_atol": 3e-05,
+    "training_comparison_rtol": 3e-05,
+    "adam_learning_rate": 0.001,
+    "adam_epsilon": 1e-05
+  },
+  "example": "examples/train.py; three synthetic steps; final step switches phase",
+  "repository_version": "0.1.0",
+  "repository_url": "https://github.com/fbalensiefer/Next-Concept-Modeling-for-TPU",
+  "snapshot_identity": "paper/source_manifest.sha256"
+}

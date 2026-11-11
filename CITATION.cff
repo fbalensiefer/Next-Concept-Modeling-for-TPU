@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "Please cite this implementation and the original NCM paper when using this project."
+type: software
+title: "Next-Concept Modeling for TPU"
+authors:
+  - family-names: Balensiefer
+    given-names: Fabian
+version: 0.1.0
+date-released: 2026-11-11
+url: "https://github.com/fbalensiefer/Next-Concept-Modeling-for-TPU"
+repository-code: "https://github.com/fbalensiefer/Next-Concept-Modeling-for-TPU"
+license: MIT
+abstract: >-
+  A functional JAX/Flax implementation of multiscale residual vector
+  quantization and shared level-wise parallel generation, with explicit EMA
+  state and dp/fsdp sharding. CPU correctness tests are provided; TPU
+  performance and model quality remain unmeasured. The underlying NCM method
+  is due to Kumbong and colleagues.
+keywords:
+  - next-concept modeling
+  - residual vector quantization
+  - JAX
+  - Flax
+  - TPU
+  - SPMD
