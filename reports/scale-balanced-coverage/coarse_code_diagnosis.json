@@ -1,0 +1,245 @@
+{
+  "post_run_diagnostic_not_a_gate_or_training_change": true,
+  "results": [
+    {
+      "seed": 8,
+      "arm": "reconstruction",
+      "coarse_code_probability": [
+        0.0,
+        0.9999999999999998
+      ],
+      "coarse_entropy_nats": 2.220446049250313e-16,
+      "coarse_codes_used": 1,
+      "exact_output_tv": 0.608702608928956,
+      "hard_conditional_tc_nats": 1.001856803894043
+    },
+    {
+      "seed": 8,
+      "arm": "alignment",
+      "coarse_code_probability": [
+        0.0,
+        0.9999999999999998
+      ],
+      "coarse_entropy_nats": 2.220446049250313e-16,
+      "coarse_codes_used": 1,
+      "exact_output_tv": 0.6124249370407427,
+      "hard_conditional_tc_nats": 1.001856803894043
+    },
+    {
+      "seed": 8,
+      "arm": "dependency",
+      "coarse_code_probability": [
+        0.0,
+        0.9999999999999998
+      ],
+      "coarse_entropy_nats": 2.220446049250313e-16,
+      "coarse_codes_used": 1,
+      "exact_output_tv": 0.610539369410317,
+      "hard_conditional_tc_nats": 1.001856803894043
+    },
+    {
+      "seed": 8,
+      "arm": "alignment_dependency",
+      "coarse_code_probability": [
+        0.0,
+        0.9999999999999998
+      ],
+      "coarse_entropy_nats": 2.220446049250313e-16,
+      "coarse_codes_used": 1,
+      "exact_output_tv": 0.6125151354104812,
+      "hard_conditional_tc_nats": 1.001856803894043
+    },
+    {
+      "seed": 9,
+      "arm": "reconstruction",
+      "coarse_code_probability": [
+        0.41831420746743975,
+        0.5816857925325601
+      ],
+      "coarse_entropy_nats": 0.6797420359314859,
+      "coarse_codes_used": 2,
+      "exact_output_tv": 0.16383656103433172,
+      "hard_conditional_tc_nats": 0.17498230934143066
+    },
+    {
+      "seed": 9,
+      "arm": "alignment",
+      "coarse_code_probability": [
+        0.41831420746743975,
+        0.5816857925325601
+      ],
+      "coarse_entropy_nats": 0.6797420359314859,
+      "coarse_codes_used": 2,
+      "exact_output_tv": 0.188394940042956,
+      "hard_conditional_tc_nats": 0.11584615707397461
+    },
+    {
+      "seed": 9,
+      "arm": "dependency",
+      "coarse_code_probability": [
+        0.5248798936864743,
+        0.4751201063135255
+      ],
+      "coarse_entropy_nats": 0.6919086509372027,
+      "coarse_codes_used": 2,
+      "exact_output_tv": 0.16504083747187928,
+      "hard_conditional_tc_nats": 0.09594202041625977
+    },
+    {
+      "seed": 9,
+      "arm": "alignment_dependency",
+      "coarse_code_probability": [
+        0.41831420746743975,
+        0.5816857925325601
+      ],
+      "coarse_entropy_nats": 0.6797420359314859,
+      "coarse_codes_used": 2,
+      "exact_output_tv": 0.19104274974446322,
+      "hard_conditional_tc_nats": 0.08794260025024414
+    },
+    {
+      "seed": 10,
+      "arm": "reconstruction",
+      "coarse_code_probability": [
+        0.9999999999999998,
+        0.0
+      ],
+      "coarse_entropy_nats": 2.220446049250313e-16,
+      "coarse_codes_used": 1,
+      "exact_output_tv": 0.6138846074310271,
+      "hard_conditional_tc_nats": 1.0018566846847534
+    },
+    {
+      "seed": 10,
+      "arm": "alignment",
+      "coarse_code_probability": [
+        0.41831420746743975,
+        0.5816857925325601
+      ],
+      "coarse_entropy_nats": 0.6797420359314859,
+      "coarse_codes_used": 2,
+      "exact_output_tv": 0.13224385640435427,
+      "hard_conditional_tc_nats": 0.08794283866882324
+    },
+    {
+      "seed": 10,
+      "arm": "dependency",
+      "coarse_code_probability": [
+        0.9999999999999998,
+        0.0
+      ],
+      "coarse_entropy_nats": 2.220446049250313e-16,
+      "coarse_codes_used": 1,
+      "exact_output_tv": 0.613881247657963,
+      "hard_conditional_tc_nats": 1.0018566846847534
+    },
+    {
+      "seed": 10,
+      "arm": "alignment_dependency",
+      "coarse_code_probability": [
+        0.41831420746743975,
+        0.5816857925325601
+      ],
+      "coarse_entropy_nats": 0.6797420359314859,
+      "coarse_codes_used": 2,
+      "exact_output_tv": 0.13132412098489588,
+      "hard_conditional_tc_nats": 0.08794283866882324
+    },
+    {
+      "seed": 11,
+      "arm": "reconstruction",
+      "coarse_code_probability": [
+        0.0,
+        0.9999999999999998
+      ],
+      "coarse_entropy_nats": 2.220446049250313e-16,
+      "coarse_codes_used": 1,
+      "exact_output_tv": 0.613175477128556,
+      "hard_conditional_tc_nats": 1.001856803894043
+    },
+    {
+      "seed": 11,
+      "arm": "alignment",
+      "coarse_code_probability": [
+        0.5248798936864743,
+        0.4751201063135255
+      ],
+      "coarse_entropy_nats": 0.6919086509372027,
+      "coarse_codes_used": 2,
+      "exact_output_tv": 0.13899244090227772,
+      "hard_conditional_tc_nats": 0.09594202041625977
+    },
+    {
+      "seed": 11,
+      "arm": "dependency",
+      "coarse_code_probability": [
+        0.0,
+        0.9999999999999998
+      ],
+      "coarse_entropy_nats": 2.220446049250313e-16,
+      "coarse_codes_used": 1,
+      "exact_output_tv": 0.6135140867104236,
+      "hard_conditional_tc_nats": 1.0018566846847534
+    },
+    {
+      "seed": 11,
+      "arm": "alignment_dependency",
+      "coarse_code_probability": [
+        0.41831420746743975,
+        0.5816857925325601
+      ],
+      "coarse_entropy_nats": 0.6797420359314859,
+      "coarse_codes_used": 2,
+      "exact_output_tv": 0.15454341133155663,
+      "hard_conditional_tc_nats": 0.08794260025024414
+    },
+    {
+      "seed": 12,
+      "arm": "reconstruction",
+      "coarse_code_probability": [
+        0.4751201063135255,
+        0.5248798936864743
+      ],
+      "coarse_entropy_nats": 0.6919086509372027,
+      "coarse_codes_used": 2,
+      "exact_output_tv": 0.1291220160724421,
+      "hard_conditional_tc_nats": 0.09594178199768066
+    },
+    {
+      "seed": 12,
+      "arm": "alignment",
+      "coarse_code_probability": [
+        0.41831420746743975,
+        0.5816857925325601
+      ],
+      "coarse_entropy_nats": 0.6797420359314859,
+      "coarse_codes_used": 2,
+      "exact_output_tv": 0.11306559411627903,
+      "hard_conditional_tc_nats": 0.08794283866882324
+    },
+    {
+      "seed": 12,
+      "arm": "dependency",
+      "coarse_code_probability": [
+        0.0,
+        0.9999999999999998
+      ],
+      "coarse_entropy_nats": 2.220446049250313e-16,
+      "coarse_codes_used": 1,
+      "exact_output_tv": 0.6114417026982886,
+      "hard_conditional_tc_nats": 1.0018566846847534
+    },
+    {
+      "seed": 12,
+      "arm": "alignment_dependency",
+      "coarse_code_probability": [
+        0.4751201063135255,
+        0.5248798936864743
+      ],
+      "coarse_entropy_nats": 0.6919086509372027,
+      "coarse_codes_used": 2,
+      "exact_output_tv": 0.1445388998571887,
+      "hard_conditional_tc_nats": 0.09594178199768066
+    }
+  ]
+}

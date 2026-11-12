@@ -1,0 +1,14 @@
+{
+  "prior_run": "runs/milestone2-prior",
+  "ar_steps": 500,
+  "ar_batch_size": 4,
+  "ar_learning_rate": 0.003,
+  "seed": 1,
+  "batch_sizes": [1, 16],
+  "warmup": 5,
+  "repeats": 30,
+  "quality_samples": 64,
+  "temperature": 1.0,
+  "synthetic_lengths": [128, 512],
+  "synthetic_width": 64
+}

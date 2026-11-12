@@ -53,7 +53,8 @@ def concept_consistency(coarse, projected_fine, mask, axis_name=None):
 
 def combined_loss(reconstruction_logits, tokens, token_mask, rvq: RVQOutput,
                   prior_logits, config: LossConfig, *, coarse=None,
-                  projected_fine=None, concept_mask=None, axis_name=None):
+                  projected_fine=None, concept_mask=None, axis_name=None,
+                  coarse_beta=None, coarse_entropy_weight=0.0):
     """RVQ statistics are already global; other terms reduce their own masks."""
     levels = rvq.counts.shape[0]
     if config.entropy_weights and len(config.entropy_weights) != levels:
@@ -69,7 +70,13 @@ def combined_loss(reconstruction_logits, tokens, token_mask, rvq: RVQOutput,
         if coarse is None or projected_fine is None or concept_mask is None:
             raise ValueError("concept loss requires aligned features and a mask")
         concept = concept_consistency(coarse, projected_fine, concept_mask, axis_name)
-    total = (recon + config.beta * commit + config.entropy * entropy
+    weighted_commitment = config.beta * commit
+    if coarse_beta is not None:
+        beta = jnp.full((levels,), config.beta).at[0].set(coarse_beta)
+        weighted_commitment = (beta * rvq.commitment_numerator).sum() / jnp.maximum(rvq.commitment_denominator.sum(), 1)
+    coarse_entropy = entropy_loss(rvq.soft_counts[:1], jnp.ones(1))
+    total = (recon + weighted_commitment + config.entropy * entropy
+             + coarse_entropy_weight * coarse_entropy
              + config.concept * concept + config.prior * prior)
     return total, dict(loss=total, reconstruction=recon, commitment=commit,
                       entropy=entropy, concept=concept, prior=prior)

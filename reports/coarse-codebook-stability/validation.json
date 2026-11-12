@@ -1,0 +1,32 @@
+{
+  "suite_command": ".venv312/bin/python -m pytest -q",
+  "passed": 44,
+  "failed": 0,
+  "historical_checkpoint_loaded": "runs/milestone2-codec/checkpoint.msgpack (step 500, maintenance disabled)",
+  "virtual_four_device_coarse_replacement_check": "passed; matches unsharded reference",
+  "source_and_archived_snapshot_hashes_verified": true,
+  "initialization_samples_per_model": 128,
+  "codec_steps_per_model": 400,
+  "uniform_step_flop_estimates_codec_prior_repair": [
+    [
+      10564359.0,
+      6996102.0,
+      5837030.0
+    ]
+  ],
+  "coarse_stability_decision": {
+    "passed": true,
+    "confirmation_seeds": [
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "evaluated_models": 20,
+    "failures": [],
+    "minimum_population_perplexity": 1.9733686083705464,
+    "maximum_monitored_collapsed_fraction": 0.0,
+    "matched_student_flop_estimates": true
+  }
+}

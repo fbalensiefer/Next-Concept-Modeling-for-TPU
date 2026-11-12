@@ -1,0 +1,24 @@
+{
+  "prior_run": "runs/milestone2-prior",
+  "ar_steps": 500,
+  "ar_batch_size": 4,
+  "ar_learning_rate": 0.003,
+  "seed": 1,
+  "batch_sizes": [
+    1,
+    16
+  ],
+  "warmup": 5,
+  "repeats": 30,
+  "quality_samples": 64,
+  "temperature": 1.0,
+  "synthetic_lengths": [
+    128,
+    512
+  ],
+  "synthetic_width": 64,
+  "codec_sha256": "8e77590a841d67ea408827c253079e7bde1614703243c4362a65ae86094a9976",
+  "prior_sha256": "fb6531f049917be1892fd43b33ecd5e67612d05a0c4f0030f810a01d087e5960",
+  "train_sha256": "b069f27dedbcd310b4eb8cc95d0e95693a011268dc4265de1b35a39d85d1ef88",
+  "validation_sha256": "2172a7eb2b119243aa0b3dfb4e4fcafb86763a68cae27e241db7e9fbec6ec438"
+}

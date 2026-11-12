@@ -1,0 +1,1 @@
+{"codec_run":"runs/text-demo","batch_size":4,"seed":1,"learning_rate":0.003,"steps":500,"checkpoint_every":100,"sample_seed":42,"sample_count":16,"temperature":1.0,"top_k":0}

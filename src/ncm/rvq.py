@@ -46,7 +46,7 @@ def reduce_stats(value, axis_name=None):
 
 
 def quantize(latent, mask, state: CodebookState, config: RVQConfig, *,
-             phase=0, key=None, training=False, axis_name=None) -> RVQOutput:
+             phase=0, key=None, training=False, axis_name=None, coarse_temperature=None) -> RVQOutput:
     """Scan K levels, retaining a residual on the common finest grid.
 
     phase=0: joint training; phase!=0: final-two-level tuning. Nested dropout
@@ -85,7 +85,9 @@ def quantize(latent, mask, state: CodebookState, config: RVQConfig, *,
             valid.astype(jnp.float32).reshape(-1))
         sums = jnp.zeros_like(embeddings).at[codes.reshape(-1)].add(
             residual.reshape(-1, config.dim))
-        soft = jax.nn.softmax(-distances / config.entropy_temperature, -1)
+        temperature = (config.entropy_temperature if coarse_temperature is None else
+                       jnp.where(level == 0, coarse_temperature, config.entropy_temperature))
+        soft = jax.nn.softmax(-distances / temperature, -1)
         soft_counts = jnp.sum(jnp.where(valid[..., None], soft, 0), axis=(0, 1))
         error = jnp.where(valid[..., None], (residual - vectors)**2, 0).sum()
         denom = valid.sum().astype(jnp.float32) * config.dim

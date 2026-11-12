@@ -16,6 +16,7 @@ class TokenizerOutput:
     coarse: jax.Array
     projected_fine: jax.Array
     concept_mask: jax.Array
+    latent: jax.Array
 
 
 class ResidualConv(nn.Module):
@@ -56,6 +57,16 @@ class MultiscaleTokenizer(nn.Module):
         self.decoder = TokenDecoder(self.config.dim, self.token_vocab_size, self.encoder_layers)
         self.concept_projection = nn.Dense(self.config.dim)
 
+    def encode_latent(self, tokens, padding_mask, fallback_mask):
+        """Encoder-only warmup path; no quantizer or decoder work is required."""
+        learned_mask = padding_mask.astype(bool) & ~fallback_mask.astype(bool)
+        safe_tokens = jnp.where(learned_mask, tokens, 0)
+        latent = self.token_embedding(safe_tokens)
+        latent = jnp.where(learned_mask[..., None], latent, 0)
+        for layer in self.encoder:
+            latent = layer(latent, learned_mask)
+        return latent
+
     def decode(self, representation, padding_mask, fallback_bytes=None, fallback_mask=None):
         """Decode a generated cumulative representation using trained weights.
 
@@ -69,7 +80,7 @@ class MultiscaleTokenizer(nn.Module):
         return self.decoder(representation, padding_mask)
 
     def __call__(self, tokens, padding_mask, fallback_bytes, fallback_mask,
-                 codebooks, *, phase=0, training=False, axis_name=None):
+                 codebooks, *, phase=0, training=False, axis_name=None, coarse_temperature=None):
         """All token inputs are [B,L]; True padding_mask means a valid token.
 
         fallback_bytes supplies one pre-aligned byte ID (0..255) per slot. The
@@ -87,13 +98,9 @@ class MultiscaleTokenizer(nn.Module):
         fallback = fallback_mask.astype(bool) & valid
         learned_mask = valid & ~fallback
         # Fallback tokens cannot leak through encoder convolutions into codes.
-        safe_tokens = jnp.where(learned_mask, tokens, 0)
-        latent = self.token_embedding(safe_tokens)
-        latent = jnp.where(learned_mask[..., None], latent, 0)
-        for layer in self.encoder:
-            latent = layer(latent, learned_mask)
+        latent = self.encode_latent(tokens, valid, fallback)
         output = quantize(latent, learned_mask, codebooks, self.config,
-                          phase=phase, training=training, axis_name=axis_name,
+                          phase=phase, training=training, axis_name=axis_name, coarse_temperature=coarse_temperature,
                           key=self.make_rng("dropout") if training else None)
         safe_bytes = jnp.where(fallback, fallback_bytes, 0)
         byte_features = self.byte_embedding(safe_bytes)
@@ -104,4 +111,4 @@ class MultiscaleTokenizer(nn.Module):
         coarse, coarse_mask = align(output.level_vectors[0], output.mask[0], up[0])
         fine = self.concept_projection(output.quantized)
         return TokenizerOutput(logits, output, representation, coarse, fine,
-                               coarse_mask & learned_mask)
+                               coarse_mask & learned_mask, latent)

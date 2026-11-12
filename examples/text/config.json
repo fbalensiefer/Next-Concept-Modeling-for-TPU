@@ -1,0 +1,1 @@
+{"train_file":"examples/text/train.txt","validation_file":"examples/text/validation.txt","lengths":[2,4,8],"codebook_size":16,"dim":16,"width":16,"heads":2,"layers":1,"batch_size":4,"seed":0,"learning_rate":0.003,"steps":500,"checkpoint_every":100}
