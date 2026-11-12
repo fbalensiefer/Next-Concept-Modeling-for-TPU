@@ -1,0 +1,108 @@
+{
+  "summary": {
+    "minimal_ema": {
+      "models": 20,
+      "mean_sequence_reconstruction": 0.9999999999999998,
+      "minimum_sequence_reconstruction": 0.9999999999999999,
+      "mean_factorized_oracle_tv": 0.26848436011331667,
+      "mean_factorized_oracle_kl_nats": 0.37133568093119745,
+      "population_collapsed_models": 6,
+      "monitoring_failures": 7,
+      "collision_models": 0,
+      "missing_support_models": 0,
+      "all_fidelity_usage_gates_passed": false,
+      "codec_step_flops": [
+        10525149.0
+      ]
+    },
+    "ema_recovery": {
+      "models": 20,
+      "mean_sequence_reconstruction": 0.9995329814989423,
+      "minimum_sequence_reconstruction": 0.990659629978849,
+      "mean_factorized_oracle_tv": 0.12293729993523914,
+      "mean_factorized_oracle_kl_nats": 0.10938661553627982,
+      "population_collapsed_models": 0,
+      "monitoring_failures": 0,
+      "collision_models": 0,
+      "missing_support_models": 0,
+      "all_fidelity_usage_gates_passed": true,
+      "codec_step_flops": [
+        10564359.0
+      ]
+    },
+    "reference": {
+      "models": 20,
+      "mean_sequence_reconstruction": 0.9995329814989423,
+      "minimum_sequence_reconstruction": 0.990659629978849,
+      "mean_factorized_oracle_tv": 0.12154252884788586,
+      "mean_factorized_oracle_kl_nats": 0.1050680077756975,
+      "population_collapsed_models": 0,
+      "monitoring_failures": 0,
+      "collision_models": 0,
+      "missing_support_models": 0,
+      "all_fidelity_usage_gates_passed": true,
+      "codec_step_flops": [
+        10564359.0
+      ]
+    },
+    "fixed_binary": {
+      "models": 20,
+      "mean_sequence_reconstruction": 0.9999999999999998,
+      "minimum_sequence_reconstruction": 0.9999999999999999,
+      "mean_factorized_oracle_tv": 0.12216335525179123,
+      "mean_factorized_oracle_kl_nats": 0.10655579925774927,
+      "population_collapsed_models": 0,
+      "monitoring_failures": 0,
+      "collision_models": 0,
+      "missing_support_models": 0,
+      "all_fidelity_usage_gates_passed": true,
+      "codec_step_flops": [
+        10525149.0
+      ]
+    }
+  },
+  "paired_seed_analysis": {
+    "ema_recovery minus minimal_ema": {
+      "seed_mean_tv_differences": [
+        -0.23587900350444227,
+        -0.24695838000045345,
+        0.0006800446635335244,
+        0.0,
+        -0.24557796204902554
+      ],
+      "mean": -0.14554706017807756,
+      "range": [
+        -0.24695838000045345,
+        0.0006800446635335244
+      ]
+    },
+    "ema_recovery minus reference": {
+      "seed_mean_tv_differences": [
+        0.009456898773829464,
+        -0.00294394383720388,
+        0.0004780496157562597,
+        0.0,
+        -1.714911561548349e-05
+      ],
+      "mean": 0.0013947710873532721,
+      "range": [
+        -0.00294394383720388,
+        0.009456898773829464
+      ]
+    },
+    "fixed_binary minus ema_recovery": {
+      "seed_mean_tv_differences": [
+        -0.010123277264498687,
+        0.006007347622810633,
+        -0.0005391397881075871,
+        0.0,
+        0.000785346012556129
+      ],
+      "mean": -0.0007739446834479025,
+      "range": [
+        -0.010123277264498687,
+        0.006007347622810633
+      ]
+    }
+  }
+}

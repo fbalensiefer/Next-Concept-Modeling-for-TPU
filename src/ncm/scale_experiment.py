@@ -78,7 +78,7 @@ def fit_canonical(features, dim):
     return mean.astype(np.float32), projection.astype(np.float32), scale.astype(np.float32)
 
 
-def make_codec_step(config, optimizer):
+def make_codec_step(config, optimizer, *, maintenance=maintain_coarse):
     rvq = experiment_rvq_config(config)
     tokenizer = MultiscaleTokenizer(rvq, 256)
     levels = jnp.asarray(tuple(range(rvq.levels, 0, -1)), jnp.float32)
@@ -119,7 +119,7 @@ def make_codec_step(config, optimizer):
         neural_state = state.opt_state['neural'] if rvq.coarse.enabled else state.opt_state
         updates, neural_state = optimizer.update(grads, neural_state, state.params)
         if rvq.coarse.enabled:
-            books, coarse, diagnostics = maintain_coarse(
+            books, coarse, diagnostics = maintenance(
                 state.codebooks, state.opt_state['coarse'], rvq_output.counts, rvq_output.sums,
                 latent, batch.mask & ~batch.fallback_mask, rvq)
             opt_state = {'neural': neural_state, 'coarse': coarse}

@@ -1,0 +1,27 @@
+{
+  "existing_suite": {
+    "passed": 44,
+    "seconds": 192.9
+  },
+  "additional_tests": {
+    "passed": 2
+  },
+  "trained_models": 100,
+  "codec_updates": 40000,
+  "decoder_replay_updates": 20000,
+  "all_initial_hashes_matched": true,
+  "all_supplementary_oracle_metrics_reproduced": true,
+  "current_source_sha256": {
+    "src/ncm/scale_experiment.py": "4113314420a122e2118db03488bc1f42845405c8466dda6ef5bcc8aee779411b",
+    "src/ncm/maintenance_experiment.py": "a26fc084f32198eea462a55defe7a88bfba5ae91ef75e1affaab94e348fd9d67",
+    "tests/test_maintenance_experiment.py": "0e46c573ffec30a4a395701f7871d5f940863dd8063e8d982b97bfb6f6863d98"
+  },
+  "limitations": [
+    "Previously used seeds and one finite-domain teacher",
+    "No trained prior comparison",
+    "Shared entropy and schedules retained",
+    "Fixed coarse binary endpoints, not full FSQ",
+    "Original timing overlap disclosed; clean repeated timings separately archived",
+    "Original joint-oracle gate corrected by direct supplementary support audit"
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "minimal_ema": {
+    "models": 20,
+    "failures": [
+      {
+        "seed": 13,
+        "arm": "reconstruction"
+      },
+      {
+        "seed": 13,
+        "arm": "dependency"
+      },
+      {
+        "seed": 14,
+        "arm": "dependency"
+      },
+      {
+        "seed": 14,
+        "arm": "alignment_dependency"
+      },
+      {
+        "seed": 17,
+        "arm": "reconstruction"
+      },
+      {
+        "seed": 17,
+        "arm": "dependency"
+      },
+      {
+        "seed": 17,
+        "arm": "alignment_dependency"
+      }
+    ],
+    "mean": {
+      "sequence_reconstruction": 0.9999999999999998,
+      "factorized_oracle_tv": 0.26848436011331667,
+      "factorized_oracle_kl_nats": 0.37133568093119745,
+      "coarse_perplexity": 1.6909940404037236
+    },
+    "median_codec_seconds": 0.2649510835035471,
+    "codec_step_flops": [
+      10525149.0
+    ]
+  },
+  "ema_recovery": {
+    "models": 20,
+    "failures": [
+      {
+        "seed": 13,
+        "arm": "alignment_dependency"
+      }
+    ],
+    "mean": {
+      "sequence_reconstruction": 0.9995329814989423,
+      "factorized_oracle_tv": 0.12293729993523914,
+      "factorized_oracle_kl_nats": 0.10938661553627982,
+      "coarse_perplexity": 1.985281196903226
+    },
+    "median_codec_seconds": 0.28979402100958396,
+    "codec_step_flops": [
+      10564359.0
+    ]
+  },
+  "reference": {
+    "models": 20,
+    "failures": [
+      {
+        "seed": 13,
+        "arm": "alignment_dependency"
+      }
+    ],
+    "mean": {
+      "sequence_reconstruction": 0.9995329814989423,
+      "factorized_oracle_tv": 0.12154252884788586,
+      "factorized_oracle_kl_nats": 0.1050680077756975,
+      "coarse_perplexity": 1.9850087442314586
+    },
+    "median_codec_seconds": 0.27913110399094876,
+    "codec_step_flops": [
+      10564359.0
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "ema_recovery": {
+    "models": 20,
+    "failures": [
+      {
+        "seed": 13,
+        "arm": "alignment_dependency"
+      }
+    ],
+    "mean": {
+      "sequence_reconstruction": 0.9995329814989423,
+      "factorized_oracle_tv": 0.12293729993523914,
+      "factorized_oracle_kl_nats": 0.10938661553627982,
+      "coarse_perplexity": 1.985281196903226
+    },
+    "median_codec_seconds": 0.3364105414948426,
+    "codec_step_flops": [
+      10564359.0
+    ]
+  },
+  "fixed_binary": {
+    "models": 20,
+    "failures": [],
+    "mean": {
+      "sequence_reconstruction": 0.9999999999999998,
+      "factorized_oracle_tv": 0.12216335525179123,
+      "factorized_oracle_kl_nats": 0.10655579925774927,
+      "coarse_perplexity": 1.989509737804538
+    },
+    "median_codec_seconds": 0.32419764551741537,
+    "codec_step_flops": [
+      10525149.0
+    ]
+  }
+}

@@ -1,0 +1,319 @@
+{
+  "scope": "Seed 13; all four objective arms; three repeats each; 400 original-order updates from identical initialization. No concurrent test or experiment jobs dispatched by this task. Inputs resident, compilation and warmup excluded.",
+  "observations": [
+    {
+      "repeat": 0,
+      "arm": "reconstruction",
+      "treatment": "minimal_ema",
+      "seconds": 0.2602083340170793
+    },
+    {
+      "repeat": 0,
+      "arm": "reconstruction",
+      "treatment": "ema_recovery",
+      "seconds": 0.2647899999865331
+    },
+    {
+      "repeat": 0,
+      "arm": "reconstruction",
+      "treatment": "reference",
+      "seconds": 0.2636332499969285
+    },
+    {
+      "repeat": 0,
+      "arm": "reconstruction",
+      "treatment": "fixed_binary",
+      "seconds": 0.25799970800289884
+    },
+    {
+      "repeat": 0,
+      "arm": "alignment",
+      "treatment": "ema_recovery",
+      "seconds": 0.26569337499677204
+    },
+    {
+      "repeat": 0,
+      "arm": "alignment",
+      "treatment": "reference",
+      "seconds": 0.2647224170214031
+    },
+    {
+      "repeat": 0,
+      "arm": "alignment",
+      "treatment": "fixed_binary",
+      "seconds": 0.25595120797515847
+    },
+    {
+      "repeat": 0,
+      "arm": "alignment",
+      "treatment": "minimal_ema",
+      "seconds": 0.26843616701080464
+    },
+    {
+      "repeat": 0,
+      "arm": "dependency",
+      "treatment": "reference",
+      "seconds": 0.2686329999996815
+    },
+    {
+      "repeat": 0,
+      "arm": "dependency",
+      "treatment": "fixed_binary",
+      "seconds": 0.25947812499362044
+    },
+    {
+      "repeat": 0,
+      "arm": "dependency",
+      "treatment": "minimal_ema",
+      "seconds": 0.25854883401189
+    },
+    {
+      "repeat": 0,
+      "arm": "dependency",
+      "treatment": "ema_recovery",
+      "seconds": 0.26805958300246857
+    },
+    {
+      "repeat": 0,
+      "arm": "alignment_dependency",
+      "treatment": "fixed_binary",
+      "seconds": 0.2555334169883281
+    },
+    {
+      "repeat": 0,
+      "arm": "alignment_dependency",
+      "treatment": "minimal_ema",
+      "seconds": 0.2555322920088656
+    },
+    {
+      "repeat": 0,
+      "arm": "alignment_dependency",
+      "treatment": "ema_recovery",
+      "seconds": 0.2668892910005525
+    },
+    {
+      "repeat": 0,
+      "arm": "alignment_dependency",
+      "treatment": "reference",
+      "seconds": 0.2656213339942042
+    },
+    {
+      "repeat": 1,
+      "arm": "reconstruction",
+      "treatment": "ema_recovery",
+      "seconds": 0.26517091700225137
+    },
+    {
+      "repeat": 1,
+      "arm": "reconstruction",
+      "treatment": "reference",
+      "seconds": 0.26561375000164844
+    },
+    {
+      "repeat": 1,
+      "arm": "reconstruction",
+      "treatment": "fixed_binary",
+      "seconds": 0.25776833400595933
+    },
+    {
+      "repeat": 1,
+      "arm": "reconstruction",
+      "treatment": "minimal_ema",
+      "seconds": 0.2559585000271909
+    },
+    {
+      "repeat": 1,
+      "arm": "alignment",
+      "treatment": "reference",
+      "seconds": 0.2649857910000719
+    },
+    {
+      "repeat": 1,
+      "arm": "alignment",
+      "treatment": "fixed_binary",
+      "seconds": 0.2575130420154892
+    },
+    {
+      "repeat": 1,
+      "arm": "alignment",
+      "treatment": "minimal_ema",
+      "seconds": 0.2570642499777023
+    },
+    {
+      "repeat": 1,
+      "arm": "alignment",
+      "treatment": "ema_recovery",
+      "seconds": 0.2683697499742266
+    },
+    {
+      "repeat": 1,
+      "arm": "dependency",
+      "treatment": "fixed_binary",
+      "seconds": 0.2658975000085775
+    },
+    {
+      "repeat": 1,
+      "arm": "dependency",
+      "treatment": "minimal_ema",
+      "seconds": 0.32628766700509004
+    },
+    {
+      "repeat": 1,
+      "arm": "dependency",
+      "treatment": "ema_recovery",
+      "seconds": 0.27554233302362263
+    },
+    {
+      "repeat": 1,
+      "arm": "dependency",
+      "treatment": "reference",
+      "seconds": 0.2713685000198893
+    },
+    {
+      "repeat": 1,
+      "arm": "alignment_dependency",
+      "treatment": "minimal_ema",
+      "seconds": 0.26201450001099147
+    },
+    {
+      "repeat": 1,
+      "arm": "alignment_dependency",
+      "treatment": "ema_recovery",
+      "seconds": 0.278634125017561
+    },
+    {
+      "repeat": 1,
+      "arm": "alignment_dependency",
+      "treatment": "reference",
+      "seconds": 0.2834061670000665
+    },
+    {
+      "repeat": 1,
+      "arm": "alignment_dependency",
+      "treatment": "fixed_binary",
+      "seconds": 0.26361779202125035
+    },
+    {
+      "repeat": 2,
+      "arm": "reconstruction",
+      "treatment": "reference",
+      "seconds": 0.27023016699240543
+    },
+    {
+      "repeat": 2,
+      "arm": "reconstruction",
+      "treatment": "fixed_binary",
+      "seconds": 0.26385258298250847
+    },
+    {
+      "repeat": 2,
+      "arm": "reconstruction",
+      "treatment": "minimal_ema",
+      "seconds": 0.26168208301533014
+    },
+    {
+      "repeat": 2,
+      "arm": "reconstruction",
+      "treatment": "ema_recovery",
+      "seconds": 0.272962541988818
+    },
+    {
+      "repeat": 2,
+      "arm": "alignment",
+      "treatment": "fixed_binary",
+      "seconds": 0.2568181249953341
+    },
+    {
+      "repeat": 2,
+      "arm": "alignment",
+      "treatment": "minimal_ema",
+      "seconds": 0.25840970801073126
+    },
+    {
+      "repeat": 2,
+      "arm": "alignment",
+      "treatment": "ema_recovery",
+      "seconds": 0.26711362501373515
+    },
+    {
+      "repeat": 2,
+      "arm": "alignment",
+      "treatment": "reference",
+      "seconds": 0.26804599998285994
+    },
+    {
+      "repeat": 2,
+      "arm": "dependency",
+      "treatment": "minimal_ema",
+      "seconds": 0.2597155830007978
+    },
+    {
+      "repeat": 2,
+      "arm": "dependency",
+      "treatment": "ema_recovery",
+      "seconds": 0.2657007910020184
+    },
+    {
+      "repeat": 2,
+      "arm": "dependency",
+      "treatment": "reference",
+      "seconds": 0.2689907919848338
+    },
+    {
+      "repeat": 2,
+      "arm": "dependency",
+      "treatment": "fixed_binary",
+      "seconds": 0.2576464999874588
+    },
+    {
+      "repeat": 2,
+      "arm": "alignment_dependency",
+      "treatment": "ema_recovery",
+      "seconds": 0.268656790984096
+    },
+    {
+      "repeat": 2,
+      "arm": "alignment_dependency",
+      "treatment": "reference",
+      "seconds": 0.2803507500211708
+    },
+    {
+      "repeat": 2,
+      "arm": "alignment_dependency",
+      "treatment": "fixed_binary",
+      "seconds": 0.2582980830047745
+    },
+    {
+      "repeat": 2,
+      "arm": "alignment_dependency",
+      "treatment": "minimal_ema",
+      "seconds": 0.25877741700969636
+    }
+  ],
+  "summary": {
+    "minimal_ema": {
+      "median_seconds": 0.25924650000524707,
+      "minimum_seconds": 0.2555322920088656,
+      "maximum_seconds": 0.32628766700509004,
+      "step_flops": 10525149.0
+    },
+    "ema_recovery": {
+      "median_seconds": 0.26758660400810186,
+      "minimum_seconds": 0.2647899999865331,
+      "maximum_seconds": 0.278634125017561,
+      "step_flops": 10564359.0
+    },
+    "reference": {
+      "median_seconds": 0.2683394999912707,
+      "minimum_seconds": 0.2636332499969285,
+      "maximum_seconds": 0.2834061670000665,
+      "step_flops": 10564359.0
+    },
+    "fixed_binary": {
+      "median_seconds": 0.2578840210044291,
+      "minimum_seconds": 0.2555334169883281,
+      "maximum_seconds": 0.2658975000085775,
+      "step_flops": 10525149.0
+    }
+  }
+}

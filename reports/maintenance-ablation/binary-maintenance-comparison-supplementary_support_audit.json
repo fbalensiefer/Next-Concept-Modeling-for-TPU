@@ -1,0 +1,762 @@
+[
+  {
+    "seed": 13,
+    "arm": "reconstruction",
+    "treatment": "fixed_binary",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999999,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.997524474077054,
+      "factorized_oracle_kl_nats": 0.09594173640414488,
+      "factorized_oracle_tv": 0.11987465318432952,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 13,
+    "arm": "reconstruction",
+    "treatment": "ema_recovery",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999998,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.98668818987183,
+      "factorized_oracle_kl_nats": 0.1200761027323093,
+      "factorized_oracle_tv": 0.12549938699811608,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 13,
+    "arm": "alignment",
+    "treatment": "ema_recovery",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999998,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.9733686083705464,
+      "factorized_oracle_kl_nats": 0.2141227404892282,
+      "factorized_oracle_tv": 0.15383231214059603,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 13,
+    "arm": "alignment",
+    "treatment": "fixed_binary",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999999,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.997524474077054,
+      "factorized_oracle_kl_nats": 0.09594173640414488,
+      "factorized_oracle_tv": 0.11987465318432952,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 13,
+    "arm": "dependency",
+    "treatment": "fixed_binary",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999999,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.997524474077054,
+      "factorized_oracle_kl_nats": 0.09594173640414488,
+      "factorized_oracle_tv": 0.11987465318432952,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 13,
+    "arm": "dependency",
+    "treatment": "ema_recovery",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 1.0,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.997524474077054,
+      "factorized_oracle_kl_nats": 0.09594173640414488,
+      "factorized_oracle_tv": 0.11987465318432952,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 13,
+    "arm": "alignment_dependency",
+    "treatment": "ema_recovery",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999998,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9976649074947121,
+      "sequence_reconstruction": 0.990659629978849,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.9733686083705464,
+      "factorized_oracle_kl_nats": 0.11584641777908475,
+      "factorized_oracle_tv": 0.12078536947227118,
+      "joint_oracle_tv": 0.009340376270604224,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 13,
+    "arm": "alignment_dependency",
+    "treatment": "fixed_binary",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999999,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.997524474077054,
+      "factorized_oracle_kl_nats": 0.09594173640414488,
+      "factorized_oracle_tv": 0.11987465318432952,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 14,
+    "arm": "reconstruction",
+    "treatment": "ema_recovery",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999998,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.998246562840431,
+      "factorized_oracle_kl_nats": 0.12912225761673318,
+      "factorized_oracle_tv": 0.12949829997075993,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 14,
+    "arm": "reconstruction",
+    "treatment": "fixed_binary",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 1.0,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.9977065547188275,
+      "factorized_oracle_kl_nats": 0.12752948777260845,
+      "factorized_oracle_tv": 0.12663583804761058,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 14,
+    "arm": "alignment",
+    "treatment": "fixed_binary",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 1.0,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.9977065547188275,
+      "factorized_oracle_kl_nats": 0.12752948777260845,
+      "factorized_oracle_tv": 0.12663583804761058,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 14,
+    "arm": "alignment",
+    "treatment": "ema_recovery",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 1.0,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.997524474077054,
+      "factorized_oracle_kl_nats": 0.09594173640414488,
+      "factorized_oracle_tv": 0.11987465318432952,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 14,
+    "arm": "dependency",
+    "treatment": "ema_recovery",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999998,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.9733686083705464,
+      "factorized_oracle_kl_nats": 0.08794291534338972,
+      "factorized_oracle_tv": 0.11796245472130451,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 14,
+    "arm": "dependency",
+    "treatment": "fixed_binary",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999999,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.9945824762790485,
+      "factorized_oracle_kl_nats": 0.12615018710030348,
+      "factorized_oracle_tv": 0.12822954538662476,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 14,
+    "arm": "alignment_dependency",
+    "treatment": "fixed_binary",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 1.0,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.999340084643346,
+      "factorized_oracle_kl_nats": 0.12778510592379852,
+      "factorized_oracle_tv": 0.127826031607095,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 14,
+    "arm": "alignment_dependency",
+    "treatment": "ema_recovery",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999998,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.9733686083705464,
+      "factorized_oracle_kl_nats": 0.08794291534338972,
+      "factorized_oracle_tv": 0.11796245472130451,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 15,
+    "arm": "reconstruction",
+    "treatment": "fixed_binary",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 1.0,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.9997629611146215,
+      "factorized_oracle_kl_nats": 0.12822378380867017,
+      "factorized_oracle_tv": 0.1278749910801815,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 15,
+    "arm": "reconstruction",
+    "treatment": "ema_recovery",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999999,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.998246562840431,
+      "factorized_oracle_kl_nats": 0.12912225761673318,
+      "factorized_oracle_tv": 0.12949829997075993,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 15,
+    "arm": "alignment",
+    "treatment": "ema_recovery",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999999,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.9958948878715987,
+      "factorized_oracle_kl_nats": 0.13962849076446082,
+      "factorized_oracle_tv": 0.12540377446140763,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 15,
+    "arm": "alignment",
+    "treatment": "fixed_binary",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999998,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.9868615486288734,
+      "factorized_oracle_kl_nats": 0.11535452226750675,
+      "factorized_oracle_tv": 0.12577370641419955,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 15,
+    "arm": "dependency",
+    "treatment": "fixed_binary",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999999,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.9992407805949621,
+      "factorized_oracle_kl_nats": 0.11423850476928249,
+      "factorized_oracle_tv": 0.12088366943271073,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 15,
+    "arm": "dependency",
+    "treatment": "ema_recovery",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999999,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.997524474077054,
+      "factorized_oracle_kl_nats": 0.09594173640414488,
+      "factorized_oracle_tv": 0.11987465318432952,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 15,
+    "arm": "alignment_dependency",
+    "treatment": "ema_recovery",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999999,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.997524474077054,
+      "factorized_oracle_kl_nats": 0.09594173640414488,
+      "factorized_oracle_tv": 0.11987465318432952,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 15,
+    "arm": "alignment_dependency",
+    "treatment": "fixed_binary",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999998,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.9733686083705464,
+      "factorized_oracle_kl_nats": 0.08794291534338972,
+      "factorized_oracle_tv": 0.11796245472130451,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 16,
+    "arm": "reconstruction",
+    "treatment": "ema_recovery",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999998,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.9733686083705464,
+      "factorized_oracle_kl_nats": 0.08794291534338972,
+      "factorized_oracle_tv": 0.11796245472130451,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 16,
+    "arm": "reconstruction",
+    "treatment": "fixed_binary",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999998,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.9733686083705464,
+      "factorized_oracle_kl_nats": 0.08794291534338972,
+      "factorized_oracle_tv": 0.11796245472130451,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 16,
+    "arm": "alignment",
+    "treatment": "fixed_binary",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999998,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.9733686083705464,
+      "factorized_oracle_kl_nats": 0.08794291534338972,
+      "factorized_oracle_tv": 0.11796245472130451,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 16,
+    "arm": "alignment",
+    "treatment": "ema_recovery",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999998,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.9733686083705464,
+      "factorized_oracle_kl_nats": 0.08794291534338972,
+      "factorized_oracle_tv": 0.11796245472130451,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 16,
+    "arm": "dependency",
+    "treatment": "ema_recovery",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999998,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.9733686083705464,
+      "factorized_oracle_kl_nats": 0.08794291534338972,
+      "factorized_oracle_tv": 0.11796245472130451,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 16,
+    "arm": "dependency",
+    "treatment": "fixed_binary",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999998,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.9733686083705464,
+      "factorized_oracle_kl_nats": 0.08794291534338972,
+      "factorized_oracle_tv": 0.11796245472130451,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 16,
+    "arm": "alignment_dependency",
+    "treatment": "fixed_binary",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999998,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.9733686083705464,
+      "factorized_oracle_kl_nats": 0.08794291534338972,
+      "factorized_oracle_tv": 0.11796245472130451,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 16,
+    "arm": "alignment_dependency",
+    "treatment": "ema_recovery",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999998,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.9733686083705464,
+      "factorized_oracle_kl_nats": 0.08794291534338972,
+      "factorized_oracle_tv": 0.11796245472130451,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 17,
+    "arm": "reconstruction",
+    "treatment": "fixed_binary",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 1.0,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.997524474077054,
+      "factorized_oracle_kl_nats": 0.09594173640414488,
+      "factorized_oracle_tv": 0.11987465318432952,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 17,
+    "arm": "reconstruction",
+    "treatment": "ema_recovery",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 1.0,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.9810834148429863,
+      "factorized_oracle_kl_nats": 0.10929747909439358,
+      "factorized_oracle_tv": 0.12153302307139045,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 17,
+    "arm": "alignment",
+    "treatment": "ema_recovery",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999999,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.997524474077054,
+      "factorized_oracle_kl_nats": 0.1352074752082007,
+      "factorized_oracle_tv": 0.12761954919431537,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 17,
+    "arm": "alignment",
+    "treatment": "fixed_binary",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999999,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.9801048836679274,
+      "factorized_oracle_kl_nats": 0.10779906198434215,
+      "factorized_oracle_tv": 0.12086289081313632,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 17,
+    "arm": "dependency",
+    "treatment": "fixed_binary",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 1.0,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.999340084643346,
+      "factorized_oracle_kl_nats": 0.12778510592379852,
+      "factorized_oracle_tv": 0.127826031607095,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 17,
+    "arm": "dependency",
+    "treatment": "ema_recovery",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999998,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.9733686083705464,
+      "factorized_oracle_kl_nats": 0.08794291534338972,
+      "factorized_oracle_tv": 0.11792798917569139,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 17,
+    "arm": "alignment_dependency",
+    "treatment": "ema_recovery",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 1.0,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.997524474077054,
+      "factorized_oracle_kl_nats": 0.09594173640414488,
+      "factorized_oracle_tv": 0.11987465318432952,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  },
+  {
+    "seed": 17,
+    "arm": "alignment_dependency",
+    "treatment": "fixed_binary",
+    "metrics": {
+      "population_unique_encodings": 16,
+      "max_sequence_reconstruction_from_codes": 0.9999999999999999,
+      "code_collision_groups": [],
+      "byte_reconstruction": 0.9999999999999999,
+      "sequence_reconstruction": 0.9999999999999999,
+      "active_coarse_codes": 2,
+      "coarse_perplexity": 1.9810834148429863,
+      "factorized_oracle_kl_nats": 0.10929747909439358,
+      "factorized_oracle_tv": 0.12153302307139045,
+      "joint_oracle_tv": 6.249453407027039e-09,
+      "factorized_missing_teacher_mass": 0.0,
+      "factorized_outside_mass": 0.0
+    }
+  }
+]
