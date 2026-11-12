@@ -1,0 +1,166 @@
+{
+  "config": {
+    "lengths": [
+      1,
+      4
+    ],
+    "codebook_size": 2,
+    "dim": 8,
+    "width": 16,
+    "heads": 2,
+    "layers": 1,
+    "teacher_width": 16,
+    "teacher_seed": 2026,
+    "teacher_steps": 400,
+    "teacher_learning_rate": 0.003,
+    "source_noise": 0.25,
+    "seeds": [
+      31,
+      32,
+      33,
+      34,
+      35
+    ],
+    "codec_steps": 400,
+    "prior_steps": 400,
+    "codec_learning_rate": 0.003,
+    "prior_learning_rate": 0.003,
+    "batch_size": 64,
+    "checkpoint_every": 100,
+    "train_samples": 512,
+    "validation_samples": 512,
+    "calibration_samples": 256,
+    "soft_temperature": 0.25,
+    "entropy_weight": 0.01,
+    "alignment_weight": 0.05,
+    "dependency_weight": 0.25,
+    "min_reconstruction": 0.95,
+    "max_reconstruction_drop": 0.01,
+    "min_tv_improvement": 0.02,
+    "min_tc_reduction": 0.01,
+    "arms": [
+      "reconstruction",
+      "alignment",
+      "dependency",
+      "alignment_dependency"
+    ],
+    "confirmation_seeds": [
+      31,
+      32,
+      33,
+      34,
+      35
+    ],
+    "decoder_repair_steps": 200,
+    "decoder_repair_learning_rate": 0.003,
+    "min_sequence_reconstruction": 0.98,
+    "max_repair_tv_increase": 0.01,
+    "min_alignment_tv_improvement": 0.02,
+    "min_alignment_winning_seeds": 4,
+    "study": "Coarse-codebook maintenance test. Same four arms, balanced observations and budgets. Known seeds 4,8,10; only unused seeds 13-17 determine hard-usage and coverage gates. No gating on soft entropy alone.",
+    "codec_sampling": "balanced_observed",
+    "min_coarse_perplexity": 1.5,
+    "max_coarse_collapsed_fraction": 0.05,
+    "coarse": {
+      "enabled": true,
+      "warmup_batches": 2,
+      "kmeans_iterations": 20,
+      "initialization_noise": 0.0001,
+      "usage_decay": 0.9,
+      "dead_code_threshold": 1.0,
+      "dead_code_grace_steps": 25,
+      "dead_code_check_every": 1,
+      "reset_count": 2.0,
+      "replacement_noise": 0.01,
+      "entropy_weight": 0.05,
+      "temp_start": 2.0,
+      "temp_end": 0.25,
+      "temp_anneal_steps": 200,
+      "beta_start": 0.0,
+      "beta_end": 0.25,
+      "beta_warmup_steps": 200,
+      "coarse_codebook_lr_scale": 0.25
+    }
+  },
+  "domains": [
+    [
+      "original_mixture",
+      4,
+      9101
+    ],
+    [
+      "biased_independent",
+      4,
+      9102
+    ],
+    [
+      "persistent_markov",
+      8,
+      9103
+    ],
+    [
+      "noisy_parity",
+      8,
+      9104
+    ],
+    [
+      "skewed_modes",
+      8,
+      9105
+    ],
+    [
+      "alternating_modes",
+      8,
+      9106
+    ]
+  ],
+  "treatments": [
+    "ema_recovery",
+    "reference",
+    "fixed_binary"
+  ],
+  "target": "Analytic full-support source law, not fitted teacher law; independently trained teachers provide PCA alignment features only.",
+  "budgets": "360 models, each 400 codec + 200 decoder replay updates; six teachers x 400 updates. No prior training.",
+  "fidelity_checks": {
+    "sequence_reconstruction_min": 0.98,
+    "missing_source_mass_max": 0.01,
+    "outside_domain_mass_max": 0.01,
+    "collision_ceiling_min": 0.98
+  },
+  "usage": "Report final active codes, perplexity and collapsed-window fraction. Do not require balanced coarse usage for a skewed source.",
+  "comparison": "Per-domain, seed-paired means across objective arms; TV difference <=.02 is a descriptive tolerance, not a statistical noninferiority claim. Report all failures, no tuning or domain exclusion.",
+  "limitations": "Finite binary mechanism studies; not natural-language, unseen-support, pretrained transfer, or TPU validation. One feature teacher per source.",
+  "timing": "Synchronized training windows, precomputed resident batches, discarded warmup, separate compilation and replay. No concurrent tests scheduled.",
+  "versions": {
+    "python": "3.12.16",
+    "jax": "0.10.2",
+    "numpy": "2.5.4"
+  },
+  "backend": "cpu",
+  "source_sha256": {
+    "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/__init__.py": "63bcdb4720f957c8a3e14aa6e0f901e0dbfd616eb18273d2ab91ca4550910453",
+    "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/autoregressive.py": "c7e2d32886808941de90a836345a1a6031c3cd61d9a2cc990019ad19aa71eb27",
+    "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/benchmark.py": "84ed1ed5c6818584b5cceaa4830b838931a25239fe140f13443f0ad70399aae7",
+    "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/coarse.py": "517a5b741741893a1d3dad3c1c488c2253228f6b0b097532e2a7c9be60b5e1dc",
+    "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/config.py": "17b585e6ba81c55a61717c51950c37f970677400fe0ad0107e444ab45503a063",
+    "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/coverage.py": "bd75ec017eeeba62d0419fda3aab92bcf3d76010de90043877c151de6b8ff422",
+    "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/dependence.py": "c7c9df1f405e2e56854f1679167f7b7a67d59f9b00bcc4ec75619f2af451e597",
+    "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/domain_validation.py": "64c9272d44fb8a68542149d0ed45dd9b4d5b3337abda709739961e661266227e",
+    "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/experiment.py": "1f819eb1c6c8b20ef589d7ca35a8ddb80b5ccebc8c7ede511f1637ff1b371a3b",
+    "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/fast_generation.py": "cd5d925c0c4d971a4ece9b00f67d3e14aa842e02bc0d17670ed788b5d6e6c378",
+    "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/generation.py": "1c7c739a34be3c84768afc49b6a5863d09091af9f55b8bdea0cf2a53a796c44a",
+    "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/generator.py": "50bc977d8522578bbaba4e3a27c4627459c21d72032b4bd952881ef0feb911e8",
+    "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/grids.py": "45c4da3d4224335ff0b50f8bf0fcfbd190daa7c949dd5dc690189f4121749d30",
+    "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/losses.py": "a52b17f683b3d5a4e6eec704b5f055ecd57edcff1474ec4732035886c31f6771",
+    "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/maintenance_experiment.py": "a26fc084f32198eea462a55defe7a88bfba5ae91ef75e1affaab94e348fd9d67",
+    "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/metrics.py": "be204442a808f33322cf4aeae50905127b53f715b19c1d79e7f1e4edefd855ed",
+    "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/prior_experiment.py": "4906f396d8f273102dd75d6b689f322ddcfc30ff33a023f3dffa43a24276292f",
+    "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/rvq.py": "a66c08bc993eda484f3a7e13fdc82be5b967064c3945df481d4ba85df8328883",
+    "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/sample.py": "ab960dd114d5cf53930307f2a0c32c522487d6d92698e88f072f8746e0134188",
+    "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/scale_experiment.py": "4113314420a122e2118db03488bc1f42845405c8466dda6ef5bcc8aee779411b",
+    "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/sharding.py": "085df4a615b7e7985c4dc3be91cb1529260eced9d713a87ea81d68ff40419674",
+    "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/sparse_grids.py": "a20fd5247df0ef52895e3cb6cc6e6e3f0e753a4790fef22c689acfb10bc5af8c",
+    "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/tokenizer.py": "ced3cbc58a6a6b2ff8a33f6ed96152302e8732f6a7edba246b909df2a8c67110",
+    "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/training.py": "1d43febd96b2a1703a2670f609a9a7bde6ed7c4f01bd16c8a6a44c15dad3bcfd"
+  }
+}

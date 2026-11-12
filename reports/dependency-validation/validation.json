@@ -1,0 +1,19 @@
+{
+  "fitted_priors": 480,
+  "frozen_codecs": 120,
+  "all_four_models_per_codec": true,
+  "all_codec_hashes_unchanged": true,
+  "tests_passed": 5,
+  "eligible_codecs": 104,
+  "population_gate_misses": [
+    {
+      "domain": "persistent_markov",
+      "seed": 34,
+      "arm": "alignment",
+      "validation_sequence_accuracy": 0.986328125,
+      "population_failures": [
+        "reconstruction"
+      ]
+    }
+  ]
+}

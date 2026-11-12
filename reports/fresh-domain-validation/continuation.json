@@ -1,0 +1,14 @@
+{
+  "reason": "Float64 diagnostic verification and checkpoint continuation after recorded numeric incident",
+  "training_helpers": {
+    "minimal_ema": "unchanged AST",
+    "ema_recovery": "unchanged AST",
+    "fixed_binary": "unchanged AST",
+    "prepare_teacher": "unchanged AST",
+    "source_law": "unchanged AST"
+  },
+  "sources": {
+    "src/ncm/domain_validation.py": "19abadaf9edb9163ccaa4e5c133a755dd4291c74ff199d6fd2e37ae6e70cf05e",
+    "src/ncm/maintenance_experiment.py": "72bda9ba782fa60bd1d1fcc0ab9abad4114e324bcf641634be82c050aaa0c57e"
+  }
+}

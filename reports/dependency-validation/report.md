@@ -1,0 +1,75 @@
+# Reconstruction-first dependency comparison
+
+Production defaults remain unchanged. This experiment freezes all 120 reference codecs from the six-domain study and fits four explicit code priors from their original 512 training observations. No codec, codebook, feature teacher or neural prior is retrained. Every result, including unsafe codecs, is retained.
+
+## Reconstruction protection and protocol
+
+An experimental eligibility check flags codecs whose validation sequence accuracy is below 98% or whose training collision-based reconstruction ceiling is below 98%. It uses sampled training/validation observations, not population probabilities. It accepts 104 codecs and flags 16. The exact population audit finds one additional accepted codec below the reconstruction threshold: persistent_markov, seed 34, alignment arm, validation accuracy 98.633%. Thus this gate is a useful filter, not a population guarantee or production admission certificate.
+
+Freezing the codec ensures that changing the prior cannot change its autoencoding fidelity; checkpoint hashes were checked before and after each comparison. It does not ensure that generated samples are accurate or that a prior can repair collisions already present. Validation NLL and population output quality are evaluation metrics only; neither selects a smoothing value, model topology or training update.
+
+The protocol was saved before fitting. All conditional tables use total symmetric Dirichlet pseudo-count one per conditional row, distributing the mass uniformly over its output categories. The coarse-bit table uses the same rule. The tree topology maximizes empirical conditional mutual information on training codes, using one shared topology across coarse states, deterministic tie breaking and a center root. Conditional tables are then smoothed; this regularized fit is not claimed to retain the unsmoothed Chow–Liu optimality theorem.
+
+## Results on codecs passing the sampled fidelity check
+
+Cells are mean exact decoded output TV; lower is better. All four objective arms remain represented, and eligibility is identical across the four priors for each codec. This selected subset is not evidence for all codecs.
+
+| Source | Eligible codecs /20 | Independent | Adjacent pairs | Conditional tree | Joint fine level |
+|---|---:|---:|---:|---:|---:|
+| original_mixture | 19 | 0.1359 | 0.1024 | 0.0771 | 0.0465 |
+| biased_independent | 19 | 0.0955 | 0.0895 | 0.0869 | 0.0527 |
+| persistent_markov | 15 | 0.4956 | 0.3087 | 0.1232 | 0.1444 |
+| noisy_parity | 16 | 0.4647 | 0.4601 | 0.4570 | 0.2308 |
+| skewed_modes | 18 | 0.1746 | 0.1493 | 0.1128 | 0.0840 |
+| alternating_modes | 17 | 0.7526 | 0.7327 | 0.2596 | 0.1416 |
+
+## All codecs, including flagged failures
+
+| Source | Independent | Adjacent pairs | Conditional tree | Joint fine level |
+|---|---:|---:|---:|---:|
+| original_mixture | 0.1377 | 0.1042 | 0.0782 | 0.0480 |
+| biased_independent | 0.1027 | 0.0956 | 0.0939 | 0.0592 |
+| persistent_markov | 0.4975 | 0.3267 | 0.1474 | 0.1681 |
+| noisy_parity | 0.4727 | 0.4685 | 0.4660 | 0.2639 |
+| skewed_modes | 0.1732 | 0.1491 | 0.1125 | 0.0841 |
+| alternating_modes | 0.7382 | 0.7153 | 0.2810 | 0.1629 |
+
+The empirical joint tables improve decoded TV over independent tables on every source in these averages. The Markov source is the important capacity counterexample: conditional trees outperform the larger joint tables at the fixed 512-observation budget. This is consistent with a useful sparsity bias and reduced estimation error; it is not a causal proof of that explanation. No model dominates for both dependency capacity and serial depth.
+
+## Complexity and practical limits
+
+| Prior | Free parameters at length eight | Sampling rounds |
+|---|---:|---:|
+| Independent | 17 | 2 |
+| Adjacent pairs | 25 | 2 |
+| Conditional tree | 31 | 3–6 observed |
+| Joint fine level | 511 | 2 |
+
+Counts include the coarse distribution and all conditional probability rows, including unobserved contexts. Tree rounds include the coarse bit and the center-rooted fine tree. Block distributions can sample their categories in parallel; trees must respect parent dependencies. The joint model scales exponentially with fine-level length and is an oracle/finite-domain control, not a proposed full-sequence language architecture.
+
+The implementation enumerates codewords to evaluate the exact output distribution. Its fit_seconds measure local table construction and enumeration, not accelerator inference speed or end-to-end generation latency. The reported parameter counts describe conditional models; the enumeration arrays used for diagnosis are larger. No compiler FLOP or TPU speed claim is made.
+
+## Decision
+
+1. Retain production defaults and the reference quantizer.
+2. Require fidelity checks before interpreting improvements in dependence or usage. Strengthen the sampled gate with prespecified uncertainty handling before treating it as an admission rule; the observed false acceptance shows why point estimates alone are insufficient.
+3. Use joint fine-level tables as a finite-domain upper-capacity control. Use sparse conditional trees as the first tractable dependency-aware baseline, with explicit measurement of the extra serial rounds.
+4. For longer sequences, test small joint blocks linked by sparse dependencies rather than assuming a globally factorized fine level or a full exponentially sized joint table.
+5. Address codec information loss separately through fidelity-constrained training. The present experiment protects frozen codec fidelity; it does not implement a reconstruction-constrained training algorithm.
+
+These results support redesigning dependency handling before adopting a new quantizer. They do not establish language quality, a practical decoder replacement, or cross-domain generalization: each prior is fitted separately to the training observations of its source. Five student seeds and one feature teacher per source remain the evidence envelope. No population probabilities enter fitting or gate eligibility.
+
+## Validation and reproduction
+
+Five tests passed for positive normalized laws in every model family and a closed-form joint posterior predictive check. All 480 fitted laws normalize, every source codec checkpoint hash is unchanged, and all 120 codecs are retained. protocol.json records design and implementation identity; results.json preserves every model-level metric and conditional structure. The new code is experimental and has no production call path.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 .venv312/bin/python -m ncm.dependency_validation
+PYTHONDONTWRITEBYTECODE=1 .venv312/bin/python -m pytest -q tests/test_dependency_validation.py
+```
+
+The runner requires the locally available fresh-domain checkpoints and data under runs/fresh-domain-validation and refuses an existing output protocol. This experiment adds no codec training or quantizer changes.
+
+## Public replay
+
+`python examples/replay_dependency_results.py` verifies all 480 fits using committed codec_tables.npz and codec_tables.json, without trained checkpoints. The compressed tables contain population encodings, decoded codeword mappings, reconstructed tokens and original sample indices; population probabilities are used only to reproduce evaluation. `examples/export_research_inputs.py` documents extraction and checkpoint identities.

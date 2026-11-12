@@ -1,0 +1,1115 @@
+{
+  "summary": {
+    "original_mixture": {
+      "ema_recovery": {
+        "models": 20,
+        "fidelity_failures": 2,
+        "reconstruction_failures": 2,
+        "coverage_failures": 2,
+        "collision_ceiling_failures": 1,
+        "any_collision_models": 2,
+        "final_coarse_collapse": 0,
+        "usage_window_failures": 0,
+        "mean": {
+          "sequence_reconstruction": 0.97890625,
+          "factorized_oracle_tv": 0.14310459199682563,
+          "factorized_oracle_kl_nats": 0.1264416867762234,
+          "factorized_missing_teacher_mass": 0.02109375,
+          "factorized_outside_mass": 2.754827996227807e-06,
+          "max_sequence_reconstruction_from_codes": 0.99765625,
+          "coarse_perplexity": 1.9943398690506886
+        },
+        "min_reconstruction": 0.609375,
+        "max_missing_mass": 0.390625,
+        "median_codec_seconds": 0.2650970209942898,
+        "missing_codec_timings": 0,
+        "codec_step_flops": [
+          10564359.0
+        ]
+      },
+      "reference": {
+        "models": 20,
+        "fidelity_failures": 1,
+        "reconstruction_failures": 1,
+        "coverage_failures": 1,
+        "collision_ceiling_failures": 1,
+        "any_collision_models": 1,
+        "final_coarse_collapse": 0,
+        "usage_window_failures": 0,
+        "mean": {
+          "sequence_reconstruction": 0.99765625,
+          "factorized_oracle_tv": 0.1273328338448945,
+          "factorized_oracle_kl_nats": 0.13423292812035742,
+          "factorized_missing_teacher_mass": 0.0015625,
+          "factorized_outside_mass": 2.754827996227807e-06,
+          "max_sequence_reconstruction_from_codes": 0.99765625,
+          "coarse_perplexity": 1.994193634240173
+        },
+        "min_reconstruction": 0.953125,
+        "max_missing_mass": 0.03125,
+        "median_codec_seconds": 0.26595091650960967,
+        "missing_codec_timings": 0,
+        "codec_step_flops": [
+          10564359.0
+        ]
+      },
+      "fixed_binary": {
+        "models": 20,
+        "fidelity_failures": 0,
+        "reconstruction_failures": 0,
+        "coverage_failures": 0,
+        "collision_ceiling_failures": 0,
+        "any_collision_models": 0,
+        "final_coarse_collapse": 0,
+        "usage_window_failures": 0,
+        "mean": {
+          "sequence_reconstruction": 1.0,
+          "factorized_oracle_tv": 0.11857732055263978,
+          "factorized_oracle_kl_nats": 0.1108447226818651,
+          "factorized_missing_teacher_mass": 0.0,
+          "factorized_outside_mass": 0.0,
+          "max_sequence_reconstruction_from_codes": 1.0,
+          "coarse_perplexity": 1.9949252359731104
+        },
+        "min_reconstruction": 1.0,
+        "max_missing_mass": 0.0,
+        "median_codec_seconds": 0.2564022915175883,
+        "missing_codec_timings": 0,
+        "codec_step_flops": [
+          10525149.0
+        ]
+      }
+    },
+    "biased_independent": {
+      "ema_recovery": {
+        "models": 20,
+        "fidelity_failures": 1,
+        "reconstruction_failures": 1,
+        "coverage_failures": 1,
+        "collision_ceiling_failures": 0,
+        "any_collision_models": 2,
+        "final_coarse_collapse": 0,
+        "usage_window_failures": 0,
+        "mean": {
+          "sequence_reconstruction": 0.9982400000000003,
+          "factorized_oracle_tv": 0.08740514653017221,
+          "factorized_oracle_kl_nats": 0.13994115985173666,
+          "factorized_missing_teacher_mass": 0.0017600000000000005,
+          "factorized_outside_mass": 0.00015999999999999996,
+          "max_sequence_reconstruction_from_codes": 0.9992800000000003,
+          "coarse_perplexity": 1.454129620043911
+        },
+        "min_reconstruction": 0.9728000000000002,
+        "max_missing_mass": 0.02720000000000001,
+        "median_codec_seconds": 0.265555313002551,
+        "missing_codec_timings": 0,
+        "codec_step_flops": [
+          10564359.0
+        ]
+      },
+      "reference": {
+        "models": 20,
+        "fidelity_failures": 1,
+        "reconstruction_failures": 1,
+        "coverage_failures": 1,
+        "collision_ceiling_failures": 0,
+        "any_collision_models": 2,
+        "final_coarse_collapse": 0,
+        "usage_window_failures": 0,
+        "mean": {
+          "sequence_reconstruction": 0.9918400000000004,
+          "factorized_oracle_tv": 0.09256143259369791,
+          "factorized_oracle_kl_nats": 0.14562010847347467,
+          "factorized_missing_teacher_mass": 0.0068800000000000016,
+          "factorized_outside_mass": 0.00015999999999999996,
+          "max_sequence_reconstruction_from_codes": 0.9989600000000003,
+          "coarse_perplexity": 1.4376152241832338
+        },
+        "min_reconstruction": 0.8448000000000002,
+        "max_missing_mass": 0.12960000000000002,
+        "median_codec_seconds": 0.2662843960133614,
+        "missing_codec_timings": 0,
+        "codec_step_flops": [
+          10564359.0
+        ]
+      },
+      "fixed_binary": {
+        "models": 20,
+        "fidelity_failures": 0,
+        "reconstruction_failures": 0,
+        "coverage_failures": 0,
+        "collision_ceiling_failures": 0,
+        "any_collision_models": 0,
+        "final_coarse_collapse": 0,
+        "usage_window_failures": 0,
+        "mean": {
+          "sequence_reconstruction": 1.0000000000000004,
+          "factorized_oracle_tv": 0.0889365925617239,
+          "factorized_oracle_kl_nats": 0.15095255065620639,
+          "factorized_missing_teacher_mass": 0.0,
+          "factorized_outside_mass": 0.0,
+          "max_sequence_reconstruction_from_codes": 1.0000000000000004,
+          "coarse_perplexity": 1.4961140537077773
+        },
+        "min_reconstruction": 1.0000000000000004,
+        "max_missing_mass": 0.0,
+        "median_codec_seconds": 0.2572018335049506,
+        "missing_codec_timings": 0,
+        "codec_step_flops": [
+          10525149.0
+        ]
+      }
+    },
+    "persistent_markov": {
+      "ema_recovery": {
+        "models": 20,
+        "fidelity_failures": 4,
+        "reconstruction_failures": 4,
+        "coverage_failures": 3,
+        "collision_ceiling_failures": 4,
+        "any_collision_models": 4,
+        "final_coarse_collapse": 0,
+        "usage_window_failures": 0,
+        "mean": {
+          "sequence_reconstruction": 0.9723431733789061,
+          "factorized_oracle_tv": 0.4852258627199558,
+          "factorized_oracle_kl_nats": 0.9730743841880635,
+          "factorized_missing_teacher_mass": 0.008698742167968749,
+          "factorized_outside_mass": 0.0,
+          "max_sequence_reconstruction_from_codes": 0.9799531027539061,
+          "coarse_perplexity": 1.9903286304800596
+        },
+        "min_reconstruction": 0.8050974660156247,
+        "max_missing_mass": 0.08525954648437498,
+        "median_codec_seconds": 0.6296037914871704,
+        "missing_codec_timings": 0,
+        "codec_step_flops": [
+          24416086.0
+        ]
+      },
+      "reference": {
+        "models": 20,
+        "fidelity_failures": 6,
+        "reconstruction_failures": 6,
+        "coverage_failures": 2,
+        "collision_ceiling_failures": 5,
+        "any_collision_models": 6,
+        "final_coarse_collapse": 0,
+        "usage_window_failures": 0,
+        "mean": {
+          "sequence_reconstruction": 0.9624026918945312,
+          "factorized_oracle_tv": 0.4890072415282446,
+          "factorized_oracle_kl_nats": 0.9543412879854817,
+          "factorized_missing_teacher_mass": 0.0026437499999999994,
+          "factorized_outside_mass": 0.0,
+          "max_sequence_reconstruction_from_codes": 0.9780139573632811,
+          "coarse_perplexity": 1.9891466403762248
+        },
+        "min_reconstruction": 0.7888498445312497,
+        "max_missing_mass": 0.0225,
+        "median_codec_seconds": 0.629629583505448,
+        "missing_codec_timings": 0,
+        "codec_step_flops": [
+          24416086.0
+        ]
+      },
+      "fixed_binary": {
+        "models": 20,
+        "fidelity_failures": 0,
+        "reconstruction_failures": 0,
+        "coverage_failures": 0,
+        "collision_ceiling_failures": 0,
+        "any_collision_models": 0,
+        "final_coarse_collapse": 1,
+        "usage_window_failures": 2,
+        "mean": {
+          "sequence_reconstruction": 0.9999999999999998,
+          "factorized_oracle_tv": 0.491008572347247,
+          "factorized_oracle_kl_nats": 0.9828315767648409,
+          "factorized_missing_teacher_mass": 0.0,
+          "factorized_outside_mass": 0.0,
+          "max_sequence_reconstruction_from_codes": 0.9999999999999998,
+          "coarse_perplexity": 1.9420887389682204
+        },
+        "min_reconstruction": 0.9999999999999998,
+        "max_missing_mass": 0.0,
+        "median_codec_seconds": 0.6352919790078886,
+        "missing_codec_timings": 0,
+        "codec_step_flops": [
+          24349482.0
+        ]
+      }
+    },
+    "noisy_parity": {
+      "ema_recovery": {
+        "models": 20,
+        "fidelity_failures": 4,
+        "reconstruction_failures": 4,
+        "coverage_failures": 3,
+        "collision_ceiling_failures": 3,
+        "any_collision_models": 5,
+        "final_coarse_collapse": 0,
+        "usage_window_failures": 0,
+        "mean": {
+          "sequence_reconstruction": 0.9398828124999999,
+          "factorized_oracle_tv": 0.469888704953391,
+          "factorized_oracle_kl_nats": 0.7392132637145677,
+          "factorized_missing_teacher_mass": 0.0359375,
+          "factorized_outside_mass": 0.0,
+          "max_sequence_reconstruction_from_codes": 0.98642578125,
+          "coarse_perplexity": 1.8305289974457666
+        },
+        "min_reconstruction": 0.58515625,
+        "max_missing_mass": 0.28125,
+        "median_codec_seconds": 0.628578625008231,
+        "missing_codec_timings": 0,
+        "codec_step_flops": [
+          24416086.0
+        ]
+      },
+      "reference": {
+        "models": 20,
+        "fidelity_failures": 4,
+        "reconstruction_failures": 4,
+        "coverage_failures": 2,
+        "collision_ceiling_failures": 2,
+        "any_collision_models": 6,
+        "final_coarse_collapse": 0,
+        "usage_window_failures": 1,
+        "mean": {
+          "sequence_reconstruction": 0.9541601562500001,
+          "factorized_oracle_tv": 0.47016467229013675,
+          "factorized_oracle_kl_nats": 0.7321719099083918,
+          "factorized_missing_teacher_mass": 0.0234375,
+          "factorized_outside_mass": 0.0,
+          "max_sequence_reconstruction_from_codes": 0.9894921875,
+          "coarse_perplexity": 1.779577268442542
+        },
+        "min_reconstruction": 0.60078125,
+        "max_missing_mass": 0.28125,
+        "median_codec_seconds": 0.6297635624941904,
+        "missing_codec_timings": 0,
+        "codec_step_flops": [
+          24416086.0
+        ]
+      },
+      "fixed_binary": {
+        "models": 20,
+        "fidelity_failures": 4,
+        "reconstruction_failures": 4,
+        "coverage_failures": 4,
+        "collision_ceiling_failures": 4,
+        "any_collision_models": 5,
+        "final_coarse_collapse": 0,
+        "usage_window_failures": 2,
+        "mean": {
+          "sequence_reconstruction": 0.8760546874999999,
+          "factorized_oracle_tv": 0.49309793734894036,
+          "factorized_oracle_kl_nats": 0.7335877396496261,
+          "factorized_missing_teacher_mass": 0.08470703125,
+          "factorized_outside_mass": 0.0,
+          "max_sequence_reconstruction_from_codes": 0.9396093750000001,
+          "coarse_perplexity": 1.8352795739444125
+        },
+        "min_reconstruction": 0.244140625,
+        "max_missing_mass": 0.75,
+        "median_codec_seconds": 0.6377352499985136,
+        "missing_codec_timings": 0,
+        "codec_step_flops": [
+          24349482.0
+        ]
+      }
+    },
+    "skewed_modes": {
+      "ema_recovery": {
+        "models": 20,
+        "fidelity_failures": 2,
+        "reconstruction_failures": 2,
+        "coverage_failures": 2,
+        "collision_ceiling_failures": 2,
+        "any_collision_models": 5,
+        "final_coarse_collapse": 0,
+        "usage_window_failures": 0,
+        "mean": {
+          "sequence_reconstruction": 0.9959765624999996,
+          "factorized_oracle_tv": 0.18229282006195816,
+          "factorized_oracle_kl_nats": 0.3410611605637628,
+          "factorized_missing_teacher_mass": 0.0015625,
+          "factorized_outside_mass": 0.0,
+          "max_sequence_reconstruction_from_codes": 0.9971289062499998,
+          "coarse_perplexity": 1.5456977833445957
+        },
+        "min_reconstruction": 0.9624999999999998,
+        "max_missing_mass": 0.01875,
+        "median_codec_seconds": 0.6344780420185998,
+        "missing_codec_timings": 1,
+        "codec_step_flops": [
+          24416086.0
+        ]
+      },
+      "reference": {
+        "models": 20,
+        "fidelity_failures": 2,
+        "reconstruction_failures": 2,
+        "coverage_failures": 2,
+        "collision_ceiling_failures": 2,
+        "any_collision_models": 6,
+        "final_coarse_collapse": 0,
+        "usage_window_failures": 1,
+        "mean": {
+          "sequence_reconstruction": 0.9944531249999997,
+          "factorized_oracle_tv": 0.1813576088192793,
+          "factorized_oracle_kl_nats": 0.3417739579934725,
+          "factorized_missing_teacher_mass": 0.0029101562499999995,
+          "factorized_outside_mass": 0.0,
+          "max_sequence_reconstruction_from_codes": 0.9957226562499999,
+          "coarse_perplexity": 1.5474043596175875
+        },
+        "min_reconstruction": 0.9535156249999998,
+        "max_missing_mass": 0.03320312499999999,
+        "median_codec_seconds": 0.6306995209888555,
+        "missing_codec_timings": 0,
+        "codec_step_flops": [
+          24416086.0
+        ]
+      },
+      "fixed_binary": {
+        "models": 20,
+        "fidelity_failures": 3,
+        "reconstruction_failures": 3,
+        "coverage_failures": 2,
+        "collision_ceiling_failures": 3,
+        "any_collision_models": 4,
+        "final_coarse_collapse": 0,
+        "usage_window_failures": 0,
+        "mean": {
+          "sequence_reconstruction": 0.9951953124999997,
+          "factorized_oracle_tv": 0.1782254097900407,
+          "factorized_oracle_kl_nats": 0.33113563867213436,
+          "factorized_missing_teacher_mass": 0.0015625,
+          "factorized_outside_mass": 0.0,
+          "max_sequence_reconstruction_from_codes": 0.996328125,
+          "coarse_perplexity": 1.5527687789284879
+        },
+        "min_reconstruction": 0.9624999999999997,
+        "max_missing_mass": 0.01875,
+        "median_codec_seconds": 0.6365614170063054,
+        "missing_codec_timings": 0,
+        "codec_step_flops": [
+          24349482.0
+        ]
+      }
+    },
+    "alternating_modes": {
+      "ema_recovery": {
+        "models": 20,
+        "fidelity_failures": 3,
+        "reconstruction_failures": 3,
+        "coverage_failures": 2,
+        "collision_ceiling_failures": 3,
+        "any_collision_models": 5,
+        "final_coarse_collapse": 0,
+        "usage_window_failures": 1,
+        "mean": {
+          "sequence_reconstruction": 0.9702343750000004,
+          "factorized_oracle_tv": 0.7047409596517097,
+          "factorized_oracle_kl_nats": 2.8064728548109565,
+          "factorized_missing_teacher_mass": 0.025078125,
+          "factorized_outside_mass": 0.0,
+          "max_sequence_reconstruction_from_codes": 0.9917968750000004,
+          "coarse_perplexity": 1.5229917329999032
+        },
+        "min_reconstruction": 0.5429687500000002,
+        "max_missing_mass": 0.44375000000000003,
+        "median_codec_seconds": 0.6315710619965103,
+        "missing_codec_timings": 0,
+        "codec_step_flops": [
+          24416086.0
+        ]
+      },
+      "reference": {
+        "models": 20,
+        "fidelity_failures": 3,
+        "reconstruction_failures": 3,
+        "coverage_failures": 3,
+        "collision_ceiling_failures": 3,
+        "any_collision_models": 6,
+        "final_coarse_collapse": 0,
+        "usage_window_failures": 1,
+        "mean": {
+          "sequence_reconstruction": 0.9680859375000004,
+          "factorized_oracle_tv": 0.740066563603161,
+          "factorized_oracle_kl_nats": 3.0284584625458,
+          "factorized_missing_teacher_mass": 0.0071484374999999985,
+          "factorized_outside_mass": 0.0,
+          "max_sequence_reconstruction_from_codes": 0.9889453125000003,
+          "coarse_perplexity": 1.4381478185116208
+        },
+        "min_reconstruction": 0.4734375,
+        "max_missing_mass": 0.08046874999999998,
+        "median_codec_seconds": 0.6324836459971266,
+        "missing_codec_timings": 0,
+        "codec_step_flops": [
+          24416086.0
+        ]
+      },
+      "fixed_binary": {
+        "models": 20,
+        "fidelity_failures": 4,
+        "reconstruction_failures": 4,
+        "coverage_failures": 3,
+        "collision_ceiling_failures": 4,
+        "any_collision_models": 5,
+        "final_coarse_collapse": 1,
+        "usage_window_failures": 4,
+        "mean": {
+          "sequence_reconstruction": 0.9435156250000004,
+          "factorized_oracle_tv": 0.7058794265948083,
+          "factorized_oracle_kl_nats": 2.8065363596098476,
+          "factorized_missing_teacher_mass": 0.009414062499999999,
+          "factorized_outside_mass": 0.0,
+          "max_sequence_reconstruction_from_codes": 0.9875781250000003,
+          "coarse_perplexity": 1.5278209061452883
+        },
+        "min_reconstruction": 0.11875000000000002,
+        "max_missing_mass": 0.08828125,
+        "median_codec_seconds": 0.6375010210176697,
+        "missing_codec_timings": 0,
+        "codec_step_flops": [
+          24349482.0
+        ]
+      }
+    }
+  },
+  "by_objective_arm": {
+    "original_mixture": {
+      "reconstruction": {
+        "ema_recovery": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.12068603826078353,
+          "mean_reconstruction": 1.0
+        },
+        "reference": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.11844981267421155,
+          "mean_reconstruction": 1.0
+        },
+        "fixed_binary": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.12109884781121745,
+          "mean_reconstruction": 1.0
+        }
+      },
+      "alignment": {
+        "ema_recovery": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.13389358081245878,
+          "mean_reconstruction": 1.0
+        },
+        "reference": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.13389358081245878,
+          "mean_reconstruction": 1.0
+        },
+        "fixed_binary": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.11913846807127768,
+          "mean_reconstruction": 1.0
+        }
+      },
+      "dependency": {
+        "ema_recovery": {
+          "fidelity_failures": 1,
+          "mean_tv": 0.12309273738211639,
+          "mean_reconstruction": 0.99375
+        },
+        "reference": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.1302694985343396,
+          "mean_reconstruction": 1.0
+        },
+        "fixed_binary": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.1175881981456639,
+          "mean_reconstruction": 1.0
+        }
+      },
+      "alignment_dependency": {
+        "ema_recovery": {
+          "fidelity_failures": 1,
+          "mean_tv": 0.19474601153194365,
+          "mean_reconstruction": 0.921875
+        },
+        "reference": {
+          "fidelity_failures": 1,
+          "mean_tv": 0.12671844335856802,
+          "mean_reconstruction": 0.990625
+        },
+        "fixed_binary": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.11648376818240022,
+          "mean_reconstruction": 1.0
+        }
+      }
+    },
+    "biased_independent": {
+      "reconstruction": {
+        "ema_recovery": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.11512999644404345,
+          "mean_reconstruction": 1.0000000000000004
+        },
+        "reference": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.09844168301823333,
+          "mean_reconstruction": 1.0000000000000004
+        },
+        "fixed_binary": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.10074683336620578,
+          "mean_reconstruction": 1.0000000000000004
+        }
+      },
+      "alignment": {
+        "ema_recovery": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.10243531454369777,
+          "mean_reconstruction": 1.0000000000000004
+        },
+        "reference": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.10243531454369777,
+          "mean_reconstruction": 1.0000000000000004
+        },
+        "fixed_binary": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.11874748281316794,
+          "mean_reconstruction": 1.0000000000000004
+        }
+      },
+      "dependency": {
+        "ema_recovery": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.08648556849175562,
+          "mean_reconstruction": 0.9984000000000005
+        },
+        "reference": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.07815658121035374,
+          "mean_reconstruction": 0.9984000000000005
+        },
+        "fixed_binary": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.04820665326656101,
+          "mean_reconstruction": 1.0000000000000004
+        }
+      },
+      "alignment_dependency": {
+        "ema_recovery": {
+          "fidelity_failures": 1,
+          "mean_tv": 0.04556970664119196,
+          "mean_reconstruction": 0.9945600000000004
+        },
+        "reference": {
+          "fidelity_failures": 1,
+          "mean_tv": 0.09121215160250677,
+          "mean_reconstruction": 0.9689600000000004
+        },
+        "fixed_binary": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.08804540080096097,
+          "mean_reconstruction": 1.0000000000000004
+        }
+      }
+    },
+    "persistent_markov": {
+      "reconstruction": {
+        "ema_recovery": {
+          "fidelity_failures": 1,
+          "mean_tv": 0.4891917802489207,
+          "mean_reconstruction": 0.9739494753906246
+        },
+        "reference": {
+          "fidelity_failures": 1,
+          "mean_tv": 0.4892397010716939,
+          "mean_reconstruction": 0.9706745382812498
+        },
+        "fixed_binary": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.47956204806848957,
+          "mean_reconstruction": 0.9999999999999998
+        }
+      },
+      "alignment": {
+        "ema_recovery": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.508038335867468,
+          "mean_reconstruction": 0.9993781984374998
+        },
+        "reference": {
+          "fidelity_failures": 1,
+          "mean_tv": 0.5067968064339677,
+          "mean_reconstruction": 0.9938971328124998
+        },
+        "fixed_binary": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.48404846925409223,
+          "mean_reconstruction": 0.9999999999999998
+        }
+      },
+      "dependency": {
+        "ema_recovery": {
+          "fidelity_failures": 1,
+          "mean_tv": 0.48587273348980425,
+          "mean_reconstruction": 0.9686959489843747
+        },
+        "reference": {
+          "fidelity_failures": 2,
+          "mean_tv": 0.48074635983532144,
+          "mean_reconstruction": 0.9426058754687497
+        },
+        "fixed_binary": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.5228577601852599,
+          "mean_reconstruction": 0.9999999999999998
+        }
+      },
+      "alignment_dependency": {
+        "ema_recovery": {
+          "fidelity_failures": 2,
+          "mean_tv": 0.45780060127363065,
+          "mean_reconstruction": 0.9473490707031248
+        },
+        "reference": {
+          "fidelity_failures": 2,
+          "mean_tv": 0.4792460987719954,
+          "mean_reconstruction": 0.9424332210156248
+        },
+        "fixed_binary": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.4775660118811464,
+          "mean_reconstruction": 0.9999999999999998
+        }
+      }
+    },
+    "noisy_parity": {
+      "reconstruction": {
+        "ema_recovery": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.46226633049183363,
+          "mean_reconstruction": 1.0
+        },
+        "reference": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.4648286509654131,
+          "mean_reconstruction": 1.0
+        },
+        "fixed_binary": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.45878342271407746,
+          "mean_reconstruction": 0.9999218750000001
+        }
+      },
+      "alignment": {
+        "ema_recovery": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.46118865923003993,
+          "mean_reconstruction": 1.0
+        },
+        "reference": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.46233400475495234,
+          "mean_reconstruction": 1.0
+        },
+        "fixed_binary": {
+          "fidelity_failures": 1,
+          "mean_tv": 0.4717209118595697,
+          "mean_reconstruction": 0.894140625
+        }
+      },
+      "dependency": {
+        "ema_recovery": {
+          "fidelity_failures": 2,
+          "mean_tv": 0.47631610071509023,
+          "mean_reconstruction": 0.9065625
+        },
+        "reference": {
+          "fidelity_failures": 2,
+          "mean_tv": 0.4719017479434416,
+          "mean_reconstruction": 0.909140625
+        },
+        "fixed_binary": {
+          "fidelity_failures": 1,
+          "mean_tv": 0.47504714593754443,
+          "mean_reconstruction": 0.911328125
+        }
+      },
+      "alignment_dependency": {
+        "ema_recovery": {
+          "fidelity_failures": 2,
+          "mean_tv": 0.4797837293766003,
+          "mean_reconstruction": 0.8529687500000002
+        },
+        "reference": {
+          "fidelity_failures": 2,
+          "mean_tv": 0.4815942854967399,
+          "mean_reconstruction": 0.9075
+        },
+        "fixed_binary": {
+          "fidelity_failures": 2,
+          "mean_tv": 0.56684026888457,
+          "mean_reconstruction": 0.698828125
+        }
+      }
+    },
+    "skewed_modes": {
+      "reconstruction": {
+        "ema_recovery": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.18357354678520968,
+          "mean_reconstruction": 0.9994531249999994
+        },
+        "reference": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.1870591169292189,
+          "mean_reconstruction": 0.9991406249999996
+        },
+        "fixed_binary": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.1920735632759886,
+          "mean_reconstruction": 0.9999999999999997
+        }
+      },
+      "alignment": {
+        "ema_recovery": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.20247288751567977,
+          "mean_reconstruction": 0.9983593749999997
+        },
+        "reference": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.20322477143288098,
+          "mean_reconstruction": 0.9991406249999996
+        },
+        "fixed_binary": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.20284043153713313,
+          "mean_reconstruction": 0.9991406249999996
+        }
+      },
+      "dependency": {
+        "ema_recovery": {
+          "fidelity_failures": 1,
+          "mean_tv": 0.16888646324369247,
+          "mean_reconstruction": 0.9923437499999996
+        },
+        "reference": {
+          "fidelity_failures": 1,
+          "mean_tv": 0.16845830644703982,
+          "mean_reconstruction": 0.9917968749999997
+        },
+        "fixed_binary": {
+          "fidelity_failures": 1,
+          "mean_tv": 0.16351323425420317,
+          "mean_reconstruction": 0.9937499999999997
+        }
+      },
+      "alignment_dependency": {
+        "ema_recovery": {
+          "fidelity_failures": 1,
+          "mean_tv": 0.17423838270325068,
+          "mean_reconstruction": 0.9937499999999997
+        },
+        "reference": {
+          "fidelity_failures": 1,
+          "mean_tv": 0.16668824046797756,
+          "mean_reconstruction": 0.9877343749999998
+        },
+        "fixed_binary": {
+          "fidelity_failures": 2,
+          "mean_tv": 0.15447441009283785,
+          "mean_reconstruction": 0.9878906249999997
+        }
+      }
+    },
+    "alternating_modes": {
+      "reconstruction": {
+        "ema_recovery": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.7256810137991054,
+          "mean_reconstruction": 0.9996875000000005
+        },
+        "reference": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.7256754642248711,
+          "mean_reconstruction": 0.9996875000000005
+        },
+        "fixed_binary": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.7257892665524371,
+          "mean_reconstruction": 0.9993750000000006
+        }
+      },
+      "alignment": {
+        "ema_recovery": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.725675342614883,
+          "mean_reconstruction": 1.0000000000000004
+        },
+        "reference": {
+          "fidelity_failures": 0,
+          "mean_tv": 0.7257425708280645,
+          "mean_reconstruction": 0.9998437500000005
+        },
+        "fixed_binary": {
+          "fidelity_failures": 1,
+          "mean_tv": 0.725036952198584,
+          "mean_reconstruction": 0.9914062500000004
+        }
+      },
+      "dependency": {
+        "ema_recovery": {
+          "fidelity_failures": 1,
+          "mean_tv": 0.7116365422545886,
+          "mean_reconstruction": 0.9085937500000003
+        },
+        "reference": {
+          "fidelity_failures": 1,
+          "mean_tv": 0.7218379519392771,
+          "mean_reconstruction": 0.9893750000000004
+        },
+        "fixed_binary": {
+          "fidelity_failures": 1,
+          "mean_tv": 0.6453429024372693,
+          "mean_reconstruction": 0.9782812500000004
+        }
+      },
+      "alignment_dependency": {
+        "ema_recovery": {
+          "fidelity_failures": 2,
+          "mean_tv": 0.6559709399382612,
+          "mean_reconstruction": 0.9726562500000003
+        },
+        "reference": {
+          "fidelity_failures": 2,
+          "mean_tv": 0.7870102674204313,
+          "mean_reconstruction": 0.8834375000000005
+        },
+        "fixed_binary": {
+          "fidelity_failures": 2,
+          "mean_tv": 0.7273485851909423,
+          "mean_reconstruction": 0.8050000000000004
+        }
+      }
+    }
+  },
+  "paired_vs_reference": {
+    "original_mixture": {
+      "ema_recovery": {
+        "seed_mean_tv_differences": [
+          1.3293646726003638e-05,
+          0.0,
+          0.0041717533728651,
+          0.07471108441482566,
+          -3.73406747612437e-05
+        ],
+        "mean": 0.015771758151931103,
+        "wins": 1,
+        "exact_seed_bootstrap_percentile_95": [
+          -1.2277540559296751e-05,
+          0.045653533188516164
+        ],
+        "descriptive_mean_within_tolerance": true
+      },
+      "fixed_binary": {
+        "seed_mean_tv_differences": [
+          0.0019262035848661985,
+          3.523617204481688e-05,
+          -0.003017314927107495,
+          -0.04530590762587294,
+          0.0025842163347960523
+        ],
+        "mean": -0.008755513292254675,
+        "wins": 2,
+        "exact_seed_bootstrap_percentile_95": [
+          -0.027270164293986054,
+          0.0018112152022738636
+        ],
+        "descriptive_mean_within_tolerance": true
+      }
+    },
+    "biased_independent": {
+      "ema_recovery": {
+        "seed_mean_tv_differences": [
+          0.0030879722000243526,
+          0.0,
+          0.0034511552833434017,
+          -0.03232055780099628,
+          0.0
+        ],
+        "mean": -0.005156286063525706,
+        "wins": 1,
+        "exact_seed_bootstrap_percentile_95": [
+          -0.018774740240592898,
+          0.0026882876100109117
+        ],
+        "descriptive_mean_within_tolerance": true
+      },
+      "fixed_binary": {
+        "seed_mean_tv_differences": [
+          0.013555894267125432,
+          0.026591706061455445,
+          0.0008586907906878993,
+          -0.0500419713737994,
+          -0.009088519905339293
+        ],
+        "mean": -0.003624840031973983,
+        "wins": 2,
+        "exact_seed_bootstrap_percentile_95": [
+          -0.02913170795192241,
+          0.016298499953148426
+        ],
+        "descriptive_mean_within_tolerance": true
+      }
+    },
+    "persistent_markov": {
+      "ema_recovery": {
+        "seed_mean_tv_differences": [
+          -0.004868102146644515,
+          -8.994672764028877e-05,
+          0.0014407569145517551,
+          -0.01417351401346012,
+          -0.001216088068250465
+        ],
+        "mean": -0.003781378808288727,
+        "wins": 4,
+        "exact_seed_bootstrap_percentile_95": [
+          -0.009189577454494623,
+          0.0002971064611144936
+        ],
+        "descriptive_mean_within_tolerance": true
+      },
+      "fixed_binary": {
+        "seed_mean_tv_differences": [
+          0.0006503330972328358,
+          0.0005817090293109839,
+          -1.865596006217496e-05,
+          0.0070032870681605575,
+          0.0017899808603701328
+        ],
+        "mean": 0.002001330819002467,
+        "wins": 1,
+        "exact_seed_bootstrap_percentile_95": [
+          0.0003552878471460907,
+          0.004556237220957926
+        ],
+        "descriptive_mean_within_tolerance": true
+      }
+    },
+    "noisy_parity": {
+      "ema_recovery": {
+        "seed_mean_tv_differences": [
+          0.0012542971043017492,
+          0.0034044917204580916,
+          0.0034585125021320273,
+          -0.005078679311863676,
+          -0.004418458698756678
+        ],
+        "mean": -0.0002759673367456972,
+        "wins": 2,
+        "exact_seed_bootstrap_percentile_95": [
+          -0.0035479957833877917,
+          0.0029960611098963975
+        ],
+        "descriptive_mean_within_tolerance": true
+      },
+      "fixed_binary": {
+        "seed_mean_tv_differences": [
+          0.06381664460461989,
+          -0.0021270912582793677,
+          -0.0015280644428783963,
+          0.06466726181509608,
+          -0.010162425424539656
+        ],
+        "mean": 0.02293326505880371,
+        "wins": 3,
+        "exact_seed_bootstrap_percentile_95": [
+          -0.005221419561703289,
+          0.05113826775832575
+        ],
+        "descriptive_mean_within_tolerance": false
+      }
+    },
+    "skewed_modes": {
+      "ema_recovery": {
+        "seed_mean_tv_differences": [
+          -0.008892388426160663,
+          0.0,
+          0.00273078720901504,
+          0.010837657430539799,
+          0.0
+        ],
+        "mean": 0.0009352112426788351,
+        "wins": 1,
+        "exact_seed_bootstrap_percentile_95": [
+          -0.00478927561389339,
+          0.006502594458323879
+        ],
+        "descriptive_mean_within_tolerance": true
+      },
+      "fixed_binary": {
+        "seed_mean_tv_differences": [
+          -0.020064240742943606,
+          -0.01828882227336398,
+          0.007525711409432451,
+          0.002735612062428422,
+          0.012430744398253646
+        ],
+        "mean": -0.0031321990292386137,
+        "wins": 2,
+        "exact_seed_bootstrap_percentile_95": [
+          -0.01479410279403735,
+          0.008529704735560122
+        ],
+        "descriptive_mean_within_tolerance": true
+      }
+    },
+    "alternating_modes": {
+      "ema_recovery": {
+        "seed_mean_tv_differences": [
+          -0.09822527944241688,
+          -0.0817956080488993,
+          -0.003815358041477257,
+          0.007210835443598906,
+          -2.6096680626475077e-06
+        ],
+        "mean": -0.035325603951451436,
+        "wins": 4,
+        "exact_seed_bootstrap_percentile_95": [
+          -0.07529481120884252,
+          0.002120218701919052
+        ],
+        "descriptive_mean_within_tolerance": true
+      },
+      "fixed_binary": {
+        "seed_mean_tv_differences": [
+          -0.0046458345167428305,
+          -0.08828050395940223,
+          -0.003860910473589385,
+          -0.07408108392440493,
+          -6.735216762432383e-05
+        ],
+        "mean": -0.03418713700835274,
+        "wins": 5,
+        "exact_seed_bootstrap_percentile_95": [
+          -0.0685567012552402,
+          -0.0025004719598340497
+        ],
+        "descriptive_mean_within_tolerance": true
+      }
+    }
+  },
+  "bootstrap_note": "All 5^5 resamples of five seed-level, objective-arm-averaged differences. Descriptive percentile intervals; no multiplicity-adjusted noninferiority claim.",
+  "all_initial_hashes_matched": true,
+  "complete_models": 360
+}

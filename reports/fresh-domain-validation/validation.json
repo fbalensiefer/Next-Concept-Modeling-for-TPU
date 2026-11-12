@@ -1,0 +1,37 @@
+{
+  "models": 360,
+  "student_seeds": [
+    31,
+    32,
+    33,
+    34,
+    35
+  ],
+  "domains": 6,
+  "objective_arms": 4,
+  "conditions": 3,
+  "codec_updates": 144000,
+  "decoder_replay_updates": 72000,
+  "teacher_updates": 2400,
+  "complete_results_verified": true,
+  "initial_hashes_matched": true,
+  "domain_artifact_hashes_verified": true,
+  "source_freshness_against_previous_ablation": true,
+  "diagnostic_and_maintenance_tests": {
+    "passed": 10,
+    "seconds": 2.31
+  },
+  "missing_codec_timings": 1,
+  "training_helpers_unchanged_across_numeric_correction": {
+    "minimal_ema": "unchanged AST",
+    "ema_recovery": "unchanged AST",
+    "fixed_binary": "unchanged AST",
+    "prepare_teacher": "unchanged AST",
+    "source_law": "unchanged AST"
+  },
+  "current_sources": {
+    "src/ncm/domain_validation.py": "19abadaf9edb9163ccaa4e5c133a755dd4291c74ff199d6fd2e37ae6e70cf05e",
+    "src/ncm/maintenance_experiment.py": "72bda9ba782fa60bd1d1fcc0ab9abad4114e324bcf641634be82c050aaa0c57e",
+    "tests/test_domain_validation.py": "e6a1223bd5d305922b8ba3df2784f6056bc6b58091c6b276cebc8128e444d9cc"
+  }
+}

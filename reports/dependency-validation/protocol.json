@@ -1,0 +1,15 @@
+{
+  "models": [
+    "independent",
+    "adjacent_pairs",
+    "conditional_tree",
+    "joint_fine"
+  ],
+  "scope": "All 120 frozen reference codecs; every objective arm retained; no neural retraining or production changes.",
+  "fit": "512 empirical training code observations only. Total symmetric Dirichlet pseudo-count one per conditional row. Conditional tree topology uses training conditional MI and deterministic tie-breaking; tree center minimizes serial depth.",
+  "fidelity_gate": "Flag validation sequence accuracy <.98 or training collision ceiling <.98. No population probabilities used for this gate. Gate is a diagnostic eligibility check, not a population certificate; retain and report all codecs.",
+  "evaluation": "Exact source output TV, KL, support/outside mass, empirical validation code NLL, and serial depth/parameter count. Population used only after fitting; no smoothing/model selection on evaluation results.",
+  "source_results_sha256": "f5491d5ae773f6fa3776fe007d4813367a3940fb27b7a43bb34c46bf0aa3eaad",
+  "implementation_sha256": "63fd0ca5ab1227fa42c449560a766ed160d67deb84a6572b18e5cc3b6f92d1de",
+  "numeric": "NumPy float64 tables; JAX used only for unchanged frozen codec inference."
+}

@@ -1,0 +1,56 @@
+{
+  "original_mixture": {
+    "teacher_seed": 9101,
+    "source_to_teacher_kl": 0.02801260864522727,
+    "source_to_teacher_tv": 0.09811060942549692,
+    "teacher_seconds": 0.17676900001242757,
+    "teacher_compile_seconds": 0.41385804198216647,
+    "observed_training_sequences": 16,
+    "domain_sha256": "f500e801c0b915d1d38fcc7323243ab44b6348bb89032d60ea3b9f44642cb33d"
+  },
+  "biased_independent": {
+    "teacher_seed": 9102,
+    "source_to_teacher_kl": 0.0026304530456029134,
+    "source_to_teacher_tv": 0.03056993385800054,
+    "teacher_seconds": 0.17743808301747777,
+    "teacher_compile_seconds": 0.38185945799341425,
+    "observed_training_sequences": 15,
+    "domain_sha256": "b6e5c967984a881dcc788865de93293199e089275ba1b774a49d7e806d600d93"
+  },
+  "persistent_markov": {
+    "teacher_seed": 9103,
+    "source_to_teacher_kl": 0.010673551520435802,
+    "source_to_teacher_tv": 0.06027490622567636,
+    "teacher_seconds": 0.2766088329954073,
+    "teacher_compile_seconds": 0.4158901250048075,
+    "observed_training_sequences": 80,
+    "domain_sha256": "85be4a624d73cb8f4ee4b556fbd2fd5276e1ca097afc7fd4e579ed6729b98f47"
+  },
+  "noisy_parity": {
+    "teacher_seed": 9104,
+    "source_to_teacher_kl": 0.4955671393906384,
+    "source_to_teacher_tv": 0.44996430122729003,
+    "teacher_seconds": 0.29265074999420904,
+    "teacher_compile_seconds": 0.3700385410047602,
+    "observed_training_sequences": 148,
+    "domain_sha256": "5305595844c6f0e1eb0312ffb3b5a72555df5682b706d04c9b2ca8f8f34ca47c"
+  },
+  "skewed_modes": {
+    "teacher_seed": 9105,
+    "source_to_teacher_kl": 0.00892696551683453,
+    "source_to_teacher_tv": 0.026008605371077555,
+    "teacher_seconds": 0.2825256669893861,
+    "teacher_compile_seconds": 0.3879847920034081,
+    "observed_training_sequences": 47,
+    "domain_sha256": "eef8167b32e3155160ede348c342b050a076ffe009b48227fc03ea001286cd2d"
+  },
+  "alternating_modes": {
+    "teacher_seed": 9106,
+    "source_to_teacher_kl": 0.03200866585186596,
+    "source_to_teacher_tv": 0.05039478329389724,
+    "teacher_seconds": 0.281098709005164,
+    "teacher_compile_seconds": 0.4156180419959128,
+    "observed_training_sequences": 81,
+    "domain_sha256": "6fb19166661bc4b033aabc770af6b68f7ce80e1767de61f9795e0bacd5160bc2"
+  }
+}

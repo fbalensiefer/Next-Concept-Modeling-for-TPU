@@ -1,0 +1,38 @@
+{
+  "original_mixture": {
+    "population": 16,
+    "entropy_bits": 2.3719873517384964,
+    "raw_independent_tv": 0.65625,
+    "raw_independent_kl_nats": 1.1284523770583914
+  },
+  "biased_independent": {
+    "population": 16,
+    "entropy_bits": 2.8877123795494497,
+    "raw_independent_tv": 1.9114484300919443e-16,
+    "raw_independent_kl_nats": 3.2027713814386514e-16
+  },
+  "persistent_markov": {
+    "population": 256,
+    "entropy_bits": 5.268882133014802,
+    "raw_independent_tv": 0.6996723398437499,
+    "raw_independent_kl_nats": 1.8930666492776802
+  },
+  "noisy_parity": {
+    "population": 256,
+    "entropy_bits": 7.286396957115959,
+    "raw_independent_tv": 0.4500000000000001,
+    "raw_independent_kl_nats": 0.49463193721407284
+  },
+  "skewed_modes": {
+    "population": 256,
+    "entropy_bits": 1.7133778775643658,
+    "raw_independent_tv": 0.6702195048437503,
+    "raw_independent_kl_nats": 2.1940496573804036
+  },
+  "alternating_modes": {
+    "population": 256,
+    "entropy_bits": 3.1056091839398325,
+    "raw_independent_tv": 0.79375,
+    "raw_independent_kl_nats": 3.3925331947105963
+  }
+}

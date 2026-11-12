@@ -1,0 +1,174 @@
+{
+  "original_mixture": {
+    "population": 16,
+    "entropy_bits": 2.3719873517384964,
+    "schedules": {
+      "independent": {
+        "levels": [
+          [
+            0,
+            1,
+            2,
+            3
+          ]
+        ],
+        "serial_rounds": 1,
+        "tv": 0.65625,
+        "kl_nats": 1.1284523770583914
+      }
+    }
+  },
+  "biased_independent": {
+    "population": 16,
+    "entropy_bits": 2.8877123795494497,
+    "schedules": {
+      "independent": {
+        "levels": [
+          [
+            0,
+            1,
+            2,
+            3
+          ]
+        ],
+        "serial_rounds": 1,
+        "tv": 2.710505431213761e-16,
+        "kl_nats": 4.440892098500626e-16
+      }
+    }
+  },
+  "persistent_markov": {
+    "population": 256,
+    "entropy_bits": 5.268882133014802,
+    "schedules": {
+      "independent": {
+        "levels": [
+          [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        ],
+        "serial_rounds": 1,
+        "tv": 0.6996723398437499,
+        "kl_nats": 1.8930666492776804
+      },
+      "midpoint_bridge": {
+        "levels": [
+          [
+            3
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            0,
+            2,
+            4,
+            6
+          ],
+          [
+            7
+          ]
+        ],
+        "serial_rounds": 4,
+        "tv": 7.585942372314788e-17,
+        "kl_nats": -1.4714325669365482e-16
+      }
+    }
+  },
+  "noisy_parity": {
+    "population": 256,
+    "entropy_bits": 7.286396957115959,
+    "schedules": {
+      "independent": {
+        "levels": [
+          [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        ],
+        "serial_rounds": 1,
+        "tv": 0.4500000000000001,
+        "kl_nats": 0.49463193721407284
+      },
+      "last_bit_conditional": {
+        "levels": [
+          [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          [
+            7
+          ]
+        ],
+        "serial_rounds": 2,
+        "tv": 0.0,
+        "kl_nats": 0.0
+      }
+    }
+  },
+  "skewed_modes": {
+    "population": 256,
+    "entropy_bits": 1.7133778775643658,
+    "schedules": {
+      "independent": {
+        "levels": [
+          [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        ],
+        "serial_rounds": 1,
+        "tv": 0.6702195048437503,
+        "kl_nats": 2.1940496573804036
+      }
+    }
+  },
+  "alternating_modes": {
+    "population": 256,
+    "entropy_bits": 3.1056091839398325,
+    "schedules": {
+      "independent": {
+        "levels": [
+          [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        ],
+        "serial_rounds": 1,
+        "tv": 0.7937499999999995,
+        "kl_nats": 3.392533194710597
+      }
+    }
+  }
+}

@@ -1,0 +1,245 @@
+{
+  "summary": {
+    "original_mixture": {
+      "independent": {
+        "codecs": 20,
+        "eligible": 19,
+        "all_mean_tv": 0.13768105612757087,
+        "eligible_mean_tv": 0.13585926902229004,
+        "eligible_mean_validation_nll": 1.6908179053804324,
+        "min_rounds": 2,
+        "max_rounds": 2
+      },
+      "adjacent_pairs": {
+        "codecs": 20,
+        "eligible": 19,
+        "all_mean_tv": 0.10420521554301192,
+        "eligible_mean_tv": 0.10239386775974263,
+        "eligible_mean_validation_nll": 1.668076666345619,
+        "min_rounds": 2,
+        "max_rounds": 2
+      },
+      "conditional_tree": {
+        "codecs": 20,
+        "eligible": 19,
+        "all_mean_tv": 0.07823589586655579,
+        "eligible_mean_tv": 0.07712427488087568,
+        "eligible_mean_validation_nll": 1.6556746876333275,
+        "min_rounds": 3,
+        "max_rounds": 4
+      },
+      "joint_fine": {
+        "codecs": 20,
+        "eligible": 19,
+        "all_mean_tv": 0.04804062359975482,
+        "eligible_mean_tv": 0.04654940911447081,
+        "eligible_mean_validation_nll": 1.5995384001834214,
+        "min_rounds": 2,
+        "max_rounds": 2
+      }
+    },
+    "biased_independent": {
+      "independent": {
+        "codecs": 20,
+        "eligible": 19,
+        "all_mean_tv": 0.10273640638247679,
+        "eligible_mean_tv": 0.09554609782007903,
+        "eligible_mean_validation_nll": 2.1409760458662497,
+        "min_rounds": 2,
+        "max_rounds": 2
+      },
+      "adjacent_pairs": {
+        "codecs": 20,
+        "eligible": 19,
+        "all_mean_tv": 0.09556829911587968,
+        "eligible_mean_tv": 0.08948030233671161,
+        "eligible_mean_validation_nll": 2.1144542328064224,
+        "min_rounds": 2,
+        "max_rounds": 2
+      },
+      "conditional_tree": {
+        "codecs": 20,
+        "eligible": 19,
+        "all_mean_tv": 0.09389421974300605,
+        "eligible_mean_tv": 0.08691021213890117,
+        "eligible_mean_validation_nll": 2.090696645593537,
+        "min_rounds": 3,
+        "max_rounds": 4
+      },
+      "joint_fine": {
+        "codecs": 20,
+        "eligible": 19,
+        "all_mean_tv": 0.0592327877442856,
+        "eligible_mean_tv": 0.052721128323488575,
+        "eligible_mean_validation_nll": 2.025760200579883,
+        "min_rounds": 2,
+        "max_rounds": 2
+      }
+    },
+    "persistent_markov": {
+      "independent": {
+        "codecs": 20,
+        "eligible": 15,
+        "all_mean_tv": 0.4975209754980163,
+        "eligible_mean_tv": 0.4955718939185434,
+        "eligible_mean_validation_nll": 4.502780584056306,
+        "min_rounds": 2,
+        "max_rounds": 2
+      },
+      "adjacent_pairs": {
+        "codecs": 20,
+        "eligible": 15,
+        "all_mean_tv": 0.3266773453624197,
+        "eligible_mean_tv": 0.30867552149093186,
+        "eligible_mean_validation_nll": 4.02798896153689,
+        "min_rounds": 2,
+        "max_rounds": 2
+      },
+      "conditional_tree": {
+        "codecs": 20,
+        "eligible": 15,
+        "all_mean_tv": 0.1473817228229361,
+        "eligible_mean_tv": 0.12319591655243269,
+        "eligible_mean_validation_nll": 3.7259513658148102,
+        "min_rounds": 4,
+        "max_rounds": 5
+      },
+      "joint_fine": {
+        "codecs": 20,
+        "eligible": 15,
+        "all_mean_tv": 0.16809728836647816,
+        "eligible_mean_tv": 0.1444140422953154,
+        "eligible_mean_validation_nll": 3.7305688485285757,
+        "min_rounds": 2,
+        "max_rounds": 2
+      }
+    },
+    "noisy_parity": {
+      "independent": {
+        "codecs": 20,
+        "eligible": 16,
+        "all_mean_tv": 0.472673871046155,
+        "eligible_mean_tv": 0.46474029801780015,
+        "eligible_mean_validation_nll": 5.876708312206292,
+        "min_rounds": 2,
+        "max_rounds": 2
+      },
+      "adjacent_pairs": {
+        "codecs": 20,
+        "eligible": 16,
+        "all_mean_tv": 0.46853743099660805,
+        "eligible_mean_tv": 0.4600615355249856,
+        "eligible_mean_validation_nll": 5.82232260079879,
+        "min_rounds": 2,
+        "max_rounds": 2
+      },
+      "conditional_tree": {
+        "codecs": 20,
+        "eligible": 16,
+        "all_mean_tv": 0.4659947415232658,
+        "eligible_mean_tv": 0.45695539992472634,
+        "eligible_mean_validation_nll": 5.817639541353181,
+        "min_rounds": 4,
+        "max_rounds": 6
+      },
+      "joint_fine": {
+        "codecs": 20,
+        "eligible": 16,
+        "all_mean_tv": 0.26388629526606766,
+        "eligible_mean_tv": 0.23083994217033088,
+        "eligible_mean_validation_nll": 5.387575533150108,
+        "min_rounds": 2,
+        "max_rounds": 2
+      }
+    },
+    "skewed_modes": {
+      "independent": {
+        "codecs": 20,
+        "eligible": 18,
+        "all_mean_tv": 0.17319701162270149,
+        "eligible_mean_tv": 0.17462305215784074,
+        "eligible_mean_validation_nll": 1.6205209501210804,
+        "min_rounds": 2,
+        "max_rounds": 2
+      },
+      "adjacent_pairs": {
+        "codecs": 20,
+        "eligible": 18,
+        "all_mean_tv": 0.14909330018843112,
+        "eligible_mean_tv": 0.1493237087931153,
+        "eligible_mean_validation_nll": 1.563878414806314,
+        "min_rounds": 2,
+        "max_rounds": 2
+      },
+      "conditional_tree": {
+        "codecs": 20,
+        "eligible": 18,
+        "all_mean_tv": 0.11245296301687238,
+        "eligible_mean_tv": 0.11279530883465566,
+        "eligible_mean_validation_nll": 1.554321478373363,
+        "min_rounds": 4,
+        "max_rounds": 5
+      },
+      "joint_fine": {
+        "codecs": 20,
+        "eligible": 18,
+        "all_mean_tv": 0.08405814483914872,
+        "eligible_mean_tv": 0.08395725515370589,
+        "eligible_mean_validation_nll": 1.4946136755564337,
+        "min_rounds": 2,
+        "max_rounds": 2
+      }
+    },
+    "alternating_modes": {
+      "independent": {
+        "codecs": 20,
+        "eligible": 17,
+        "all_mean_tv": 0.7382230314785158,
+        "eligible_mean_tv": 0.7526327398131759,
+        "eligible_mean_validation_nll": 5.486670643154004,
+        "min_rounds": 2,
+        "max_rounds": 2
+      },
+      "adjacent_pairs": {
+        "codecs": 20,
+        "eligible": 17,
+        "all_mean_tv": 0.7153222149609813,
+        "eligible_mean_tv": 0.7326826199623184,
+        "eligible_mean_validation_nll": 3.9899517919983785,
+        "min_rounds": 2,
+        "max_rounds": 2
+      },
+      "conditional_tree": {
+        "codecs": 20,
+        "eligible": 17,
+        "all_mean_tv": 0.2810257944119844,
+        "eligible_mean_tv": 0.25956856467285483,
+        "eligible_mean_validation_nll": 2.8711105401749344,
+        "min_rounds": 4,
+        "max_rounds": 6
+      },
+      "joint_fine": {
+        "codecs": 20,
+        "eligible": 17,
+        "all_mean_tv": 0.16294908715361747,
+        "eligible_mean_tv": 0.14157993986192016,
+        "eligible_mean_validation_nll": 2.802372533009551,
+        "min_rounds": 2,
+        "max_rounds": 2
+      }
+    }
+  },
+  "eligible": 104,
+  "rejected": 16,
+  "population_gate_misses": [
+    {
+      "domain": "persistent_markov",
+      "seed": 34,
+      "arm": "alignment",
+      "validation_sequence_accuracy": 0.986328125,
+      "population_failures": [
+        "reconstruction"
+      ]
+    }
+  ]
+}

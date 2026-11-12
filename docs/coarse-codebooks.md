@@ -174,3 +174,9 @@ coarse-only learning-rate and commitment changes, soft-temperature behavior,
 canonical bit-exact checkpoint continuation, all four arms' FLOP parity, and
 seeded replacements on a virtual four-device CPU mesh. TPU execution remains
 unmeasured.
+
+## Subsequent validation boundary
+
+The stability package's original success does not establish general safety. The matched maintenance ablation found that unguarded EMA can collapse despite perfect reconstruction; recovery helped within that domain. Fixed binary coarse endpoints were competitive there but failed some subsequent source-law cases. Across 360 fresh-seed runs on six distributions, no condition passed every fidelity check. Balanced usage alone should not select a quantizer.
+
+See `reports/maintenance-ablation/report.md` and `reports/fresh-domain-validation/report.md`. Their protocols, population versus sampled checks, corrected historical support gate, numerical continuation and timing limitations are retained. Production configuration defaults have not changed. The next research priority is reconstruction protection and dependency modeling, not a quantizer replacement.
