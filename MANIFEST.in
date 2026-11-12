@@ -1,4 +1,4 @@
-include LICENSE README.md CITATION.cff
+include LICENSE README.md Research.md CITATION.cff
 recursive-include src/ncm *.py
 recursive-include tests *.py
 recursive-include examples *.py *.json *.txt

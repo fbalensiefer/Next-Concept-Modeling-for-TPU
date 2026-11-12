@@ -22,7 +22,7 @@ def main():
                  if path.is_file() and path.suffix in ('.tex', '.json', '.jsonl', '.md', '.py', '.sha256')
                  and path.name != 'document_manifest.sha256' and '__pycache__' not in path.parts]
     documents += list((ROOT / 'output/pdf').glob('*.pdf'))
-    documents += [ROOT / name for name in ('README.md', 'MANIFEST.in')]
+    documents += [ROOT / name for name in ('README.md', 'Research.md', 'MANIFEST.in')]
     for folder in ('milestone3-benchmark', 'milestone4-scale-verified', 'scale-coverage-followup', 'scale-balanced-coverage', 'coarse-codebook-stability'):
         documents += list((ROOT / 'reports' / folder).glob('*.json'))
     write('document_manifest.sha256', documents)
