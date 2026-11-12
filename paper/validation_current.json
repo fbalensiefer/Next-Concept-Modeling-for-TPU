@@ -17,9 +17,10 @@
   ],
   "pdf_validation": {
     "systems_pages": 20,
-    "scale_pages": 15,
+    "scale_pages": 14,
     "all_pages_rendered_and_visually_reviewed": true,
-    "compilation": "No undefined references/citations, missing glyphs or overfull boxes"
+    "compilation": "No undefined references/citations, missing glyphs or overfull boxes",
+    "scale_editorial_revision": "Appendix A removed; research abstract shortened; all 14 pages rendered and reviewed."
   },
   "implementation_commit": "8760eee8ec9ef6f68d2d1b7034237bc05f8c1dec"
 }

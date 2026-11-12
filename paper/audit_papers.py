@@ -43,7 +43,10 @@ def main():
         assert keys <= registry.keys(), (stem, keys - registry.keys())
         citations[stem] = keys
         assert not re.search(r'eleven\s+passing|11\s+passed|no dead-code reinitialization\s+policy is implemented', text, re.I)
-        assert 'teacher-alignment gate still failed' in text
+        # Check the shared result rather than requiring abstract wording.
+        normalized=' '.join(text.split())
+        assert 'reliable teacher-alignment gate was distinct' in normalized
+        assert 'so that gate still failed' in normalized
         assert 'no TPU hardware was available' in text
         assert 'synthetic' in text.lower() and 'not an external pretrained' in text
         assert '0.25 times the neural Adam learning rate' in text or 'not to the neural Adam learning rate' in text

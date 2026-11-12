@@ -8,31 +8,19 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-SCALE (Size-Consistent Architecture and Latent Exchange) formulates an adaptive
-compiler from pretrained autoregressive Transformers to hierarchical generative
-models: calibrate functional representations, design a rate- and dependence-aware
-code hierarchy, then reuse compatible operators or perform bounded adaptation.
-Conditional transfer and logit-error bounds, the conditional-total-correlation
-limit of factorized priors, and capacity/identifiability counterexamples delimit
-what such a compiler can guarantee. The full pretrained, cross-size compiler
-remains a proposal. Completed local mechanism studies now use one small trained
-teacher and an exactly enumerable 16-sequence domain. Four-arm controls separated
-alignment from dependence, diagnosed a code-collision reconstruction ceiling,
-and tested balanced codec sampling and deterministic coarse-codebook maintenance.
-All \StabilityModels{} new-seed models passed fixed hard-stability and coverage
-gates, with minimum coarse perplexity \StabilityPP{} of 2; the reliable
-teacher-alignment gate still failed. The companion JAX/Flax system records
-\TestCases{} passing CPU tests, resumable training, seeded generation and CPU
-inference measurements. These milestones validate a reproducible mechanism-study
-platform and a small-domain repair, not pretrained transfer, general language
-quality, adaptation savings or TPU performance.
-
-A subsequent 360-model fresh-seed study across six binary source laws finds
-fidelity failures under every quantizer condition. On 120 frozen reference
-codecs, 480 training-only tabular prior fits show substantial gains from joint
-or sparse conditional modeling, with a capacity--estimation tradeoff. Exact
-invertible innovation baselines expose avoidable dependence in the benchmark;
-these classical constructions are not new general generative algorithms.
+Transferring pretrained autoregressive models to parallel hierarchical generators
+requires preserving information while changing conditional independence
+assumptions. We formulate SCALE as a representation-compilation framework and
+establish conditional transfer and output-error bounds, together with
+factorization and capacity limits. Finite-domain experiments across six binary
+source laws show that stable code usage does not ensure reconstruction fidelity
+or accurate generation. Across 480 empirical prior fits on frozen codecs, joint
+and sparse conditional models improve output distributions, with a tradeoff
+between dependency capacity and estimation error. Exact invertible innovation
+controls demonstrate that benchmark dependence can be removed by an appropriate
+change of coordinates. These findings prioritize information preservation and
+dependency-aware representations; pretrained cross-size transfer remains an
+open research objective.
 \end{abstract}
 \noindent\textbf{Keywords:} cross-architecture transfer; next-concept modeling;
 residual vector quantization; conditional total correlation; distillation; JAX/Flax.
@@ -393,24 +381,6 @@ coordinates demonstrate that some benchmark dependence is representation-induced
 The current priority is information preservation and dependency design, with
 production defaults unchanged, rather than quantizer replacement. These studies
 remain finite-domain controls, not language or hardware validation.
-
-\appendix
-\section{Availability, Reproduction and Authorship}
-Implementation revision \code{1d600d7}, package version 0.1.0, is the historical evidence
-baseline; source manifests identify the current experimental extensions~\citep{localrepo}. The systems companion~\citep{systemscompanion} and
-this paper share \path{shared_notation.tex}, \path{shared_metrics.tex},
-\path{shared_experiments.tex} and report-derived tables. They describe the same
-experiments rather than independent replications. The original SCALE artifact
-was PDF-only; an earlier revision supplied editable LaTeX. The present revision
-extends its evidence while retaining the conditional analysis and proposed compiler scope.
-
-\path{paper/README.md} documents both builds and the cross-paper consistency
-audit. \path{paper/generate_results.py} reads committed evidence, while
-\path{paper/references.json} is the common bibliographic registry. Bibliographies
-are generated only from cited entries; no BibTeX step is needed. The
-implementation and manuscript manifests identify inputs independently of the
-mutable branch. There is no archival DOI. Fabian Balensiefer is the author;
-underlying NCM, VQ and transfer methods are credited to their cited authors.
 
 \input{generated/bibliography_scale.tex}
 \end{document}

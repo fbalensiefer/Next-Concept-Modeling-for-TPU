@@ -50,3 +50,9 @@ The papers repeat one shared empirical section deliberately to prevent incompati
 ## Current publication verification
 
 The extension suite passed 62 tests. All 480 dependency fits replayed with 1e-12 tolerances from the compact tables. Five public replay/summary commands passed in a separate directory containing no runs folder or trained checkpoints. Both updated PDFs compiled successfully: systems 20 pages, SCALE 15 pages. All 35 pages were rendered and visually reviewed, with changed historical/current wording rechecked at full size. Final logs have no undefined references/citations, missing glyphs or overfull boxes. Historical records were preserved rather than relabeled as current training.
+
+## SCALE editorial revision
+
+Removed the entire availability/reproduction/authorship appendix from SCALE and replaced its abstract with a shorter research-focused account of the question, theoretical limits, empirical findings and open transfer objective. Author attribution remains in the title block. The substantive methods, results and conclusions are unchanged. Reproduction information remains in this directory and the repository documentation.
+
+The revised SCALE PDF has 14 pages; every page was rendered and reviewed. Citation/reference and final-log checks passed. The audit now checks the shared alignment result instead of requiring a particular sentence in the abstract.
