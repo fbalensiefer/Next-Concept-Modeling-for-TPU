@@ -28,10 +28,17 @@ hard-usage EMA replacement, entropy/temperature and commitment schedules, and a
 separate centroid update group. All \StabilityModels{} new-seed models passed
 fixed hard-stability and coverage gates; minimum population coarse perplexity
 was \StabilityPP{} of 2. The reliable teacher-alignment gate still failed.
-The implementation record reports \TestCases{} passing CPU tests, including
+The historical implementation record reports \TestCases{} passing CPU tests, including
 exact checkpoint continuation and virtual-device checks. These results establish
 software behavior and a small-domain stabilization result, not useful pretrained
 model transfer, competitive language modeling or measured TPU performance.
+
+A subsequent 360-model fresh-seed study across six binary source laws finds
+fidelity failures under every quantizer condition. On 120 frozen reference
+codecs, 480 training-only tabular prior fits show substantial gains from joint
+or sparse conditional modeling, with a capacity--estimation tradeoff. Exact
+invertible innovation baselines expose avoidable dependence in the benchmark;
+these classical constructions are not new general generative algorithms.
 \end{abstract}
 
 \noindent\textbf{Keywords:} next-concept modeling; residual vector quantization;
@@ -57,8 +64,8 @@ The implementation uses JAX transformations~\citep{jax} and the Flax Linen
 module API~\citep{flax,flaxscan}. XLA provides the compilation layer~\citep{xla}.
 Rust is reserved for a proposed surrounding data and orchestration layer; no
 Rust component is present in the evaluated snapshot. The implementation is
-available in the public project repository, version 0.1.0, with this manuscript
-describing revision \code{1d600d7}, the November 12, 2026 snapshot~\citep{localrepo}. Source hashes
+available in the public project repository, version 0.1.0, with historical baseline
+\code{1d600d7} and current research extensions identified by source hashes~\citep{localrepo}. Source hashes
 identify the files evaluated here independently of later branch updates.
 
 \begin{samepage}
@@ -73,8 +80,9 @@ The contributions are implementation-specific:
   \item Executable tests of masking, gradients, state transitions, and virtual
   multi-device equivalence, plus reproducible data, checkpoint and sampling paths.
   \item Actual-length CPU inference measurements and four-arm finite-domain
-  studies of coverage and coarse-codebook stability, with negative alignment
-  results reported alongside the completed engineering gates.
+  studies of coverage and coarse-codebook stability, followed by broader-source
+  failures, empirical dependency priors and exact innovation controls. Negative
+  alignment results are retained alongside completed engineering gates.
 \end{enumerate}
 \end{samepage}
 
@@ -581,7 +589,8 @@ imply a corresponding wall-clock improvement over token-autoregressive models.
 \section{Software Validation}
 \label{sec:validation}
 The implementation's November 12 validation record reports \textbf{\TestCases{}
-passed}, with zero failures; manuscript revision did not change model code.
+passed}, with zero failures; that historical manuscript revision did not change model code.
+The current experimental extension passes \CurrentTestCases{} tests, recorded separately.
 The environment and evidence are detailed in the completed experiments section.
 Counts include parameterized pytest cases, not only Python test functions.
 The suite covers VQ/loss behavior, deterministic distinct-centroid initialization,
@@ -688,7 +697,7 @@ TC and output fidelity measure different properties: improving one cannot stand
 in for the others. Hard stability passed while reliable alignment still failed.
 The maintenance package has not been decomposed into causal component ablations.
 
-The 26-byte fixture overfit, and the finite-domain studies share a 16-state
+The 26-byte fixture overfit, and the historical finite-domain studies share a 16-state
 support. Neither establishes useful pretrained transfer or competitive language
 modeling. Different follow-ups used different seed cohorts and samplers;
 within-protocol paired comparisons are valid, but row-to-row TV changes do not
@@ -720,11 +729,19 @@ the reliable teacher-alignment gate failed. The next scientific stages are
 component ablations, held-out real-corpus quality/cost evaluation and actual TPU
 measurements, followed by external pretrained-transfer tests where justified.
 
+The newer source-law studies qualify the original stability envelope: no
+quantizer passes all fidelity checks. Empirical dependency priors improve
+output distributions without changing the codec, while exact innovation
+coordinates demonstrate that some benchmark dependence is representation-induced.
+The current priority is information preservation and dependency design, with
+production defaults unchanged, rather than quantizer replacement. These studies
+remain finite-domain controls, not language or hardware validation.
+
 \appendix
 \section{Repository Map and Reproduction}
 \label{app:repro}
-The implementation reference is revision \code{1d600d7}, package version 0.1.0.
-\path{paper/source_manifest.sha256} identifies the unchanged implementation files;
+The historical implementation reference is revision \code{1d600d7}, package version 0.1.0.
+\path{paper/source_manifest.sha256} identifies current implementation files;
 \path{paper/validation.json} links the recorded suite to the current evidence.
 Shared notation, metrics, report-derived tables and bibliography metadata are
 included in both sources. \path{paper/README.md} documents builds and the

@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-12",
+  "suite_command": "PYTHONDONTWRITEBYTECODE=1 .venv312/bin/python -m pytest -q",
+  "passed": 62,
+  "failed": 0,
+  "seconds": 171.62,
+  "scope": "Current research extension suite; historical 44-test record preserved separately in validation.json.",
+  "dependency_replay": "All 480 fits reproduced from compressed public tables with 1e-12 tolerances.",
+  "production_defaults": "Unchanged; the historical module differs only by an opt-in maintenance callback with the original default.",
+  "training": "No new model training during publication; preserves earlier executed study records.",
+  "public_replay_without_runs": [
+    "replay_dependency_results.py",
+    "alignment_diagnosis.py",
+    "domain_source_baselines.py",
+    "summarize_maintenance.py",
+    "summarize_domain_validation.py --from-reports"
+  ],
+  "pdf_validation": {
+    "systems_pages": 20,
+    "scale_pages": 15,
+    "all_pages_rendered_and_visually_reviewed": true,
+    "compilation": "No undefined references/citations, missing glyphs or overfull boxes"
+  },
+  "implementation_commit": "8760eee8ec9ef6f68d2d1b7034237bc05f8c1dec"
+}

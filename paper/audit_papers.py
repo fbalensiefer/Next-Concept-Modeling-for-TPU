@@ -26,7 +26,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--build-dir', type=Path)
     args = parser.parse_args()
-    for script in ('generate_results.py', 'generate_bibliographies.py'):
+    for script in ('generate_results.py', 'generate_recent_results.py', 'generate_bibliographies.py'):
         subprocess.run([sys.executable, str(BASE / script), '--check'], check=True)
     registry = json.loads((BASE / 'references.json').read_text())
     citations = {}
@@ -55,6 +55,8 @@ def main():
         assert hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == expected, path
     validation = json.loads((BASE / 'validation.json').read_text())
     assert validation['passed'] == 44 and validation['failed'] == 0
+    current=json.loads((BASE/'validation_current.json').read_text())
+    assert current['passed']==62 and current['failed']==0
     if args.build_dir:
         check_logs(args.build_dir)
         print('Both final compilation logs: no undefined citations/references, missing glyphs or overfull boxes.')

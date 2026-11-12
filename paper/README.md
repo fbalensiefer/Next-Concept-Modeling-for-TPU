@@ -1,42 +1,46 @@
 # Research papers
 
-Both papers are authored by Fabian Balensiefer and revised November 12, 2026:
+Both papers are authored by Fabian Balensiefer. The November 12, 2026 research extension preserves the historical baseline and adds the same shared evidence to both papers:
 
-- [Systems paper](../output/pdf/ncm_systems_paper.pdf): [editable source](ncm_systems_paper.tex). Adds the completed data/checkpoint/prior/generation milestones, CPU inference measurements, coverage controls and coarse-codebook maintenance to the functional JAX/Flax description.
-- [SCALE paper](../output/pdf/SCALE_research_paper.pdf): [editable source](SCALE_research_paper.tex), newly supplied for the formerly PDF-only manuscript. Retains the conditional compiler analysis and adds the completed local mechanism studies. The full pretrained, cross-size compiler remains proposed.
+- [Systems paper](../output/pdf/ncm_systems_paper.pdf), [editable source](ncm_systems_paper.tex): functional JAX/Flax contracts, historical engineering/CPU results, and current maintenance and dependency studies.
+- [SCALE paper](../output/pdf/SCALE_research_paper.pdf), [editable source](SCALE_research_paper.tex): conditional compiler analysis, broader failure boundaries, empirical dependency controls, exact innovation baselines and the alignment-target diagnosis.
 
-The papers describe the same experiments, not independent replications. All 20 newly reserved-seed models passed the final hard-stability/coverage gate; the separate reliable teacher-alignment gate failed. Neither paper claims pretrained transfer, competitive language quality, total adaptation savings or TPU performance.
+They describe shared experiments, not independent replications. The historical 20-model stability success remains valid within its domain. The later 360-run study finds failures under every quantizer condition; 480 training-only fits on frozen reference codecs demonstrate dependency-model improvements. No pretrained transfer, natural-language quality, total adaptation savings or TPU performance is established. Production defaults remain unchanged.
 
 ## Build and check
 
-Use Python 3.10+ and either Tectonic or a standard pdfLaTeX installation with the packages listed in `shared_preamble.tex`. No BibTeX, proprietary fonts or external raster figures are needed. Run from the repository root:
+Use Python 3.10+ and Tectonic or pdfLaTeX with packages in `shared_preamble.tex`:
 
 ```sh
-python paper/build_papers.py
-```
-
-This regenerates report-derived values and bibliography subsets, compiles both papers until references settle (three passes for pdfLaTeX), checks final logs, and copies the PDFs to `output/pdf/`. To retain logs/intermediates, add `--build-dir /tmp/ncm-paper-build`. To select an engine, add `--engine tectonic` or `--engine pdflatex`. Tectonic's `--offline` option requires previously cached packages and fonts.
-
-Check committed generated inputs without changing them:
-
-```sh
+python paper/build_papers.py --build-dir /tmp/ncm-paper-build
 python paper/generate_results.py --check
+python paper/generate_recent_results.py --check
 python paper/generate_bibliographies.py --check
-python paper/audit_papers.py
-# After a build with retained logs:
 python paper/audit_papers.py --build-dir /tmp/ncm-paper-build
 ```
 
-After building, render **both complete PDFs** with Poppler (`pdftoppm -png -r 100 ...`) and inspect every page, especially equations, tables, the systems diagram and references. Intermediate files belong outside the repository; only final PDFs are published.
+The build regenerates evidence and bibliography inputs, checks references/logs, then copies final PDFs to `output/pdf`. Tectonic can use `--offline` after its package cache is populated. Render both complete PDFs with Poppler and inspect every page before publishing. Keep logs and page images outside the repository.
 
-## Shared sources and evidence
+## Evidence and provenance
 
-- `shared_notation.tex`, `shared_metrics.tex` and `shared_experiments.tex` keep terminology, definitions, experimental settings and interpretation identical.
-- `generate_results.py` calculates cohort-specific means, latency tables and stability summaries directly from the five committed reports. It verifies implementation hashes, the recorded 44-test result, final FLOP parity/support and historical text-run identities. `generated/observed_results.json` lists input hashes and the underlying values.
-- `references.json` is the common bibliography registry. `generate_bibliographies.py` emits only each paper's cited subset. Shared citations therefore cannot silently acquire different metadata. The Wen et al. entry uses the revised four-author title/version; K-means++ is explicitly credited.
-- `validation.json` identifies the **recorded** November 12 implementation verification: 44 passed, zero failed. The 44-case inventory was recollected during this documentation revision; training was not rerun. `validation_2026-11-11.json` preserves the original 11-test record as history.
-- `source_manifest.sha256` identifies implementation, tests, fixtures and package configuration at baseline `1d600d7f4598ddb7e2808b29ee8f6eefe01cfb78`. Model code was not changed by this manuscript revision.
-- `../reports/text-experiments/` archives the existing 500-step codec/prior logs and configurations, with checkpoint identities independently matched to the committed CPU benchmark. These are historical records, not new runs. Fixture validation CE worsened despite perfect training reconstruction.
-- `document_manifest.sha256` hashes manuscript sources, shared inputs, generated evidence, audit notes, historical logs and final PDFs. Run `python paper/update_manifests.py` only after building and visual review; verify from the repository root with `shasum -a 256 -c paper/document_manifest.sha256`.
+- `shared_experiments.tex` retains historical observations; `shared_recent_findings.tex` adds the new studies and mathematical controls. Both papers include them.
+- `generate_results.py` validates historical evidence and the original 44-test record. Existing historical modules must match their recorded hashes after explicitly reversing only the optional maintenance callback hook. It does not assert that today's entire package is the old snapshot.
+- `generate_recent_results.py` derives current tables from raw archived results, checks study counts and innovation/alignment invariants, and hashes its inputs in `generated/recent_results.json`.
+- `references.json` supplies both generated citation subsets. Classical dependence trees and associative scan are credited; innovation controls are not claimed as novel algorithms.
+- `validation.json` preserves the historical 44-test verification. `validation_current.json` records 62 passing tests and the public 480-fit replay for this extension.
+- `source_manifest.sha256` identifies current implementation, tests and examples. `document_manifest.sha256` includes manuscripts, all reports, compressed replay inputs and both PDFs. Refresh with `python paper/update_manifests.py` after final build/review, then verify with `shasum -a 256 -c`.
+- Historical protocol hashes and new study continuation records identify executed versions; later diagnostic fixes are not retroactively described as training changes. The float32 verification interruption and one missing timing remain documented.
 
-See [consistency audit and changelog](consistency_audit.md) for the resolved discrepancies, evidence boundaries and verification record. The public repository is a mutable development location; no archival DOI has been assigned.
+Public replay does not require ignored checkpoints:
+
+```sh
+python examples/replay_dependency_results.py
+python examples/alignment_diagnosis.py
+python examples/domain_source_baselines.py
+python examples/summarize_maintenance.py
+python examples/summarize_domain_validation.py --from-reports
+```
+
+`examples/export_research_inputs.py` documents extraction of compact tables/activations from the original local runs. `examples/write_domain_report.py` and `examples/write_dependency_report.py` preserve report generation. Model checkpoints stay under ignored `runs/`; source laws and compressed public inputs support independent re-evaluation. The old text fixture logs remain in `reports/text-experiments` and show overfitting, not a successful held-out language result.
+
+See [consistency audit](consistency_audit.md). No archival DOI is assigned.

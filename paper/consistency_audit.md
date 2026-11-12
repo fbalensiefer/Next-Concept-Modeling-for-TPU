@@ -1,5 +1,11 @@
 # Cross-paper consistency audit and revision changelog
 
+## Current research extension
+
+The current revision preserves the historical record below and adds shared maintenance, 360-run broader-source and 480-fit dependency evidence, exact invertible innovations, and a replayable causal-target diagnosis. Current source manifests cover experimental additions; the original production defaults remain unchanged. Current validation reports 62 passing tests, separately from the historical 44. Both papers use generated report-derived tables and the same bibliography registry. Compressed codec/activation inputs allow replay without ignored checkpoints. Numeric interruption, gate limitations, source-law versus teacher-law targets, finite-domain scope and non-independent fit counts remain explicit. No new language, transfer or TPU success is asserted.
+
+## Historical manuscript revision
+
 Revision date: November 12, 2026. Author: Fabian Balensiefer.
 Implementation/evidence baseline: `1d600d7f4598ddb7e2808b29ee8f6eefe01cfb78`.
 This is a manuscript and evidence-archival revision; model code and experimental results were not changed or rerun.
@@ -40,3 +46,7 @@ This is a manuscript and evidence-archival revision; model code and experimental
 - `git diff --check` and the implementation/document hash checks pass. Generated PDFs and their editable inputs are committed together.
 
 The papers repeat one shared empirical section deliberately to prevent incompatible summaries. The studies are locally specified and gated, not externally preregistered. Real-corpus generalization, maintenance-component attribution and reliable teacher alignment remain research questions.
+
+## Current publication verification
+
+The extension suite passed 62 tests. All 480 dependency fits replayed with 1e-12 tolerances from the compact tables. Five public replay/summary commands passed in a separate directory containing no runs folder or trained checkpoints. Both updated PDFs compiled successfully: systems 20 pages, SCALE 15 pages. All 35 pages were rendered and visually reviewed, with changed historical/current wording rechecked at full size. Final logs have no undefined references/citations, missing glyphs or overfull boxes. Historical records were preserved rather than relabeled as current training.

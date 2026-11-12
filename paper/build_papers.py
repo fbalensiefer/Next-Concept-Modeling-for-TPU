@@ -25,6 +25,7 @@ def main():
     if args.offline and engine != 'tectonic':
         parser.error('--offline applies only to Tectonic')
     subprocess.run([sys.executable, str(BASE / 'generate_results.py')], check=True)
+    subprocess.run([sys.executable, str(BASE / 'generate_recent_results.py')], check=True)
     subprocess.run([sys.executable, str(BASE / 'generate_bibliographies.py')], check=True)
     with tempfile.TemporaryDirectory(prefix='ncm-papers-') as temporary:
         folder = args.build_dir.resolve() if args.build_dir else Path(temporary)

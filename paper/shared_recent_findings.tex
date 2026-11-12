@@ -1,0 +1,124 @@
+\subsection{Matched maintenance ablations and fresh source distributions}
+The historical 20-model stability result above remains conditional on its
+original domain. A subsequent 100-run paired ablation reused seeds 13--17,
+400 codec updates and 200 decoder replay updates per model. It compared
+ordinary EMA without recovery, ordinary EMA with recovery, the original
+slowed-centroid reference, and fixed coarse binary endpoints. Every condition
+retained the same data-driven initialization, entropy objective, temperature
+and commitment schedules, neural optimizer and four objective arms. Thus it
+isolates centroid movement/recovery, not the necessity of all regularizers.
+\RecentMaintenanceTable
+Unguarded EMA reconstructed perfectly but failed the usage-window criterion
+in 7/20 runs. Recovery and fixed endpoints were promising within that envelope;
+small CPU timing differences did not establish substantial acceleration.
+
+A separately specified follow-up used fresh student seeds 31--35, six full-support
+binary laws and lengths four or eight: the original constant-mode source,
+independent Bernoulli(0.2) symbols, a persistent Markov chain, noisy parity,
+skewed constant modes and alternating modes. All three stable quantizers were
+trained separately on each source with the same 512/512/256 training,
+validation and calibration draw budgets. Six independently initialized small
+teachers supplied alignment features; the analytic source law, rather than the
+fitted teacher law, supplied training samples and population evaluation.
+Consequently these TV values are not direct before/after comparisons with the
+historical teacher-law pilot. All 360 models received 400 codec and 200 replay
+updates. The study is broader-distribution mechanism validation, not
+natural-language evaluation or transfer to an unseen domain.
+\RecentDomainTable
+No condition passed every fidelity check. The fixed binary condition incurred
+11/120 model failures, EMA with recovery 16/120 and reference 17/120; those
+counts do not imply a uniform winner, since failure severity differed. In
+noisy-parity seed 31, AD fixed endpoints reconstructed 25\% of source mass and
+missed 75\% under the factorized oracle. The checks require sequence accuracy
+at least 98\%, missing/outside mass at most 1\%, and collision-based fidelity
+ceiling at least 98\%. Balanced coarse usage is diagnostic, not a universal
+criterion for skewed sources. Production defaults remain unchanged.
+
+\subsection{Empirical dependency models on frozen reference codecs}
+The next experiment fitted four tabular priors to the original 512 training
+code observations of each of the 120 reference codecs: independent fine codes,
+adjacent pairs, a conditional dependence tree and a joint fine-level table.
+No neural or codec update was performed. Every conditional row receives total
+symmetric Dirichlet pseudo-count one. Tree topology uses empirical conditional
+mutual information from training codes only and is rooted at a center. This
+is related to Chow--Liu approximation~\citep{chow1968}; the shared topology and
+smoothed tables are not asserted to retain its unrestricted optimality guarantee.
+
+A sampled fidelity filter requires validation sequence accuracy and training
+collision ceiling at least 98\%. It flags 16 codecs and accepts 104, including
+one subsequently found below the population reconstruction threshold. The
+filter is not a population certificate. All 480 prior fits and all-codec
+results remain archived; population probabilities are used only for evaluation,
+not fitting, topology, smoothing selection or the eligibility filter.
+\RecentPriorTable
+Joint tables improve mean decoded TV over independent tables on every source.
+On Markov data, the conditional tree instead beats the joint table, consistent
+with a beneficial sparsity/estimation tradeoff. At length eight the independent,
+pair, tree and joint families have 17, 25, 31 and 511 free parameters including
+the coarse distribution. Independent, pair and joint sampling take two rounds;
+observed center-rooted trees take three to six. Enumeration/fit timings are not
+end-to-end generation latency. Full joint tables grow exponentially and remain
+finite-domain controls, not a proposed general language architecture.
+
+\subsection{Exact innovation coordinates and the alignment-target diagnosis}
+For the tested symmetric binary Markov law, define
+\begin{equation}
+ y_1=x_1,\qquad y_t=x_t\oplus x_{t-1}\quad(t>1).
+\end{equation}
+The variables are independent, with probabilities 0.5 for the initial bit and
+0.15 for subsequent flip indicators. Prefix XOR reconstructs every input.
+For the noisy-parity law (90\% uniform even parity plus 10\% uniform), let
+\begin{equation}
+ y_i=x_i\ (i<L),\qquad y_L=\bigoplus_{i=1}^{L}x_i.
+\end{equation}
+The first variables are independent fair bits and the last is an independent
+Bernoulli(0.05) error bit. Both are bijections; exhaustive enumeration verifies
+exact reconstruction and factorization to floating-point roundoff. All latent
+bits can be drawn independently, followed by deterministic decoding. Prefix
+XOR admits linear work and logarithmic parallel depth via associative
+scan~\citep{blelloch1993}. These are classical known-structure constructions,
+not newly learned transforms or universal independence theorems.
+
+For any finite bijection \(T\), distributional KL is invariant:
+\begin{equation}
+ D_{\rm KL}\!\left(P_X\middle\|(T^{-1})_\#q\right)
+ =D_{\rm KL}(P_{T(X)}\|q).
+\end{equation}
+This removes codec collision error and makes representation choice directly
+relevant to factorization. Arbitrary finite distributions need not admit
+independent fixed-length coordinates under a deterministic bijection, and an
+inverse can itself be costly. These simple sources therefore motivate
+information-preserving baselines without establishing a solution for language.
+
+A separate replayable diagnostic examines the historical alignment target.
+The teacher sees shifted causal inputs, whereas the codec sees the full text.
+Its complete projected target is identical for sequences differing only in
+the final byte, although that byte retains 0.4293 conditional bits. PCA/head
+reconstruction changes teacher predictive probabilities by only
+\(2.33\times10^{-6}\) mean KL nats; alignment substantially improves feature
+matching but cannot make this target information-complete. This identifies a
+conditioning conflict, not a controlled causal explanation of all failures.
+
+\subsection{Evidence scope, reproducibility and next steps}
+The 480 fits reuse 120 codecs; objective arms share seeds and datasets. They
+are not 480 independent replications. Paired analysis should treat student
+seeds as replication units. The broader studies adapt separately to each
+small binary source and retain the historical alignment convention and shared
+regularizers. No pretrained transfer, language quality or TPU result follows.
+Reconstruction constraints and uncertainty-aware acceptance should precede
+quantizer replacement; sparse dependencies and small joint blocks are the
+next tractable modeling controls.
+
+{\raggedright
+The current extension suite passes \CurrentTestCases{} tests; the historical
+\TestCases{}-test record above is retained separately. Compact frozen codec tables reproduce all 480 fits without ignored checkpoints;
+compressed feature arrays reproduce the alignment diagnosis. Protocols, raw
+observations, conditional structures, source/checkpoint hashes, source-law
+controls and scripts are archived under \path{reports/maintenance-ablation/},
+\path{reports/fresh-domain-validation/}, \path{reports/dependency-validation/},
+\path{reports/alignment-diagnosis/} and \path{reports/invertible-baselines/}.
+One float32 entropy-identity verification stopped after 268 completed models;
+float64 verification agreed with direct KL to \(1.11\times10^{-15}\). Training
+helpers and precision were unchanged; saved results and the affected checkpoint
+were resumed, with no seed replacement. One timing is missing and retained as
+null. The interruption and continuation are part of the evidence record.\par}

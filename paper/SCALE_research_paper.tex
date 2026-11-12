@@ -26,6 +26,13 @@ teacher-alignment gate still failed. The companion JAX/Flax system records
 inference measurements. These milestones validate a reproducible mechanism-study
 platform and a small-domain repair, not pretrained transfer, general language
 quality, adaptation savings or TPU performance.
+
+A subsequent 360-model fresh-seed study across six binary source laws finds
+fidelity failures under every quantizer condition. On 120 frozen reference
+codecs, 480 training-only tabular prior fits show substantial gains from joint
+or sparse conditional modeling, with a capacity--estimation tradeoff. Exact
+invertible innovation baselines expose avoidable dependence in the benchmark;
+these classical constructions are not new general generative algorithms.
 \end{abstract}
 \noindent\textbf{Keywords:} cross-architecture transfer; next-concept modeling;
 residual vector quantization; conditional total correlation; distillation; JAX/Flax.
@@ -130,7 +137,7 @@ The local platform records one synthetic teacher and fixed data hashes.
 \item \textbf{Calibrate representations.} Seek functionally relevant maps
 \(P_s:\R^{d_s}\to\R^r\), with optional injections \(R_s:\R^r\to\R^{d_s}\).
 Cross-size maps may use stitching, many-to-many layers or task losses.
-The completed studies use a sign-fixed PCA map for one teacher; this is neither
+The historical pilot uses a sign-fixed PCA map for one teacher; this is neither
 learned cross-teacher alignment nor a verified operator equivalence.
 \item \textbf{Design the code hierarchy.} Choose \((K,n_k,V,D)\) to balance
 fidelity, nominal rate, conditional TC and serial depth. The current studies fix
@@ -347,7 +354,7 @@ Balanced sampling restored coverage; maintenance stabilized both hard coarse
 codes. Neither result proves that aligned teacher features improve a parallel
 prior, and the final negative alignment gate must guide the next experiment.
 
-The evidence has one teacher, one finite support, fixed datasets and changing
+The historical studies have one teacher, one finite support, fixed datasets and changing
 student seed cohorts across follow-ups. Split names denote independent draws,
 not unseen sequences. Paired arms support within-protocol contrasts; differing
 cohorts, samplers and maintenance settings confound cross-protocol mean changes.
@@ -363,7 +370,7 @@ amplify local errors, and hard quantization can remove low-probability states.
 The present deterministic output decoder is a documented evaluation protocol,
 not a calibrated general language distribution.
 
-Future work includes real-corpus held-out tests, maintenance component ablations,
+Future work includes real-corpus held-out tests, further regularization ablations,
 robust alignment controls, scalable dependence estimation, cross-size learned
 interfaces, selective operator transplantation and complete adaptation accounting.
 Prompt/length/EOS interfaces, serialized mixed byte routing, Rust orchestration,
@@ -379,15 +386,23 @@ still failed despite stable usage and support. These outcomes refine the next
 experiments without establishing pretrained transfer, language-model quality,
 compute savings or TPU performance.
 
+The newer source-law studies qualify the original stability envelope: no
+quantizer passes all fidelity checks. Empirical dependency priors improve
+output distributions without changing the codec, while exact innovation
+coordinates demonstrate that some benchmark dependence is representation-induced.
+The current priority is information preservation and dependency design, with
+production defaults unchanged, rather than quantizer replacement. These studies
+remain finite-domain controls, not language or hardware validation.
+
 \appendix
 \section{Availability, Reproduction and Authorship}
-Implementation revision \code{1d600d7}, package version 0.1.0, is the evidence
-baseline~\citep{localrepo}. The systems companion~\citep{systemscompanion} and
+Implementation revision \code{1d600d7}, package version 0.1.0, is the historical evidence
+baseline; source manifests identify the current experimental extensions~\citep{localrepo}. The systems companion~\citep{systemscompanion} and
 this paper share \path{shared_notation.tex}, \path{shared_metrics.tex},
 \path{shared_experiments.tex} and report-derived tables. They describe the same
 experiments rather than independent replications. The original SCALE artifact
-was PDF-only; this revision adds editable LaTeX source while retaining its
-conditional analysis and proposed compiler scope.
+was PDF-only; an earlier revision supplied editable LaTeX. The present revision
+extends its evidence while retaining the conditional analysis and proposed compiler scope.
 
 \path{paper/README.md} documents both builds and the cross-paper consistency
 audit. \path{paper/generate_results.py} reads committed evidence, while

@@ -40,7 +40,11 @@ def generate():
     assert last['coarse_stability_decision']['evaluated_models'] == 20
     assert last['coarse_stability_decision']['passed'] and not last['followup_decision']['teacher_alignment_gate_passed']
     for source, expected in last['protocol']['implementation_sha256'].items():
-        assert hashlib.sha256((ROOT / 'src/ncm' / source).read_bytes()).hexdigest() == expected, source
+        content=(ROOT / 'src/ncm' / source).read_bytes()
+        # The sole change to historical modules is the opt-in maintenance hook.
+        if source=='scale_experiment.py':
+            content=content.replace(b'def make_codec_step(config, optimizer, *, maintenance=maintain_coarse):',b'def make_codec_step(config, optimizer):').replace(b'books, coarse, diagnostics = maintenance(',b'books, coarse, diagnostics = maintain_coarse(')
+        assert hashlib.sha256(content).hexdigest() == expected, source
     # Pin both the recorded suite and the newly archived historical text logs.
     record = ROOT / 'reports/coarse-codebook-stability/validation.json'
     facts['source_sha256'][str(record.relative_to(ROOT))] = hashlib.sha256(record.read_bytes()).hexdigest()

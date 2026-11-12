@@ -17,9 +17,9 @@ def main():
                       for path in (ROOT / folder).rglob('*')
                       if path.is_file() and path.suffix in ('.py', '.json', '.txt') and '__pycache__' not in path.parts]
     write('source_manifest.sha256', implementation + [ROOT / 'pyproject.toml'])
-    documents = [path for folder in ('paper', 'reports/text-experiments')
+    documents = [path for folder in ('paper', 'reports')
                  for path in (ROOT / folder).rglob('*')
-                 if path.is_file() and path.suffix in ('.tex', '.json', '.jsonl', '.md', '.py', '.sha256')
+                 if path.is_file() and path.suffix in ('.tex', '.json', '.jsonl', '.md', '.py', '.sha256', '.npz')
                  and path.name != 'document_manifest.sha256' and '__pycache__' not in path.parts]
     documents += list((ROOT / 'output/pdf').glob('*.pdf'))
     documents += [ROOT / name for name in ('README.md', 'Research.md', 'MANIFEST.in')]
