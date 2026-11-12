@@ -1,0 +1,401 @@
+% Editable revision of the original PDF-only concept and methods paper.
+\documentclass[11pt,a4paper]{article}
+\input{shared_preamble.tex}
+\hypersetup{pdftitle={SCALE: Dependency-Aware Representation Compilation from Pretrained Transformers to Hierarchical Generative Models}}
+\title{SCALE: Dependency-Aware Representation Compilation from Pretrained Transformers to Hierarchical Generative Models\\[0.5em]\large A Conditional Framework with Completed Finite-Domain Mechanism Studies}
+\author{Fabian Balensiefer\\\small Independent Research / Next-Concept Modeling for TPU}
+\date{November 12, 2026}
+\begin{document}
+\maketitle
+\begin{abstract}
+SCALE (Size-Consistent Architecture and Latent Exchange) formulates an adaptive
+compiler from pretrained autoregressive Transformers to hierarchical generative
+models: calibrate functional representations, design a rate- and dependence-aware
+code hierarchy, then reuse compatible operators or perform bounded adaptation.
+Conditional transfer and logit-error bounds, the conditional-total-correlation
+limit of factorized priors, and capacity/identifiability counterexamples delimit
+what such a compiler can guarantee. The full pretrained, cross-size compiler
+remains a proposal. Completed local mechanism studies now use one small trained
+teacher and an exactly enumerable 16-sequence domain. Four-arm controls separated
+alignment from dependence, diagnosed a code-collision reconstruction ceiling,
+and tested balanced codec sampling and deterministic coarse-codebook maintenance.
+All \StabilityModels{} new-seed models passed fixed hard-stability and coverage
+gates, with minimum coarse perplexity \StabilityPP{} of 2; the reliable
+teacher-alignment gate still failed. The companion JAX/Flax system records
+\TestCases{} passing CPU tests, resumable training, seeded generation and CPU
+inference measurements. These milestones validate a reproducible mechanism-study
+platform and a small-domain repair, not pretrained transfer, general language
+quality, adaptation savings or TPU performance.
+\end{abstract}
+\noindent\textbf{Keywords:} cross-architecture transfer; next-concept modeling;
+residual vector quantization; conditional total correlation; distillation; JAX/Flax.
+
+\section{Introduction}
+Pretrained autoregressive Transformers contain capabilities acquired at high
+training cost~\citep{vaswani2017attention,biderman2023}. Reusing these capabilities
+in a different generative factorization is appealing, but tensor copying alone
+cannot resolve width changes, basis symmetries, incompatible operators or
+conditional independence assumptions. Function-preserving transformations,
+stitching, merging and distillation provide partial precedents rather than a
+universal conversion theorem~\citep{chen2016net2net,hinton2015,ainsworth2022,chen2025stitch,wang2024mamba}.
+
+Next-Concept Modeling (NCM) predicts multiscale discrete codes coarse-to-fine,
+with positions within a level generated in parallel~\citep{kumbong2026ncm}.
+Reconstruction can remain good while codes at the same parallel step retain
+strong dependence. A useful compiler must therefore co-design its
+representation and its generative factorization. SCALE proposes to align
+functional representations into a calibrated intermediate space, design a
+hierarchy for fidelity and predictable dependence, and transplant parameters
+only when an operator-level equivalence is justified.
+
+This revision separates three evidence levels. The mathematical statements are
+conditional results. The full external pretrained compiler remains proposed.
+The local NCM system and a sequence of finite-domain studies have been
+implemented and evaluated. Those studies first exposed coverage failures, then
+repaired hard coarse-codebook stability, but did not establish a reliable
+teacher-alignment benefit. The systems companion~\citep{systemscompanion}
+describes implementation contracts and uses the same empirical records; its
+results are not independent replications of this paper.
+
+Contributions are a falsifiable compiler contract and conditional analysis;
+a completed paired-arm mechanism-study platform; an explicit collision-based
+failure diagnosis; and reproducible coverage/stability interventions with
+negative alignment results. No universal lossless compression, pretrained
+cross-size conversion or adaptation-compute reduction is claimed.
+\input{shared_notation.tex}
+
+\section{Related Work and Novelty Boundary}
+\paragraph{Functional correspondence.}
+Language-model stitching and cross-size feature transplantation motivate
+calibration across widths~\citep{chen2025stitch}. CKA is a useful descriptive
+similarity measure, not a functional-equivalence certificate~\citep{kornblith2019}.
+MATCHA models many-to-many layer correspondences explicitly~\citep{sudakov2026}.
+These precedents motivate alignment; they do not establish that a single
+low-dimensional interface preserves a teacher's generation law.
+
+\paragraph{Weight and architecture transformations.}
+Net2Net gives function-preserving changes under specific architectures and
+operators~\citep{chen2016net2net}. Permutation-aware merging, unequal-size merging
+and heterogeneous fusion constrain rather than eliminate compatibility
+requirements~\citep{ainsworth2022,soro2026,chen2026fusion}. Cross-architecture
+compression and Transformer-to-state-space adaptation similarly require measured
+adaptation~\citep{cui2026,wang2024mamba}. Distillation and restricted low-rank
+updates are candidate fallback mechanisms~\citep{hinton2015,hu2022lora}.
+
+\paragraph{Discrete parallel generation.}
+VQ-VAE and residual codecs supply discrete representations and EMA mechanisms
+\citep{oord2017vqvae,zeghidour2021soundstream}; NCM supplies the principal target
+factorization~\citep{kumbong2026ncm}. ResGen explores another hierarchical
+sampling design~\citep{kim2025resgen}. The conditional-TC factorization penalty
+below is a known information identity, also discussed by Wen et al. in the
+context of parallel sampling~\citep{wen2026parallel}. SCALE's proposed
+contribution is to use such constraints in an adaptive compiler and falsifiable
+allocation policy, not to claim that identity, NCM or model stitching as new.
+
+\section{Problem and Compiler Contract}
+Let teacher size \(s\) identify a model with weights \(\mathcal W_s\), hidden width
+\(d_s\), hidden functions \(h_s\) and output law \(p_s(x\mid u)\) under a fixed
+prompt and decoding protocol. A compiler would map
+\begin{equation}
+ \mathcal C(\mathcal W_s,\mathcal A,\mathcal B_{\rm res},\xi)
+   \longmapsto (Q_\psi,d_\psi,p_\theta,J_s),
+\end{equation}
+where \(\mathcal A\) is calibration data, \(\mathcal B_{\rm res}\) is a target
+resource envelope, \(\xi\) fixes randomness and \(J_s\) is an audit certificate.
+The certificate must distinguish proved compatibility, measured approximation
+and untested assumptions, and account for calibration, search, codec, prior and
+adaptation costs. It is not implemented in full by the current experiment logs.
+
+For fixed geometry the target code law factorizes as
+\begin{equation}
+ p_\theta(i\mid u)=\prod_{k=1}^{K}\prod_{j=1}^{n_k}
+ p_\theta(i_{k,j}\mid i_{<k},u).
+ \label{eq:scalefactor}
+\end{equation}
+A probabilistic token decoder induces
+\begin{equation}
+ p_{\theta,\psi}(x\mid u)=\sum_i p_\theta(i\mid u)d_\psi(x\mid i,u).
+ \label{eq:studentlaw}
+\end{equation}
+The local studies instead use deterministic byte argmax for \(d_\psi\); their
+exact TV is specific to that decoding rule. Prompts are empty and output length
+is fixed. A shared representation width is a design choice, not evidence of
+size consistency or a lossless teacher-independent coordinate system.
+
+\section{Proposed Six-Stage Architecture and Current Implementation}
+\begin{enumerate}
+\item \textbf{Audit teacher and budget.} Fix weights, tokenizer, layers, decoding,
+calibration splits, resource envelope and accounting rules before adaptation.
+The local platform records one synthetic teacher and fixed data hashes.
+\item \textbf{Calibrate representations.} Seek functionally relevant maps
+\(P_s:\R^{d_s}\to\R^r\), with optional injections \(R_s:\R^r\to\R^{d_s}\).
+Cross-size maps may use stitching, many-to-many layers or task losses.
+The completed studies use a sign-fixed PCA map for one teacher; this is neither
+learned cross-teacher alignment nor a verified operator equivalence.
+\item \textbf{Design the code hierarchy.} Choose \((K,n_k,V,D)\) to balance
+fidelity, nominal rate, conditional TC and serial depth. The current studies fix
+these shapes and evaluate exact small-support dependence; adaptive architecture
+search is future work.
+\item \textbf{Construct a level prior.} Train the shared Transformer on frozen
+codec labels, preserving earlier-level conditioning. This stage is implemented,
+as are stochastic code sampling and deterministic byte decoding.
+\item \textbf{Reuse or adapt operators.} Transplant only certified compatible
+maps; otherwise allow restricted distillation, adapters or capacity expansion.
+No selective pretrained operator transplant has been demonstrated.
+\item \textbf{Evaluate and allocate.} Audit hard usage, coverage, output law,
+quality and complete adaptation cost; reject or expand targets when gates fail.
+Local frozen protocols and exact diagnostics are implemented. Automated
+allocation, scalable density estimation and general compiler certificates
+remain proposed.
+\end{enumerate}
+The distinction between a stage's executable local mechanism and its full
+cross-size form is essential: the local PCA/code studies do not complete SCALE.
+
+\section{Conditional Guarantees and Failure Cases}
+\subsection{Exact transfer on an invariant compatible subspace}
+\begin{proposition}
+Let \(R_s\in\R^{d_s\times r}\) have full column rank and
+\(P_sR_s=I_r\). If a teacher operator \(F_s\) and canonical operator \(M\)
+satisfy \(F_s(R_sz)=R_sM(z)\) for every reachable \(z\), then
+\(P_sF_sR_s=M\) on that set. If an entire stack has compatible interfaces and
+heads satisfying these conditions, its canonical composition is exact there.
+\end{proposition}
+\begin{proof}
+Apply \(P_s\) to the assumed equality and use \(P_sR_s=I_r\). Repeating this
+identity across compatible reachable interfaces gives the composition result.
+\end{proof}
+Nonlinear attention, normalization and residual branches must individually
+satisfy the compatibility conditions or be included in the certified operator.
+A dimension match, high CKA or successful PCA reconstruction is insufficient.
+The present experiments did not verify these premises for a pretrained model.
+
+\subsection{A local output-error bound}
+\begin{proposition}
+Suppose \(h_s=R_sz+\eta_s\), \(P_sR_s=I_r\), and a reconstructed canonical
+vector obeys \(\|\widehat z-P_sh_s\|\leq\epsilon_Q\). Let a compatible logit
+map \(g\) be \(L_g\)-Lipschitz into the infinity norm, with teacher logit error
+at most \(\epsilon_T\) relative to \(g(z)\) and student logit error at most
+\(\epsilon_D\) relative to \(g(\widehat z)\). Then their logit vectors satisfy
+\begin{equation}
+ \|\ell_s-\ell_{\theta,\psi}\|_\infty\leq
+ \Delta=\epsilon_T+L_g(\|P_s\|\,\|\eta_s\|+\epsilon_Q)+\epsilon_D,
+\end{equation}
+and the KL between their softmax laws is at most \(2\Delta\).
+\end{proposition}
+\begin{proof}
+Since \(P_sh_s=z+P_s\eta_s\), the canonical error is at most
+\(\epsilon_Q+\|P_s\|\|\eta_s\|\). Apply Lipschitz continuity and the triangle
+inequality. Log-sum-exp is 1-Lipschitz in the infinity norm, so each log-ratio of
+the two softmax laws is at most \(2\Delta\); average under the teacher law.
+\end{proof}
+This is a one-interface bound with common conditioning and a compatible logit
+head. It is not a certified free-running sequence bound. A sequential chain
+rule would require uniform conditional control on all relevant teacher prefixes;
+a hierarchical mixture needs its own coupling or output-law argument. None of
+these constants has been certified for the local or proposed pretrained models.
+
+\subsection{Conditional total correlation limits parallel factorization}
+\begin{proposition}
+For a fixed discrete law of \((I_{<k},I_k)\), the best unrestricted within-level
+factorized conditional approximation satisfies
+\begin{equation}
+ \min_{\{q_j\}}\mathbb E_{I_{<k}}
+ D_{\rm KL}\!\left(P(I_k\mid I_{<k})\middle\|\prod_jq_j(I_{k,j}\mid I_{<k})\right)
+ =\mathrm{TC}(I_k\mid I_{<k}).
+\end{equation}
+The minimizers are the true conditional marginals.
+\end{proposition}
+\begin{proof}
+Expanding the expected log ratio gives conditional TC plus
+\(\sum_j\mathbb E_{I_{<k}}D_{\rm KL}(P(I_{k,j}\mid I_{<k})\|q_j)\).
+Each extra KL is nonnegative and vanishes at its conditional marginal.
+\end{proof}
+For a single shared unbiased bit copied into two positions, the law puts mass
+one half on each of 00 and 11. Its best parallel product has a \(\log 2\)-nat
+KL gap even though the pair is perfectly reconstructable. Neural parameter
+sharing and finite capacity can add error above this lower bound. Reducing TC
+by collapsing codes can destroy information, so TC must be evaluated together
+with reconstruction, support and hard usage~\citep{wen2026parallel}.
+
+\subsection{Finite capacity and empirical collision ceilings}
+\begin{proposition}
+If a deterministic codec has at most \(M\) codewords and must exactly reconstruct
+\(N>M\) distinct inputs through a deterministic decoder, perfect reconstruction
+is impossible. For any fixed codec and input law \(p_s\), the best deterministic
+sequence reconstruction probability is
+\begin{equation}
+ \max_{d}\Pr[d(Q_\psi(X))=X]
+   =\sum_i\max_{x:Q_\psi(x)=i}p_s(x),
+ \label{eq:collision}
+\end{equation}
+with empty cells contributing zero.
+\end{proposition}
+\begin{proof}
+Pigeonhole requires a collision when \(N>M\). In each code cell the decoder can
+select at most one input as its exact reconstruction. Selecting the most likely
+member of every nonempty cell attains the sum; no other choice can exceed it.
+\end{proof}
+The nominal capacity \(\sum_k n_k\log_2V\) bits bounds code cardinality; it is
+not an entropy-coded byte size and excludes fallback and metadata. Conversely,
+enough nominal codewords does not prevent learned collisions. Equation~\eqref{eq:collision}
+explained the completed decoder-replay failure below without relying on a
+population capacity shortage.
+
+\subsection{Calibration does not identify arbitrary off-support behavior}
+\begin{lemma}
+For a finite calibration set \(\mathcal A\) and unrestricted function class,
+agreement on \(\mathcal A\) does not determine behavior at an unobserved point
+\(x^*\notin\mathcal A\).
+\end{lemma}
+\begin{proof}
+Choose two functions equal on every calibration point but different at \(x^*\).
+Their calibration observations coincide, so an observer restricted to those
+observations cannot distinguish them.
+\end{proof}
+This limits guarantees from black-box calibration observations, not all
+algorithms with full access to teacher weights. Structural assumptions or
+broader tests may supply information beyond that finite sample. The local
+studies enumerate their entire small domain, but do not test new domains.
+
+\section{Training Objectives and Hard-Usage Safeguards}
+A proposed compiler objective combines masked reconstruction, VQ commitment,
+representation alignment, dependence, marginal entropy and a resource penalty:
+\begin{equation}
+ \mathcal L_{\rm codec}=\mathcal L_{\rm rec}
+ +\beta\mathcal L_{\rm commit}+\lambda_A\mathcal L_{\rm align}
+ +\lambda_D\mathcal L_{\rm TC}-\lambda_H\mathsf H(q_{\rm marginal})
+ +\lambda_R\mathcal R.
+\end{equation}
+Here \(\mathcal R\) is a proposed cost/rate term; no adaptive resource search was
+run. The local implementation has explicit loss coefficients, masked neural
+and EMA updates and fixed geometry. The four arms change alignment/dependence
+coefficients while executing a common graph. The frozen prior minimizes
+\(-\log p_\theta(Q_\psi(x))\). Optional decoder-only replay changes neither
+codec assignments nor prior parameters.
+
+Marginal entropy and conditional TC have different roles: a constant code can
+have zero TC and terrible fidelity; independent uniform codes may be diverse
+but uninformative. Soft assignment entropy can improve while hard usage remains
+collapsed. The completed maintained coarse path therefore tracks hard counts
+independently, fits initial centroids by deterministic K-means++ and uses
+current-batch latent replacements~\citep{arthur2007kmeans}. It schedules
+\(\tau_1(a)\) from 2 to 0.25 and \(\beta_1(a)\) from 0 to 0.25 over 200 steps,
+and adds a coarse soft marginal-entropy coefficient of 0.05. Quantization stays
+hard in the forward pass; there is no Gumbel-Softmax relaxation.
+
+The separate coarse centroid group applies
+\(E'_1=E_1+\eta_{\rm coarse}(E_1^{\rm EMA}-E_1)\), with
+\(\eta_{\rm coarse}=0.25\). This scale is relative to the EMA centroid proposal,
+not to the neural Adam learning rate. Fine EMA and neural rates are unchanged.
+Initialization flags, serializable random keys, hard-usage/replacement buffers,
+optimizer state and schedule counters are checkpointed. All arms invoke the
+same masked maintenance graph, and exact same-backend resume remains tested.
+The systems companion gives the detailed state contract~\citep{systemscompanion}.
+
+\section{Completed CPU Experiments and Finite-Domain Results}
+\label{sec:experiments}
+\input{shared_experiments.tex}
+
+\section{Falsifiable Next-Stage Evaluation}
+\paragraph{Reliable contribution of alignment.}
+The immediate scientific question is why AD has not reliably improved over D.
+Use new paired student seeds under one fixed teacher/data/sampler protocol;
+inspect representation targets and objective scales, and test alignment without
+changing the coverage/stability package. Do not select successful seeds after
+observing the gate. Decompose the maintenance package with compute-accounted
+ablations before attributing the repair to any one component.
+
+\paragraph{External pretrained transfer.}
+Only after a held-out real-corpus codec baseline is stable, evaluate multiple
+open-weight teacher sizes (for example a Pythia family) and held-out domains
+\citep{biderman2023}. Compare scratch NCM, teacher-logit distillation, feature-only
+alignment, dependence-only adaptation, copied-but-unverified operators, certified
+reuse where possible, and SCALE's full policy. Teacher sizes, tokenizer rules,
+calibration quantities and adaptation limits must be fixed before each study.
+No such pretrained-size comparison has been completed.
+
+\paragraph{Dependency and capacity.}
+Vary serial depth, codebook size and canonical width at matched parameter and
+nominal-rate budgets. Measure hard conditional TC, reconstruction, collisions,
+output support, teacher-forced/free-prefix errors and decoded output quality.
+The exact small-domain surrogate enumerates at most 4096 codewords and cannot
+be assumed scalable. Learned density critics or other estimators require
+independent checks of bias, variance and optimization behavior.
+
+\paragraph{Cost and failure criteria.}
+Record teacher preparation, feature extraction, calibration, architecture search,
+all failed adaptation attempts, compilation, updates and I/O. A reused teacher's
+sunk pretraining cost should be stated separately from additional adaptation
+cost and from a scratch baseline. Reject claims of savings if matched-quality
+adaptation cost is not lower. Reject universal canonical alignment if measured
+functional residuals or required canonical width grow beyond the resource budget.
+If no fixed-budget hierarchy preserves support and useful free-running quality,
+report the failed envelope rather than silently increasing it.
+
+\paragraph{Hardware.}
+Carry synchronized CPU measurements to actual TPU hardware before claiming TPU
+throughput, memory efficiency or multi-host scaling. Match quality, precision,
+batch, output lengths, parameter budgets and decoding rules. Report compilation
+and steady-state latency separately, with uncertainty, peak memory, collectives
+and input/checkpoint overhead. Virtual CPU meshes are correctness checks.
+
+\section{Discussion, Threats to Validity and Future Work}
+The completed work moves SCALE from an exclusively conceptual framework to a
+small, auditable mechanism-study platform. The collision analysis distinguishes
+recoverable information at the input from distinctions retained by the codec.
+Balanced sampling restored coverage; maintenance stabilized both hard coarse
+codes. Neither result proves that aligned teacher features improve a parallel
+prior, and the final negative alignment gate must guide the next experiment.
+
+The evidence has one teacher, one finite support, fixed datasets and changing
+student seed cohorts across follow-ups. Split names denote independent draws,
+not unseen sequences. Paired arms support within-protocol contrasts; differing
+cohorts, samplers and maintenance settings confound cross-protocol mean changes.
+The 20-model stability result is conditional on this domain and the combined
+package. Compiler-estimated step FLOPs and local gates are not measured total
+compute or externally preregistered confirmation. The text fixture overfit.
+
+The conditional propositions describe assumptions that a real compiler must
+verify; they are not certificates supplied by PCA. Different widths may lack a
+common invariant functional subspace. Tokenizers, attention patterns and
+normalization can defeat exact transplantation. Hierarchical sampling can
+amplify local errors, and hard quantization can remove low-probability states.
+The present deterministic output decoder is a documented evaluation protocol,
+not a calibrated general language distribution.
+
+Future work includes real-corpus held-out tests, maintenance component ablations,
+robust alignment controls, scalable dependence estimation, cross-size learned
+interfaces, selective operator transplantation and complete adaptation accounting.
+Prompt/length/EOS interfaces, serialized mixed byte routing, Rust orchestration,
+TPU profiling and multi-host recovery remain systems work. A useful SCALE result
+must demonstrate fidelity and cost together under declared gates.
+
+\section{Conclusion}
+SCALE remains a conditional, falsifiable proposal for cross-size representation
+compilation. Completed CPU engineering and finite-domain controls now supply a
+reproducible testbed, collision diagnosis and a coarse-codebook stabilization
+result across \StabilityModels{} new-seed models. The reliable alignment gate
+still failed despite stable usage and support. These outcomes refine the next
+experiments without establishing pretrained transfer, language-model quality,
+compute savings or TPU performance.
+
+\appendix
+\section{Availability, Reproduction and Authorship}
+Implementation revision \code{1d600d7}, package version 0.1.0, is the evidence
+baseline~\citep{localrepo}. The systems companion~\citep{systemscompanion} and
+this paper share \path{shared_notation.tex}, \path{shared_metrics.tex},
+\path{shared_experiments.tex} and report-derived tables. They describe the same
+experiments rather than independent replications. The original SCALE artifact
+was PDF-only; this revision adds editable LaTeX source while retaining its
+conditional analysis and proposed compiler scope.
+
+\path{paper/README.md} documents both builds and the cross-paper consistency
+audit. \path{paper/generate_results.py} reads committed evidence, while
+\path{paper/references.json} is the common bibliographic registry. Bibliographies
+are generated only from cited entries; no BibTeX step is needed. The
+implementation and manuscript manifests identify inputs independently of the
+mutable branch. There is no archival DOI. Fabian Balensiefer is the author;
+underlying NCM, VQ and transfer methods are credited to their cited authors.
+
+\input{generated/bibliography_scale.tex}
+\end{document}

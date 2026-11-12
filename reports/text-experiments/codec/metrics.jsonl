@@ -1,0 +1,5 @@
+{"step": 100, "train": {"byte_cross_entropy": 0.00557195208966732, "byte_accuracy": 1.0}, "validation": {"byte_cross_entropy": 1.9488378763198853, "byte_accuracy": 0.8461538461538461}}
+{"step": 200, "train": {"byte_cross_entropy": 0.00229769479483366, "byte_accuracy": 1.0}, "validation": {"byte_cross_entropy": 2.017399787902832, "byte_accuracy": 0.7692307692307693}}
+{"step": 300, "train": {"byte_cross_entropy": 0.0013430302496999502, "byte_accuracy": 1.0}, "validation": {"byte_cross_entropy": 2.819532871246338, "byte_accuracy": 0.7692307692307693}}
+{"step": 400, "train": {"byte_cross_entropy": 0.0008038007072173059, "byte_accuracy": 1.0}, "validation": {"byte_cross_entropy": 2.935960531234741, "byte_accuracy": 0.7692307692307693}}
+{"step": 500, "train": {"byte_cross_entropy": 0.0005750289419665933, "byte_accuracy": 1.0}, "validation": {"byte_cross_entropy": 3.550320625305176, "byte_accuracy": 0.7692307692307693}}

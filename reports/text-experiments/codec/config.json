@@ -1,0 +1,21 @@
+{
+  "train_file": "examples/text/train.txt",
+  "validation_file": "examples/text/validation.txt",
+  "lengths": [
+    2,
+    4,
+    8
+  ],
+  "codebook_size": 16,
+  "dim": 16,
+  "width": 16,
+  "heads": 2,
+  "layers": 1,
+  "batch_size": 4,
+  "seed": 0,
+  "learning_rate": 0.003,
+  "steps": 500,
+  "checkpoint_every": 100,
+  "train_sha256": "b069f27dedbcd310b4eb8cc95d0e95693a011268dc4265de1b35a39d85d1ef88",
+  "validation_sha256": "2172a7eb2b119243aa0b3dfb4e4fcafb86763a68cae27e241db7e9fbec6ec438"
+}

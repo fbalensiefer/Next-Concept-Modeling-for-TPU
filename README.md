@@ -6,11 +6,11 @@ Project by Fabian Balensiefer. The underlying NCM method is due to Kumbong et al
 
 **[Research paper (PDF)](output/pdf/ncm_systems_paper.pdf)**
 
-## SCALE research proposal
+## SCALE framework and completed mechanism studies
 
 **[SCALE: Dependency-Aware Representation Compilation from Pretrained Transformers to Hierarchical Generative Models (PDF)](output/pdf/SCALE_research_paper.pdf)** — Fabian Balensiefer, November 12, 2026.
 
-SCALE proposes transferring pretrained Transformer capabilities into hierarchical NCM generators through representation alignment, dependency-aware residual quantization, selective parameter reuse, and constrained distillation. The paper sets out conditional theoretical guarantees and a falsifiable evaluation protocol. The full SCALE compiler remains a research proposal. A small finite-domain mechanism pilot is now implemented below; it does not establish pretrained-LLM conversion or cross-size transfer.
+SCALE proposes transferring pretrained Transformer capabilities into hierarchical NCM generators through representation alignment, dependency-aware residual quantization, selective parameter reuse, and constrained distillation. The revised paper retains its conditional theory and integrates the completed finite-domain controls, coverage repair and coarse-codebook stabilization studies. All 20 new-seed models passed the final hard-stability gate; the reliable teacher-alignment gate still failed. The full pretrained, cross-size SCALE compiler remains a research proposal. Both papers share report-derived results, notation and bibliographic metadata; see [sources, build instructions and consistency audit](paper/README.md).
 
 ## Implementation
 

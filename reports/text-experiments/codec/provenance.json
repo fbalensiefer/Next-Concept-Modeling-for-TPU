@@ -1,0 +1,6 @@
+{
+  "historical_record_not_a_new_run": true,
+  "checkpoint_sha256": "8e77590a841d67ea408827c253079e7bde1614703243c4362a65ae86094a9976",
+  "verified_against": "reports/milestone3-benchmark/report.json",
+  "implementation_reference": "1d600d7f4598ddb7e2808b29ee8f6eefe01cfb78"
+}

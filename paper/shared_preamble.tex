@@ -1,0 +1,28 @@
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=25mm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,tabularx,array}
+\usepackage{microtype,xcolor,enumitem,listings,tikz}
+\usetikzlibrary{arrows.meta,positioning,fit}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue!45!black,citecolor=blue!45!black,urlcolor=blue!45!black,pdfauthor={Fabian Balensiefer}}
+\urlstyle{same}
+\setlength{\emergencystretch}{3em}
+\widowpenalty=10000
+\clubpenalty=10000
+\displaywidowpenalty=10000
+\setlist{nosep,leftmargin=*}
+\lstset{basicstyle=\ttfamily\footnotesize,breaklines=true,columns=fullflexible,keepspaces=true,frame=single,rulecolor=\color{black!20},backgroundcolor=\color{black!2},showstringspaces=false}
+\newcommand{\sg}{\operatorname{sg}}
+\newcommand{\Ind}{\mathbb{1}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\code}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\safe}[1]{\max\!\left(1,#1\right)}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newenvironment{proof}{\par\noindent\textit{Proof.}\ }{\hfill\(\square\)\par}
+\input{generated/observed_results.tex}

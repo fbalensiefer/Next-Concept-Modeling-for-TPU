@@ -1,0 +1,886 @@
+{
+  "implementation_commit": "1d600d7f4598ddb7e2808b29ee8f6eefe01cfb78",
+  "studies": {
+    "milestone4-scale-verified": {
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "mean_output_tv": {
+        "reconstruction": 0.3315752736926639,
+        "alignment": 0.333882109801121,
+        "alignment_dependency": 0.17441718265683978
+      },
+      "followup_decision": null,
+      "stability_decision": null
+    },
+    "scale-coverage-followup": {
+      "seeds": [
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "mean_output_tv": {
+        "reconstruction": 0.24167338250466264,
+        "alignment": 0.1453429433397166,
+        "dependency": 0.24716786238394917,
+        "alignment_dependency": 0.15768842392473975
+      },
+      "followup_decision": {
+        "confirmation_seeds": [
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "known_seed_replications": [
+          0,
+          1,
+          2
+        ],
+        "coverage_repair_gate_passed": false,
+        "teacher_alignment_gate_passed": false,
+        "mean_alignment_tv_improvement_over_dependency_only": 0.08947943845920944,
+        "alignment_winning_seeds": 3,
+        "paired_confirmation_results": [
+          {
+            "seed": 3,
+            "alignment_tv_improvement_over_dependency_only": 0.48077039193133875,
+            "dependency_tv_improvement_without_alignment": 0.000301471039875878,
+            "repair_tv_change": -0.004671943460473754,
+            "missing_teacher_mass_before": 0.020442859791446458,
+            "missing_teacher_mass_after": 0.0,
+            "sequence_reconstruction_after": 0.990659629978849
+          },
+          {
+            "seed": 4,
+            "alignment_tv_improvement_over_dependency_only": 0.00550405185547273,
+            "dependency_tv_improvement_without_alignment": -0.05862142384315969,
+            "repair_tv_change": -0.02966769519387702,
+            "missing_teacher_mass_before": 0.15049361778391987,
+            "missing_teacher_mass_after": 0.06626986771031097,
+            "sequence_reconstruction_after": 0.8786585373145652
+          },
+          {
+            "seed": 5,
+            "alignment_tv_improvement_over_dependency_only": -0.02921475747168395,
+            "dependency_tv_improvement_without_alignment": 0.013570405701488847,
+            "repair_tv_change": 0.0,
+            "missing_teacher_mass_before": 0.0,
+            "missing_teacher_mass_after": 0.0,
+            "sequence_reconstruction_after": 0.9999999999999999
+          },
+          {
+            "seed": 6,
+            "alignment_tv_improvement_over_dependency_only": 0.009077089240100561,
+            "dependency_tv_improvement_without_alignment": -0.0030650480624286325,
+            "repair_tv_change": 0.0,
+            "missing_teacher_mass_before": 0.0,
+            "missing_teacher_mass_after": 0.0,
+            "sequence_reconstruction_after": 0.9999999999999999
+          },
+          {
+            "seed": 7,
+            "alignment_tv_improvement_over_dependency_only": -0.01873958325918093,
+            "dependency_tv_improvement_without_alignment": 0.02034219576779095,
+            "repair_tv_change": 0.0,
+            "missing_teacher_mass_before": 0.0,
+            "missing_teacher_mass_after": 0.0,
+            "sequence_reconstruction_after": 0.9999999999999999
+          }
+        ],
+        "scope": "New student seeds with the same synthetic teacher/domain; no new-domain claim.",
+        "matched_student_flop_estimates": true
+      },
+      "stability_decision": null
+    },
+    "scale-balanced-coverage": {
+      "seeds": [
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "mean_output_tv": {
+        "reconstruction": 0.4257442541190626,
+        "alignment": 0.23702435370132197,
+        "dependency": 0.5228834487897743,
+        "alignment_dependency": 0.24679286346571713
+      },
+      "followup_decision": {
+        "confirmation_seeds": [
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "known_seed_replications": [
+          0,
+          4,
+          7
+        ],
+        "coverage_repair_gate_passed": true,
+        "teacher_alignment_gate_passed": false,
+        "mean_alignment_tv_improvement_over_dependency_only": 0.27609058532405717,
+        "alignment_winning_seeds": 3,
+        "paired_confirmation_results": [
+          {
+            "seed": 8,
+            "alignment_tv_improvement_over_dependency_only": -0.0019757660001642474,
+            "dependency_tv_improvement_without_alignment": -0.001836760481360944,
+            "repair_tv_change": -4.936088152662776e-07,
+            "missing_teacher_mass_before": 0.0,
+            "missing_teacher_mass_after": 0.0,
+            "sequence_reconstruction_after": 0.9999999999999999
+          },
+          {
+            "seed": 9,
+            "alignment_tv_improvement_over_dependency_only": -0.026001912272583944,
+            "dependency_tv_improvement_without_alignment": -0.0012042764375475579,
+            "repair_tv_change": -7.2604978440526935e-06,
+            "missing_teacher_mass_before": 0.0,
+            "missing_teacher_mass_after": 0.0,
+            "sequence_reconstruction_after": 0.9999999999999999
+          },
+          {
+            "seed": 10,
+            "alignment_tv_improvement_over_dependency_only": 0.48255712667306716,
+            "dependency_tv_improvement_without_alignment": 3.3597730640932966e-06,
+            "repair_tv_change": 0.0,
+            "missing_teacher_mass_before": 0.0,
+            "missing_teacher_mass_after": 0.0,
+            "sequence_reconstruction_after": 0.9999999999999999
+          },
+          {
+            "seed": 11,
+            "alignment_tv_improvement_over_dependency_only": 0.458970675378867,
+            "dependency_tv_improvement_without_alignment": -0.0003386095818675994,
+            "repair_tv_change": -1.0768385587500706e-05,
+            "missing_teacher_mass_before": 0.0,
+            "missing_teacher_mass_after": 0.0,
+            "sequence_reconstruction_after": 0.9999999999999999
+          },
+          {
+            "seed": 12,
+            "alignment_tv_improvement_over_dependency_only": 0.46690280284109986,
+            "dependency_tv_improvement_without_alignment": -0.48231968662584646,
+            "repair_tv_change": -0.0005101027896439736,
+            "missing_teacher_mass_before": 0.0,
+            "missing_teacher_mass_after": 0.0,
+            "sequence_reconstruction_after": 0.9999999999999999
+          }
+        ],
+        "scope": "New student seeds with the same synthetic teacher/domain; no new-domain claim.",
+        "matched_student_flop_estimates": true
+      },
+      "stability_decision": null
+    },
+    "coarse-codebook-stability": {
+      "seeds": [
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "mean_output_tv": {
+        "reconstruction": 0.13809507305033358,
+        "alignment": 0.13182279087737483,
+        "dependency": 0.13919400799906476,
+        "alignment_dependency": 0.13421104374602844
+      },
+      "followup_decision": {
+        "confirmation_seeds": [
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "known_seed_replications": [
+          4,
+          8,
+          10
+        ],
+        "coverage_repair_gate_passed": true,
+        "teacher_alignment_gate_passed": false,
+        "mean_alignment_tv_improvement_over_dependency_only": 0.0049829642530363205,
+        "alignment_winning_seeds": 4,
+        "paired_confirmation_results": [
+          {
+            "seed": 13,
+            "alignment_tv_improvement_over_dependency_only": -0.0049887342527500655,
+            "dependency_tv_improvement_without_alignment": 0.0038529605628887797,
+            "repair_tv_change": 0.0,
+            "missing_teacher_mass_before": 0.0,
+            "missing_teacher_mass_after": 0.0,
+            "sequence_reconstruction_after": 0.990659629978849
+          },
+          {
+            "seed": 14,
+            "alignment_tv_improvement_over_dependency_only": 0.00820707418358238,
+            "dependency_tv_improvement_without_alignment": 0.005967401413552315,
+            "repair_tv_change": 0.0,
+            "missing_teacher_mass_before": 0.0,
+            "missing_teacher_mass_after": 0.0,
+            "sequence_reconstruction_after": 0.9999999999999999
+          },
+          {
+            "seed": 15,
+            "alignment_tv_improvement_over_dependency_only": 0.00022543208705647078,
+            "dependency_tv_improvement_without_alignment": 0.0103851751621592,
+            "repair_tv_change": 0.0,
+            "missing_teacher_mass_before": 0.0,
+            "missing_teacher_mass_after": 0.0,
+            "sequence_reconstruction_after": 0.9999999999999999
+          },
+          {
+            "seed": 16,
+            "alignment_tv_improvement_over_dependency_only": 0.008065231341160745,
+            "dependency_tv_improvement_without_alignment": -0.0037806326928956357,
+            "repair_tv_change": 0.0,
+            "missing_teacher_mass_before": 0.0,
+            "missing_teacher_mass_after": 0.0,
+            "sequence_reconstruction_after": 0.9999999999999999
+          },
+          {
+            "seed": 17,
+            "alignment_tv_improvement_over_dependency_only": 0.013405817906132073,
+            "dependency_tv_improvement_without_alignment": -0.021919579189360605,
+            "repair_tv_change": 0.0,
+            "missing_teacher_mass_before": 0.0,
+            "missing_teacher_mass_after": 0.0,
+            "sequence_reconstruction_after": 0.9999999999999999
+          }
+        ],
+        "scope": "New student seeds with the same synthetic teacher/domain; no new-domain claim.",
+        "matched_student_flop_estimates": true
+      },
+      "stability_decision": {
+        "passed": true,
+        "confirmation_seeds": [
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "evaluated_models": 20,
+        "failures": [],
+        "minimum_population_perplexity": 1.9733686083705464,
+        "maximum_monitored_collapsed_fraction": 0.0,
+        "matched_student_flop_estimates": true
+      }
+    }
+  },
+  "source_sha256": {
+    "reports/milestone4-scale-verified/report.json": "122acb0125087da1abc259900deb613fd449dcb93b11e72a6f030b29d58e781a",
+    "reports/scale-coverage-followup/report.json": "3ba5d88b37a71f768e3c04001e2b41cb5bd0baaf0e1b32aad81f891e026b70bf",
+    "reports/scale-balanced-coverage/report.json": "1a6f1b137368ebd515c17dbed483146b8834d983711c945c413a2b368d1f235c",
+    "reports/coarse-codebook-stability/report.json": "9d324a24255b7df3d77a9d726fe2c7a2937c95c482ccd2cf63f28a24921986d3",
+    "reports/milestone3-benchmark/report.json": "bc110914d9b48ea8e174c5a0a3162098cd34067abf1af3a45099d26916fc2fbf",
+    "reports/coarse-codebook-stability/validation.json": "d5cf64e1d751ef2057f0841797d809eb7a45aa6059bf66f7888fe848dc936cb4",
+    "reports/text-experiments/codec/config.json": "74a72762a3c3908ffa7cca9f26fdb4fe4c2e560792f6a2d44d12a0ae1cd95b96",
+    "reports/text-experiments/codec/metrics.jsonl": "a4f23ad03364b181e4439546dc35ccfd36ac990b2849c3bd61e1e231d7dacb4b",
+    "reports/text-experiments/codec/provenance.json": "9194b91ae7eaad7f339bf12b15e4adbdf7f7961843aa9d7d72ef419cff9f08c2",
+    "reports/text-experiments/prior/config.json": "349be44c89154fcb9995f4b562bd3dc224c47a229ff74226ae0277815137ebe2",
+    "reports/text-experiments/prior/metrics.jsonl": "244cf222410702887bd2a806c580516a9d6a3e8a4af579245bab5c3c2cfff767",
+    "reports/text-experiments/prior/provenance.json": "50d5f4d9edd25d01d42ab2c72e0e568dca0749297c73436a0aa454d4bf649577"
+  },
+  "shared_teacher": {
+    "checkpoint_sha256": "b7e27a892455859df6dd5fb47f11a704ef615bc5252d65b06304d3e0c09f6120",
+    "split_id_sha256": {
+      "train": "3a20f9d7cbefc47993be64a15efa87ee4765c95ffe7ad9a013ea5a95c5e3ebfe",
+      "validation": "314026b9b200401af980e26161cf3260a65ecf09516f0157cc6530a9483044b9",
+      "calibration": "5164c3dcd12f6e577c880bdbe9c7d142c9c4d313617e7021c5d7a8b36a597b69"
+    }
+  },
+  "historical_text": {
+    "codec": {
+      "checkpoint_sha256": "8e77590a841d67ea408827c253079e7bde1614703243c4362a65ae86094a9976",
+      "observations": [
+        {
+          "step": 100,
+          "train": {
+            "byte_cross_entropy": 0.00557195208966732,
+            "byte_accuracy": 1.0
+          },
+          "validation": {
+            "byte_cross_entropy": 1.9488378763198853,
+            "byte_accuracy": 0.8461538461538461
+          }
+        },
+        {
+          "step": 200,
+          "train": {
+            "byte_cross_entropy": 0.00229769479483366,
+            "byte_accuracy": 1.0
+          },
+          "validation": {
+            "byte_cross_entropy": 2.017399787902832,
+            "byte_accuracy": 0.7692307692307693
+          }
+        },
+        {
+          "step": 300,
+          "train": {
+            "byte_cross_entropy": 0.0013430302496999502,
+            "byte_accuracy": 1.0
+          },
+          "validation": {
+            "byte_cross_entropy": 2.819532871246338,
+            "byte_accuracy": 0.7692307692307693
+          }
+        },
+        {
+          "step": 400,
+          "train": {
+            "byte_cross_entropy": 0.0008038007072173059,
+            "byte_accuracy": 1.0
+          },
+          "validation": {
+            "byte_cross_entropy": 2.935960531234741,
+            "byte_accuracy": 0.7692307692307693
+          }
+        },
+        {
+          "step": 500,
+          "train": {
+            "byte_cross_entropy": 0.0005750289419665933,
+            "byte_accuracy": 1.0
+          },
+          "validation": {
+            "byte_cross_entropy": 3.550320625305176,
+            "byte_accuracy": 0.7692307692307693
+          }
+        }
+      ]
+    },
+    "prior": {
+      "checkpoint_sha256": "fb6531f049917be1892fd43b33ecd5e67612d05a0c4f0030f810a01d087e5960",
+      "observations": [
+        {
+          "step": 100,
+          "train": {
+            "teacher_code_ce": [
+              1.5882364000592912,
+              0.10688037138718826,
+              0.16547894477844238
+            ],
+            "teacher_code_accuracy": [
+              0.2857142857142857,
+              1.0,
+              1.0
+            ],
+            "codec_reconstruction_accuracy": 1.0,
+            "free_code_ce": [
+              1.5882364000592912,
+              3.1727388822115383,
+              3.85100584763747
+            ],
+            "free_code_accuracy": [
+              0.2857142857142857,
+              0.3076923076923077,
+              0.11538461538461539
+            ],
+            "free_reference_byte_accuracy": 0.15384615384615385,
+            "code_count": [
+              7,
+              13,
+              26
+            ],
+            "ce_degradation": [
+              0.0,
+              3.06585851082435,
+              3.6855269028590274
+            ]
+          },
+          "validation": {
+            "teacher_code_ce": [
+              1.4414803981781006,
+              2.0241971697126115,
+              1.8064780602088342
+            ],
+            "teacher_code_accuracy": [
+              0.5,
+              0.5714285714285714,
+              0.6153846153846154
+            ],
+            "codec_reconstruction_accuracy": 0.7692307692307693,
+            "free_code_ce": [
+              1.4414803981781006,
+              3.289543696812221,
+              3.9804232670710635
+            ],
+            "free_code_accuracy": [
+              0.5,
+              0.2857142857142857,
+              0.15384615384615385
+            ],
+            "free_reference_byte_accuracy": 0.23076923076923078,
+            "code_count": [
+              4,
+              7,
+              13
+            ],
+            "ce_degradation": [
+              0.0,
+              1.2653465270996094,
+              2.1739452068622294
+            ]
+          }
+        },
+        {
+          "step": 200,
+          "train": {
+            "teacher_code_ce": [
+              1.0827908515930176,
+              0.021935756389911357,
+              0.019701737623948317
+            ],
+            "teacher_code_accuracy": [
+              0.42857142857142855,
+              1.0,
+              1.0
+            ],
+            "codec_reconstruction_accuracy": 1.0,
+            "free_code_ce": [
+              1.0827908515930176,
+              4.124959212083083,
+              3.448496305025541
+            ],
+            "free_code_accuracy": [
+              0.42857142857142855,
+              0.38461538461538464,
+              0.4230769230769231
+            ],
+            "free_reference_byte_accuracy": 0.4230769230769231,
+            "code_count": [
+              7,
+              13,
+              26
+            ],
+            "ce_degradation": [
+              0.0,
+              4.1030234556931715,
+              3.4287945674015927
+            ]
+          },
+          "validation": {
+            "teacher_code_ce": [
+              2.0817480087280273,
+              2.3162498474121094,
+              2.056409395658053
+            ],
+            "teacher_code_accuracy": [
+              0.25,
+              0.5714285714285714,
+              0.6153846153846154
+            ],
+            "codec_reconstruction_accuracy": 0.7692307692307693,
+            "free_code_ce": [
+              2.0817480087280273,
+              5.711538587297712,
+              5.791400029109075
+            ],
+            "free_code_accuracy": [
+              0.25,
+              0.14285714285714285,
+              0.15384615384615385
+            ],
+            "free_reference_byte_accuracy": 0.15384615384615385,
+            "code_count": [
+              4,
+              7,
+              13
+            ],
+            "ce_degradation": [
+              0.0,
+              3.3952887398856024,
+              3.7349906334510217
+            ]
+          }
+        },
+        {
+          "step": 300,
+          "train": {
+            "teacher_code_ce": [
+              1.0037213053022112,
+              0.008385291466346154,
+              0.008375204526461087
+            ],
+            "teacher_code_accuracy": [
+              0.42857142857142855,
+              1.0,
+              1.0
+            ],
+            "codec_reconstruction_accuracy": 1.0,
+            "free_code_ce": [
+              1.0037213053022112,
+              3.4648302518404446,
+              4.19243416419396
+            ],
+            "free_code_accuracy": [
+              0.42857142857142855,
+              0.23076923076923078,
+              0.34615384615384615
+            ],
+            "free_reference_byte_accuracy": 0.3076923076923077,
+            "code_count": [
+              7,
+              13,
+              26
+            ],
+            "ce_degradation": [
+              0.0,
+              3.4564449603740983,
+              4.1840589596674995
+            ]
+          },
+          "validation": {
+            "teacher_code_ce": [
+              2.5688748359680176,
+              2.5901083265032088,
+              2.209861608651968
+            ],
+            "teacher_code_accuracy": [
+              0.0,
+              0.5714285714285714,
+              0.6153846153846154
+            ],
+            "codec_reconstruction_accuracy": 0.7692307692307693,
+            "free_code_ce": [
+              2.5688748359680176,
+              5.113590785435268,
+              6.065504220815805
+            ],
+            "free_code_accuracy": [
+              0.0,
+              0.0,
+              0.07692307692307693
+            ],
+            "free_reference_byte_accuracy": 0.15384615384615385,
+            "code_count": [
+              4,
+              7,
+              13
+            ],
+            "ce_degradation": [
+              0.0,
+              2.5234824589320595,
+              3.8556426121638374
+            ]
+          }
+        },
+        {
+          "step": 400,
+          "train": {
+            "teacher_code_ce": [
+              0.9860743795122419,
+              0.005273158733661358,
+              0.004841052568875826
+            ],
+            "teacher_code_accuracy": [
+              0.42857142857142855,
+              1.0,
+              1.0
+            ],
+            "codec_reconstruction_accuracy": 1.0,
+            "free_code_ce": [
+              0.9860743795122419,
+              3.529523115891677,
+              4.245557931753305
+            ],
+            "free_code_accuracy": [
+              0.42857142857142855,
+              0.3076923076923077,
+              0.34615384615384615
+            ],
+            "free_reference_byte_accuracy": 0.3076923076923077,
+            "code_count": [
+              7,
+              13,
+              26
+            ],
+            "ce_degradation": [
+              0.0,
+              3.5242499571580157,
+              4.240716879184429
+            ]
+          },
+          "validation": {
+            "teacher_code_ce": [
+              2.683666944503784,
+              2.8068755013602122,
+              2.324113992544321
+            ],
+            "teacher_code_accuracy": [
+              0.0,
+              0.5714285714285714,
+              0.6153846153846154
+            ],
+            "codec_reconstruction_accuracy": 0.7692307692307693,
+            "free_code_ce": [
+              2.683666944503784,
+              5.313028608049665,
+              6.609857412484976
+            ],
+            "free_code_accuracy": [
+              0.0,
+              0.0,
+              0.07692307692307693
+            ],
+            "free_reference_byte_accuracy": 0.07692307692307693,
+            "code_count": [
+              4,
+              7,
+              13
+            ],
+            "ce_degradation": [
+              0.0,
+              2.5061531066894527,
+              4.285743419940655
+            ]
+          }
+        },
+        {
+          "step": 500,
+          "train": {
+            "teacher_code_ce": [
+              1.0512656484331404,
+              0.003741007584791917,
+              0.0037677654853233923
+            ],
+            "teacher_code_accuracy": [
+              0.42857142857142855,
+              1.0,
+              1.0
+            ],
+            "codec_reconstruction_accuracy": 1.0,
+            "free_code_ce": [
+              1.0512656484331404,
+              5.4886345496544475,
+              4.88748051570012
+            ],
+            "free_code_accuracy": [
+              0.42857142857142855,
+              0.38461538461538464,
+              0.4230769230769231
+            ],
+            "free_reference_byte_accuracy": 0.4230769230769231,
+            "code_count": [
+              7,
+              13,
+              26
+            ],
+            "ce_degradation": [
+              0.0,
+              5.484893542069655,
+              4.883712750214797
+            ]
+          },
+          "validation": {
+            "teacher_code_ce": [
+              2.8041491508483887,
+              2.759190695626395,
+              2.4529104966383715
+            ],
+            "teacher_code_accuracy": [
+              0.0,
+              0.5714285714285714,
+              0.6153846153846154
+            ],
+            "codec_reconstruction_accuracy": 0.7692307692307693,
+            "free_code_ce": [
+              2.8041491508483887,
+              8.759287697928292,
+              8.331845210148739
+            ],
+            "free_code_accuracy": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "free_reference_byte_accuracy": 0.0,
+            "code_count": [
+              4,
+              7,
+              13
+            ],
+            "ce_degradation": [
+              0.0,
+              6.000097002301897,
+              5.878934713510367
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "final_protocol": {
+    "lengths": [
+      1,
+      4
+    ],
+    "codebook_size": 2,
+    "dim": 8,
+    "width": 16,
+    "heads": 2,
+    "layers": 1,
+    "teacher_width": 16,
+    "teacher_seed": 2026,
+    "teacher_steps": 400,
+    "teacher_learning_rate": 0.003,
+    "source_noise": 0.25,
+    "seeds": [
+      4,
+      8,
+      10,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "codec_steps": 400,
+    "prior_steps": 400,
+    "codec_learning_rate": 0.003,
+    "prior_learning_rate": 0.003,
+    "batch_size": 64,
+    "checkpoint_every": 100,
+    "train_samples": 512,
+    "validation_samples": 512,
+    "calibration_samples": 256,
+    "soft_temperature": 0.25,
+    "entropy_weight": 0.01,
+    "alignment_weight": 0.05,
+    "dependency_weight": 0.25,
+    "min_reconstruction": 0.95,
+    "max_reconstruction_drop": 0.01,
+    "min_tv_improvement": 0.02,
+    "min_tc_reduction": 0.01,
+    "arms": [
+      "reconstruction",
+      "alignment",
+      "dependency",
+      "alignment_dependency"
+    ],
+    "confirmation_seeds": [
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "decoder_repair_steps": 200,
+    "decoder_repair_learning_rate": 0.003,
+    "min_sequence_reconstruction": 0.98,
+    "max_repair_tv_increase": 0.01,
+    "min_alignment_tv_improvement": 0.02,
+    "min_alignment_winning_seeds": 4,
+    "study": "Coarse-codebook maintenance test. Same four arms, balanced observations and budgets. Known seeds 4,8,10; only unused seeds 13-17 determine hard-usage and coverage gates. No gating on soft entropy alone.",
+    "codec_sampling": "balanced_observed",
+    "min_coarse_perplexity": 1.5,
+    "max_coarse_collapsed_fraction": 0.05,
+    "coarse": {
+      "enabled": true,
+      "warmup_batches": 2,
+      "kmeans_iterations": 20,
+      "initialization_noise": 0.0001,
+      "usage_decay": 0.9,
+      "dead_code_threshold": 1.0,
+      "dead_code_grace_steps": 25,
+      "dead_code_check_every": 1,
+      "reset_count": 2.0,
+      "replacement_noise": 0.01,
+      "entropy_weight": 0.05,
+      "temp_start": 2.0,
+      "temp_end": 0.25,
+      "temp_anneal_steps": 200,
+      "beta_start": 0.0,
+      "beta_end": 0.25,
+      "beta_warmup_steps": 200,
+      "coarse_codebook_lr_scale": 0.25
+    }
+  },
+  "test_cases_passed": 44,
+  "environment": {
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "python": "3.12.16",
+    "versions": {
+      "jax": "0.10.2",
+      "jaxlib": "0.10.2",
+      "flax": "0.12.8",
+      "optax": "0.2.8",
+      "numpy": "2.5.4"
+    },
+    "dtype": "float32",
+    "device_kind": "cpu"
+  },
+  "stability": {
+    "passed": true,
+    "confirmation_seeds": [
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "evaluated_models": 20,
+    "failures": [],
+    "minimum_population_perplexity": 1.9733686083705464,
+    "maximum_monitored_collapsed_fraction": 0.0,
+    "matched_student_flop_estimates": true
+  },
+  "budget": {
+    "nominal_code_bits": 5.0,
+    "codec_steps_per_arm": 400,
+    "codec_sampling": "balanced_observed",
+    "prior_sampling": "empirical teacher-training observations",
+    "prior_steps_per_arm": 400,
+    "decoder_repair_steps_per_arm": 200,
+    "batch_size": 64,
+    "shared_teacher_steps": 400,
+    "coarse_warmup_batches_per_seed": 2,
+    "coarse_kmeans_iterations": 20,
+    "note": "All arms execute teacher alignment and soft TC computations with dynamic coefficients; shared teacher/calibration cost is charged equally. FLOPs are compiler estimates, not measured total hardware work."
+  },
+  "benchmark_rows": [
+    {
+      "length": 8,
+      "batch_size": 16,
+      "median_ms": [
+        0.48897899978328496,
+        0.40320848347619176,
+        0.9374164801556617
+      ],
+      "trained_tiny_fixture": true
+    },
+    {
+      "length": 128,
+      "batch_size": 16,
+      "median_ms": [
+        26.87656250782311,
+        14.390167008969001,
+        39.58845901070163
+      ],
+      "trained_tiny_fixture": false
+    },
+    {
+      "length": 512,
+      "batch_size": 16,
+      "median_ms": [
+        173.88693749671802,
+        85.83056299539749,
+        299.9512709939154
+      ],
+      "trained_tiny_fixture": false
+    }
+  ]
+}

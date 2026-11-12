@@ -1,0 +1,16 @@
+\begin{table}[t]\centering\small
+\caption{Notation shared with the companion manuscript. Code variables \(I_k\) are distinct from EMA counts \(C_{kv}\). Prompt \(u\) is fixed/empty in the completed finite-domain studies.}
+\label{tab:notation}
+\begin{tabularx}{\linewidth}{@{}lY@{}}\toprule
+Symbol & Meaning\\\midrule
+\(B,L,W\) & Batch size, finest sequence length, output token vocabulary size\\
+\(K,n_k,V,D\) & Levels, level positions, uniform codebook size, code dimension\\
+\(H,J\) & Prior hidden width and number of Transformer blocks\\
+\(I_k,i_{kbj}\) & Random code level and realized code ID at batch/position \((b,j)\)\\
+\(E,C,S\) & Codebook embeddings, EMA counts and residual sums\\
+\(Q_\psi,d_\psi,p_\theta\) & Deterministic encoder/codec map, token decoder, level prior\\
+\(p_s,p_{\theta,\psi}\) & Teacher and induced student output distributions\\
+\(a,\varphi,\tau_1(a),\beta_1(a)\) & Optimizer step, runtime phase, coarse temperature and commitment weight\\
+\(\mathsf H,\mathrm{TC},\mathrm{TV}\) & Shannon entropy, conditional total correlation, total variation\\
+\(r,d_s,P_s,R_s\) & Canonical width, teacher width, calibration map and partial inverse; \(r=D=8\) in the pilot\\
+\bottomrule\end{tabularx}\end{table}

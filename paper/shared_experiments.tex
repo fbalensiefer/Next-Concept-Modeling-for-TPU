@@ -1,0 +1,134 @@
+\subsection{Evidence snapshot and completed engineering milestones}
+All results in this section describe the implementation at revision
+\code{1d600d7}, dated November 12, 2026, package version 0.1.0~\citep{localrepo}.
+The recorded stack was Python 3.12.16, JAX/jaxlib 0.10.2, Flax 0.12.8,
+Optax 0.2.8 and NumPy 2.5.4, on macOS 26.6.2 arm64 CPU, with float32 arrays.
+The CPU model was not recorded; no TPU hardware was available.
+The validation record reports \TestCases{} passing pytest cases, including
+parameterized runs, exact checkpoint continuation and two virtual four-device
+CPU sharding checks. Test runtime is not an algorithmic benchmark.
+
+The completed engineering path includes UTF-8 byte loading and chunking,
+configuration/data hashes, atomic checkpoint replacement, step-addressed random
+batches, a frozen-codec prior, seeded categorical code sampling with temperature
+and optional top-$k$, and byte decoding. Output length remains a caller input;
+there is no prompt-conditioning, learned-length or EOS interface. The separate
+26-byte training and 13-byte validation fixture reached 100\% training-byte
+reconstruction by step 100 of a 500-step run. Validation CE increased from
+1.949 nats at step 100 to 3.550 at step 500: this was overfitting, not a
+successful held-out language result. The historical codec/prior logs are now
+archived in \path{reports/text-experiments/}; their checkpoint hashes match the
+CPU benchmark's source identities. Those records are distinct from the
+finite-domain teacher studies below.
+
+\subsection{CPU inference measurements}
+\CPUBenchmarkTable
+The benchmark timed lowered/compiled functions separately from warmed inference,
+kept timed inputs on-device and waited for every output with
+\code{jax.block_until_ready}. Sampling used temperature 1.0; host text conversion
+and checkpoint I/O were excluded. NCM byte decoding and all cached AR serial
+steps were included. With batch 16 and untrained length-512 models, actual-level
+execution reduced median latency from \PaddedLatency{} to \ActualLatency{} ms.
+The trained length-8 fixture stored 21,328 codec parameters, 4,032 prior
+parameters and 768 codebook embedding elements, whereas AR had 11,904 parameters.
+Neither parameter count nor quality was matched. Longer shape checks used
+\(D=32,V=64,H=64,J=2\), four attention heads and levels
+\((L/4,L/2,L)\); they were not trained on text.
+
+Compiler live-buffer estimates, process-lifetime counters where supported,
+compilation times and 18 separate profiling traces were recorded. Per-case
+measured peak device memory was unavailable; compiler estimates are not peak
+memory measurements. These observations establish a local implementation
+improvement, not TPU acceleration or a quality-matched model speedup.
+
+\subsection{One-teacher finite-domain protocol}
+\ProtocolSeedsTable
+Each domain input is a length-4 sequence over A/B (16 possibilities).
+A locally trained causal byte Transformer has width 16, two heads and one block;
+it is not an external pretrained language model. Its source distribution mixed
+probability \(1-\rho\) equally over AAAA/BBBB with \(\rho=0.25\) uniformly over
+all 16 sequences. After 400 teacher updates, its A/B logits were normalized at
+every prefix to define an exactly enumerable law \(p_s\).
+Teacher seed 2026 and its checkpoint remained fixed in every protocol.
+
+Training, validation and calibration comprised 512, 512 and 256 independently
+sampled sequence draws, respectively. They shared the finite support and could
+repeat identical sequences across splits; there was no held-out domain or
+larger-teacher evaluation. A sign-fixed PCA interface fitted on calibration
+features mapped normalized causal teacher features to \(r=D=8\).
+Student codebooks had \(K=2\), \((n_1,n_2)=(1,4)\), \(V=2\), and nominal
+capacity 5 bits; student priors used width 16, two heads and one block.
+The byte vocabulary was \(W=256\), with no fallback side channel in these studies.
+The AR teacher used BOS ID 256 on its input only.
+
+Arms were R (reconstruction/commitment/utilization), A (R plus representation
+alignment), D (R plus dependence) and AD (both). Paired initial states,
+minibatch order, architecture and update counts were fixed within each seed.
+Every student used 400 codec updates and 400 frozen-codec prior updates, global
+batch 64 and Adam learning rate 0.003. The three four-arm follow-ups additionally
+used 200 decoder-only replay updates at the same rate. Prior parameters and code
+assignments stayed fixed during replay. Shared teacher/calibration preparation
+was charged equally; zero auxiliary coefficients still executed the common
+student objective graph. Equality of compiler-estimated student step FLOPs is
+not equality of measured total hardware work or a compute-saving claim.
+
+\subsection{Metrics and hard-code diagnostics}
+\input{shared_metrics.tex}
+
+\subsection{Completed controls, negative results and coverage repair}
+\StudyResultsTable
+The initial three-seed pilot passed its fixed AD-versus-A TV/dependence/fidelity
+gates. Mean hard conditional TC fell from \PilotTCAlignment{} to
+\PilotTCCombined{} nats. That comparison lacked a D-only control; most TV gain
+came from one seed, and seed 0's AD model missed 5.12\% of teacher probability.
+It therefore did not establish a reliable alignment contribution or full SCALE.
+
+The four-arm decoder-replay protocol reserved student seeds 3--7. Its coverage
+and reliable-alignment gates both failed. In AD seed 4, 16 inputs occupied only
+10 codewords. The deterministic code-to-sequence reconstruction ceiling
+\(\sum_i\max_{x:Q_\psi(x)=i}p_s(x)\) was 89.80\%; replay achieved 87.87\%
+sequence reconstruction and still missed 6.63\% of teacher mass. More decoder
+updates could not recover distinctions already merged into the same code.
+
+The balanced-codec protocol reserved seeds 8--12. Codec reconstruction and
+alignment sampled uniformly over distinct observed training sequences;
+self-normalized training-frequency importance weights kept soft dependence
+aimed at empirical teacher mass. Prior training retained the original empirical
+frequency distribution. No population probabilities or validation examples
+selected repair targets. All five new AD runs retained 16 encodings and achieved
+100\% sequence reconstruction and complete output support, already before extra
+replay. The known failing seed 4 also recovered under the changed sampler.
+The reliable-alignment gate nevertheless failed: AD beat D on only 3/5 new seeds,
+and A had slightly lower mean TV than AD. Thus the earlier dependence benefit
+was not uniform across samplers and initializations.
+
+\subsection{Coarse-codebook stabilization}
+The maintained protocol reserved seeds 13--17; seeds 4, 8 and 10 were known-case
+checks. It combined two initial encoder batches, 20 K-means++/Lloyd iterations,
+independent hard-usage EMA decay 0.9, threshold 1 assignment per global batch,
+25-step dead-code grace, reset count 2 and replacement noise 0.01.
+It added coarse entropy coefficient 0.05, temperature 2.0 to 0.25 and commitment
+0 to 0.25 over 200 steps, and centroid step scale 0.25. Fine-book EMA and neural
+Adam rates were unchanged. All four arms executed the same maintenance logic.
+The individual components were not separately ablated.
+
+The fixed stability gate required both codes active, population coarse
+perplexity at least 1.5, no more than 5\% collapsed minibatches after the warmups,
+complete teacher output support and sequence reconstruction at least 98\%.
+All \StabilityModels{} new-seed models (five seeds times four arms) passed.
+Minimum population perplexity was \StabilityPP{} out of 2; each model recorded
+zero collapsed steps over 200 post-annealing observations. Both codes remained
+active and output support was preserved. AD minimum sequence reconstruction was
+99.07\%; the other three arms reached 100\% on the new seeds.
+All 32 runs, including known-case checks, had matching compiler-estimated
+per-step FLOPs: 10,564,359 for codec training, 6,996,102 for prior training and
+5,837,030 for decoder replay. Initialization used 128 valid pooled samples per
+model and was shared per seed, with its budget charged equally.
+
+The reliable teacher-alignment gate was distinct: AD had to beat D by mean TV
+at least 0.02 and win on at least 4/5 new seeds, while preserving coverage.
+It won \FinalAlignmentWins{}/5 but its mean improvement was only
+\FinalAlignmentGain{}, so that gate still failed. Stable codebooks are an
+engineering achievement, not evidence of cross-size transfer, reduced total
+adaptation compute or general language-model quality. All gates were saved
+locally before their study; no external preregistration is claimed.

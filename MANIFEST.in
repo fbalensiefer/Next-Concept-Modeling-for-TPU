@@ -2,7 +2,7 @@ include LICENSE README.md CITATION.cff
 recursive-include src/ncm *.py
 recursive-include tests *.py
 recursive-include examples *.py *.json *.txt
-recursive-include paper *.md *.tex *.json *.sha256
+recursive-include paper *.md *.tex *.json *.sha256 *.py
 recursive-include output/pdf *.pdf
 recursive-include docs *.md
-recursive-include reports *.md *.json
+recursive-include reports *.md *.json *.jsonl

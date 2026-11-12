@@ -1,65 +1,37 @@
-% Self-contained manuscript. References are embedded; no .bib file is needed.
+% Manuscript with shared local inputs and generated embedded references.
 % Build: pdflatex ncm_systems_paper.tex (twice), or tectonic ncm_systems_paper.tex
 % This article describes the tpu-ncm 0.1.0 implementation snapshot.
 \documentclass[11pt,a4paper]{article}
-\usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
-\usepackage{lmodern}
-\usepackage[margin=25mm]{geometry}
-\usepackage{amsmath,amssymb}
-\usepackage{booktabs,tabularx,array}
-\usepackage{microtype}
-\usepackage{xcolor}
-\usepackage{enumitem}
-\usepackage{listings}
-\usepackage{tikz}
-\usetikzlibrary{arrows.meta,positioning,fit}
-\usepackage[numbers,sort&compress]{natbib}
-\usepackage{hyperref}
-\hypersetup{colorlinks=true,linkcolor=blue!45!black,citecolor=blue!45!black,
-  urlcolor=blue!45!black,pdftitle={A Functional JAX/Flax Implementation of Next-Concept Modeling for TPU-Oriented Execution},
-  pdfauthor={Fabian Balensiefer}}
-\urlstyle{same}
-\setlength{\emergencystretch}{2em}
-\setlist{nosep,leftmargin=*}
-\lstset{basicstyle=\ttfamily\footnotesize,breaklines=true,
-  columns=fullflexible,keepspaces=true,frame=single,rulecolor=\color{black!20},
-  backgroundcolor=\color{black!2},showstringspaces=false}
-\newcommand{\sg}{\operatorname{sg}}
-\newcommand{\Ind}{\mathbb{1}}
-\newcommand{\R}{\mathbb{R}}
-\newcommand{\code}[1]{\texttt{\detokenize{#1}}}
-\newcommand{\safe}[1]{\max\!\left(1,#1\right)}
-\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\input{shared_preamble.tex}
+\hypersetup{pdftitle={A Functional JAX/Flax Implementation of Next-Concept Modeling for TPU-Oriented Execution}}
 
 \title{A Functional JAX/Flax Implementation of\protect\\
 Next-Concept Modeling for TPU-Oriented Execution}
 \author{Fabian Balensiefer}
-\date{November 11, 2026}
+\date{November 12, 2026}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-Next-Concept Modeling (NCM) represents a sequence through multiscale discrete
-codes and generates each level in parallel, conditioned on earlier levels.
-This paper documents an independent, unnamed implementation of that approach
-using JAX and Flax, with a focus on explicit state and accelerator execution
-contracts. The repository implements a text encoder and decoder, scanned
-residual vector quantization, functional exponential-moving-average codebooks,
-a parameter-shared level-wise Transformer, and explicit data/model sharding.
-Additional implementation objectives include differentiable marginal entropy,
-optional aligned concept consistency, runtime codebook freezing, and fixed-shape
-byte fallback routing. We formalize the masking and conditioning paths, identify
-the gradient boundaries in the joint training step, and analyze the costs of
-padding all hierarchy levels to a common length. Validation comprises eleven
-passing CPU tests, including a four-device virtual CPU comparison of a
-\(2\times2\) data/model mesh with an unsharded reference, plus a three-step
-synthetic training example. These are software correctness checks; they do not
-establish language-model quality, compression gains, TPU throughput, or
-multi-host scalability. We give a controlled evaluation plan and specify the
-remaining data, checkpointing, and Rust tooling work needed for a complete
-research system.
+We document an independent JAX/Flax implementation of Next-Concept Modeling
+(NCM), with explicit codebook state, mask-aware residual quantization, a shared
+level-wise Transformer and declared distributed placement. Completed milestones
+add byte-data experiments, atomic resumable checkpoints, frozen-codec prior
+training, seeded categorical generation and actual-length inference with sparse
+resampling. On untrained length-512 models at batch 16, local CPU median latency
+fell from \PaddedLatency{} to \ActualLatency{} ms; this is not a quality-matched
+or TPU comparison. Four-arm finite-domain studies diagnosed code collisions and
+separated reconstruction, teacher alignment and dependence objectives. A shared
+coarse-codebook maintenance package combines deterministic K-means++ warmup,
+hard-usage EMA replacement, entropy/temperature and commitment schedules, and a
+separate centroid update group. All \StabilityModels{} new-seed models passed
+fixed hard-stability and coverage gates; minimum population coarse perplexity
+was \StabilityPP{} of 2. The reliable teacher-alignment gate still failed.
+The implementation record reports \TestCases{} passing CPU tests, including
+exact checkpoint continuation and virtual-device checks. These results establish
+software behavior and a small-domain stabilization result, not useful pretrained
+model transfer, competitive language modeling or measured TPU performance.
 \end{abstract}
 
 \noindent\textbf{Keywords:} next-concept modeling; residual vector quantization;
@@ -86,7 +58,7 @@ module API~\citep{flax,flaxscan}. XLA provides the compilation layer~\citep{xla}
 Rust is reserved for a proposed surrounding data and orchestration layer; no
 Rust component is present in the evaluated snapshot. The implementation is
 available in the public project repository, version 0.1.0, with this manuscript
-describing the November 11, 2026 snapshot~\citep{localrepo}. Source hashes
+describing revision \code{1d600d7}, the November 12, 2026 snapshot~\citep{localrepo}. Source hashes
 identify the files evaluated here independently of later branch updates.
 
 \begin{samepage}
@@ -99,10 +71,14 @@ The contributions are implementation-specific:
   \item A functional training transition combining optimizer and EMA state,
   dynamic phase selection, and explicit \code{dp}/\code{fsdp} placement.
   \item Executable tests of masking, gradients, state transitions, and virtual
-  multi-device equivalence, with an explicit boundary between verified
-  software behavior and unmeasured model or TPU performance.
+  multi-device equivalence, plus reproducible data, checkpoint and sampling paths.
+  \item Actual-length CPU inference measurements and four-arm finite-domain
+  studies of coverage and coarse-codebook stability, with negative alignment
+  results reported alongside the completed engineering gates.
 \end{enumerate}
 \end{samepage}
+
+\input{shared_notation.tex}
 
 \section{Related Work and Scope}
 Vector-quantized variational autoencoders connect discrete nearest-neighbor
@@ -116,11 +92,14 @@ schedule provides useful semantic levels for text.
 NCM supplies the principal algorithmic precedent: multiscale residual text codes
 and a generator that predicts positions within a level in
 parallel~\citep{kumbong2026ncm}. The published work includes tokenizer/prior
-staging and conditioning corruption. The current repository instead provides
-a joint optimizer interface, clean earlier-level conditioning, and greedy code
-selection. It is therefore a systems adaptation, not a reproduction of the
+staging and conditioning corruption. The repository provides both a joint optimizer interface and staged frozen-codec
+prior training, clean earlier-level conditioning, and greedy or seeded categorical
+code selection. It is therefore a systems adaptation, not a reproduction of the
 published training recipe, checkpoints, or experimental results. The entropy
-and concept objectives described below are additional project choices.
+and concept objectives described below are additional project choices. The
+companion SCALE manuscript~\citep{scalecompanion} develops a conditional
+cross-size compiler framework. Its completed local mechanism studies share the
+results below; the full compiler and external pretrained transfer remain proposed.
 
 The generator builds on Transformer attention~\citep{vaswani2017attention}.
 Its distribution strategy is also related to the broader use of compiler-based
@@ -141,19 +120,19 @@ There are \(K\) levels, ordered by
 \(V\) entries per codebook. Every compiled bucket fixes \(B,K,L,D,V\) and the
 complete tuple \((n_1,\ldots,n_K)\). Logical codes have lengths \(n_k\), but
 their common storage is \([K,B,L]\), with structural masks excluding positions
-\(t>n_k\). Invalid code indices are stored as \(-1\). The model does not infer
+\(j>n_k\). Invalid code indices are stored as \(-1\). The model does not infer
 sequence length or fallback geometry during generation; these are caller inputs.
 
 \subsection{Mask-normalized grid alignment}
 Define a resampling operator for nonnegative weights \(A\in\R^{T\times S}\):
 \begin{align}
- d_{bt}(A,a)&=\sum_{s=1}^{S} A_{ts}a_{bs},\\
- \mathcal{A}_{A}(h,a)_{bt}
- &=\frac{\sum_{s=1}^{S} A_{ts}a_{bs}h_{bs}}
- {\max(d_{bt}(A,a),\delta)},\qquad \delta=10^{-8}.
+ d_{bj}(A,\mu)&=\sum_{s=1}^{S} A_{js}\mu_{bs},\\
+ \mathcal{A}_{A}(h,\mu)_{bj}
+ &=\frac{\sum_{s=1}^{S} A_{js}\mu_{bs}h_{bs}}
+ {\max(d_{bj}(A,\mu),\delta)},\qquad \delta=10^{-8}.
  \label{eq:align}
 \end{align}
-The destination validity mask is \(d_{bt}>0\). Sources with false masks are
+The destination validity mask is \(d_{bj}>0\). Sources with false masks are
 zeroed before multiplication. Consequently, a valid output depends only on
 valid input values, including at partially padded boundaries.
 
@@ -185,18 +164,18 @@ positions zeroed. Set the common-grid cumulative representation
 \begin{align}
  u_k&=\mathcal{A}_{A_k}\bigl(z-\sg[\widehat z^{(k-1)}],\ell\bigr),
  \label{eq:residual}\\
- i_{kbt}&=\arg\min_{v\in\{0,\ldots,V-1\}}
-       \|u_{kbt}-E_{kv}\|_2^2,\\
- q_{kbt}&=E_{k,i_{kbt}},\\
+ i_{kbj}&=\arg\min_{v\in\{0,\ldots,V-1\}}
+       \|u_{kbj}-E_{kv}\|_2^2,\\
+ q_{kbj}&=E_{k,i_{kbj}},\\
  \widehat z^{(k)}&=\widehat z^{(k-1)}+
-       \ell\odot\mathcal{A}_{U_k}(q_k,a_k).
+       \ell\odot\mathcal{A}_{U_k}(q_k,\alpha_k).
  \label{eq:cumulative}
 \end{align}
-Here \(a_k\) combines pooled source validity, structural padding, and any
+Here \(\alpha_k\) combines pooled source validity, structural padding, and any
 sampled prefix dropout; invalid \(q_k\) entries are zero. The source mask
 \(\ell\) in Eq.~\eqref{eq:cumulative} also prevents interpolated contributions
-from filling byte or padding slots. This common-grid subtraction resolves the
-shape mismatch that would arise from directly subtracting vectors on different
+from filling byte or padding slots. This common-grid subjraction resolves the
+shape mismatch that would arise from directly subjracting vectors on different
 level grids.
 
 Squared distances are evaluated as
@@ -224,8 +203,8 @@ The complete codebook state is
 \end{equation}
 For each batch, sufficient statistics are
 \begin{align}
- c_{kv}&=\sum_{b,t}a_{kbt}\Ind[i_{kbt}=v],\\
- s_{kv}&=\sum_{b,t}a_{kbt}\Ind[i_{kbt}=v]u_{kbt}.
+ c_{kv}&=\sum_{b,j}\alpha_{kbj}\Ind[i_{kbj}=v],\\
+ s_{kv}&=\sum_{b,j}\alpha_{kbj}\Ind[i_{kbj}=v]u_{kbj}.
 \end{align}
 After data-parallel aggregation, an eligible level updates by
 \begin{align}
@@ -238,16 +217,74 @@ Defaults are \(\gamma=0.99\) and \(\epsilon=10^{-5}\). Initialization draws
 \(E\) from a zero-mean normal distribution scaled by \(D^{-1/2}\), uses
 \(C=1\), and sets \(S=E(C+\epsilon)\). A level with no valid assignments
 preserves its entire old state. For a nonempty eligible level, Eq.~\eqref{eq:ema}
-applies to all entries, including unused codes; no dead-code reinitialization
-policy is implemented.
+applies to all entries, including unused codes. This is the retained legacy
+configuration. The opt-in maintained coarse path below supersedes its coarse
+initialization and update policy without changing the fine-book equations.
+
+
+\subsection{Deterministic maintained coarse codebook}
+\label{sec:maintenance}
+With maintenance enabled, the initial encoder's valid pooled coarse latents are
+collected from a configured number of initial training batches before updates.
+K-means++ seeding~\citep{arthur2007kmeans} and fixed-count Lloyd refinement use
+an experiment-seeded JAX key. Degenerate K-means++ seeds are sampled from valid latents;
+small seeded perturbations prevent coincident seeds when observations repeat.
+The completed protocol used two batches, 128 pooled samples, 20 iterations and
+initialization noise \(10^{-4}\). This is a warmup of the initial encoder's
+geometry, not a fit on a pretrained semantic manifold.
+
+A separate hard-usage statistic \(U_v\), distinct from the ordinary EMA count
+\(C_{1v}\), follows
+\begin{equation}
+ U'_v=\gamma_U U_v+(1-\gamma_U)c_{1v}.
+\end{equation}
+After the grace interval, eligible codes below a configurable count threshold
+are replaced with a uniformly sampled valid current-batch latent plus seeded
+Gaussian noise. Their usage and centroid count/sum statistics are reset
+consistently. Counts use global assignments, not per-shard frequencies.
+Candidates and perturbations are computed on every eligible step, then selected
+by masks, so all four arms execute the same graph even when no code is dead.
+All-padding batches skip the entire state transition. Frozen coarse phases
+preserve its embeddings, counts, sums and usage while the global training clock
+can advance. Initialization flags prevent any refit on resume.
+
+For \(s(a)=\min(1,a/A)\), the coarse soft-assignment temperature and commitment
+weight use independently configurable linear schedules
+\begin{equation}
+ \tau_1(a)=\tau_{\rm start}+s(a)(\tau_{\rm end}-\tau_{\rm start}),\quad
+ \beta_1(a)=\beta_{\rm start}+s(a)(\beta_{\rm end}-\beta_{\rm start}).
+\end{equation}
+Separate horizons may be supplied for each schedule. Hard nearest-neighbor
+quantization remains the forward path; temperature controls the differentiable
+soft statistics, not a Gumbel sampler. The coarse commitment replaces that
+level's baseline weight within the original valid-component normalization.
+An optional extra loss \(-\lambda_{\rm entropy}\mathsf H(q_{1,\rm marginal})\)
+uses masked soft assignments. It encourages marginal spread but does not imply
+low conditional TC or uniform hard usage.
+
+Neural parameters retain their Adam group. Coarse embeddings use a separate
+stateless SGD group on the centroid displacement pseudo-gradient
+\(g_E=E_1-E_1^{\rm EMA}\), giving
+\begin{equation}
+ E'_1=E_1+\eta_{\rm coarse}(E_1^{\rm EMA}-E_1).
+\end{equation}
+The setting \code{coarse_codebook_lr_scale}=0.25 is a quarter of the EMA
+centroid proposal, not 0.25 times the neural Adam learning rate. Fine embeddings
+keep their ordinary EMA update. Because the maintained embedding can lag its
+centroid target, it need not equal \(S/(C+\epsilon)\) at every step.
+The checkpointed optimizer tree stores neural state under \code{neural} and
+coarse initialization, random key, usage, replacements and schedule progress
+under \code{coarse}; codebook \((E,C,S)\) remains explicit. Disabled maintenance
+retains the legacy state schema. Canonical hashing sorts mapping keys, and
+mid-replay continuation is tested bit-exactly on the same backend.
 
 \section{Shared Level-Wise Transformer Prior}
 \label{sec:prior}
 At the start of level \(k\), the prior resizes the cumulative earlier-level
 representation and projects it to hidden width \(H\):
 \begin{equation}
- h^{(0)}_{kbt}=W_c\mathcal{A}_{A_k}(\widehat z^{(k-1)},\ell)_{bt}
-             +b_c+e^{\mathrm{level}}_k+e^{\mathrm{pos}}_t.
+ h^{(0)}_{kbj}=W_c\mathcal{A}_{A_k}(\widehat z^{(k-1)},\ell)_{bj}
+             +b_c+e^{\mathrm{level}}_k+e^{\mathrm{pos}}_j.
 \end{equation}
 A stack of pre-normalized attention and feed-forward blocks produces
 \([B,L,V]\) logits. The stack, context projection, positional table, and output
@@ -258,8 +295,8 @@ interact. No query embeds a current-level target code.
 For fixed geometry, the corresponding prior has the form
 \begin{equation}
  p_\theta(i_{1:K}\mid\mathcal{G})=
- \prod_{k=1}^{K}\prod_{b,t:a_{kbt}=1}
- p_\theta(i_{kbt}\mid\widehat z^{(k-1)},k,\mathcal{G}),
+ \prod_{k=1}^{K}\prod_{b,j:\alpha_{kbj}=1}
+ p_\theta(i_{kbj}\mid\widehat z^{(k-1)},k,\mathcal{G}),
  \label{eq:factor}
 \end{equation}
 where \(\mathcal{G}\) contains lengths and masks. Dependencies between positions
@@ -269,7 +306,8 @@ selected current-level codes.
 
 Teacher forcing computes the logits before adding the current ground-truth
 code vectors to the carry. In free-running mode it adds its own greedy argmax
-predictions instead. A traced scalar boolean selects these paths while target
+predictions instead; a separate sampling interface supports seeded categorical
+selection, temperature and optional top-$k$. A traced scalar boolean selects these paths while target
 arrays retain a fixed dummy shape. There are \(K\) sequential Transformer
 evaluations for generation, not \(\sum_k n_k\) token-autoregressive calls.
 The implementation also scans levels during training; it does not implement a
@@ -284,7 +322,7 @@ single concatenated, all-level training attention call.
   \node[box,fill=blue!5] (carry) {Earlier-level carry\\$\widehat z^{(k-1)}$};
   \node[box,fill=blue!5,right=of carry] (context) {Resize / project\\+ level / position};
   \node[box,fill=blue!5,right=of context] (prior) {Shared Transformer\\parallel level logits};
-  \node[box,fill=green!6,below=of prior] (codes) {Teacher codes or\\greedy predicted codes};
+  \node[box,fill=green!6,below=of prior] (codes) {Teacher codes\\or predictions};
   \node[box,fill=green!6,left=of codes] (add) {Embed / interpolate\\and accumulate};
   \node[box,fill=green!6,left=of add] (next) {Updated carry\\$\widehat z^{(k)}$};
   \draw[flow] (carry)--(context);
@@ -295,7 +333,8 @@ single concatenated, all-level training attention call.
 \end{tikzpicture}
 \caption{One level of the scanned prior. Current-level teacher codes are
 introduced after the logits are computed. The updated carry is the input to
-the next level. Fallback features enter the final decoder separately.}
+the next level; predictions may be greedy or categorical samples. Fallback
+features enter the final decoder separately.}
 \label{fig:prior}
 \end{figure}
 
@@ -314,20 +353,20 @@ Default coefficients are \(\beta=0.25\), \(\lambda_H=0.01\),
 configuration choices, not experimentally optimized settings.
 
 \subsection{Reconstruction and commitment}
-Let \(p_\psi\) be the token decoder distribution. Reconstruction includes every
+Let \(d_\psi\) be the token decoder distribution. Reconstruction includes every
 valid token, including slots using byte features:
 \begin{equation}
  \mathcal{L}_{\mathrm{recon}}=
- -\frac{\sum_{b,t}m_{bt}\log p_\psi(x_{bt}\mid\widetilde z)}
- {\safe{\sum_{b,t}m_{bt}}}.
+ -\frac{\sum_{b,j}m_{bj}\log d_\psi(x_{bj}\mid\widetilde z)}
+ {\safe{\sum_{b,j}m_{bj}}}.
 \end{equation}
 The fallback-selected representation \(\widetilde z\) is defined in
 Section~\ref{sec:fallback}. Commitment is a mean over all valid scalar
 residual components, rather than an unweighted mean of per-level means:
 \begin{equation}
  \mathcal{L}_{\mathrm{commit}}=
- \frac{\sum_{k,b,t}a_{kbt}\|u_{kbt}-\sg[q_{kbt}]\|_2^2}
- {\safe{D\sum_{k,b,t}a_{kbt}}}.
+ \frac{\sum_{k,b,j}\alpha_{kbj}\|u_{kbj}-\sg[q_{kbj}]\|_2^2}
+ {\safe{D\sum_{k,b,j}\alpha_{kbj}}}.
 \end{equation}
 
 \subsection{Differentiable marginal entropy}
@@ -335,9 +374,9 @@ An entropy computed only from hard argmin counts has zero encoder derivative
 almost everywhere. The implementation therefore uses soft assignment masses
 for the regularizer, while retaining hard assignments for EMA and diagnostics:
 \begin{align}
- \pi_{kbtv}&=\operatorname{softmax}_{v}
-  \left(-\|u_{kbt}-E_{kv}\|_2^2/\tau\right),\\
- \bar c_{kv}&=\sum_{b,t}a_{kbt}\pi_{kbtv},\qquad
+ \pi_{kbjv}&=\operatorname{softmax}_{v}
+  \left(-\|u_{kbj}-E_{kv}\|_2^2/\tau\right),\\
+ \bar c_{kv}&=\sum_{b,j}\alpha_{kbj}\pi_{kbjv},\qquad
  p_{kv}=\frac{\bar c_{kv}}{\max(\sum_{v'}\bar c_{kv'},10^{-8})},\\
  \mathcal{L}_H&=\sum_{k=1}^{K}w_k\sum_{v=0}^{V-1}
                   p_{kv}\log(p_{kv}+\epsilon_H).
@@ -356,9 +395,9 @@ straight-through representation into the same feature dimension. Over the
 intersection \(\mathcal{M}\) of valid coarse and learned-path positions,
 \begin{equation}
  \mathcal{L}_{\mathrm{concept}}=
- \frac{\sum_{(b,t)\in\mathcal M}
+ \frac{\sum_{(b,j)\in\mathcal M}
   \left[1-\operatorname{cos}_{\delta}
-   \left(\mathcal{A}_{U_1}(q_1,a_1)_{bt},P(z_{\mathrm{ST}})_{bt}\right)\right]}
+   \left(\mathcal{A}_{U_1}(q_1,\alpha_1)_{bj},P(z_{\mathrm{ST}})_{bj}\right)\right]}
  {\safe{|\mathcal M|}}.
 \end{equation}
 The implementation stabilizes each feature norm by
@@ -371,27 +410,29 @@ Cosine agreement is an auxiliary hypothesis, not a measured semantic property.
 The prior is trained against aligned current-level code labels:
 \begin{equation}
  \mathcal{L}_{\mathrm{prior}}=
- -\frac{\sum_{k,b,t}a_{kbt}
-    \log p_\theta(i_{kbt}\mid\widehat z^{(k-1)},k,\mathcal G)}
- {\safe{\sum_{k,b,t}a_{kbt}}}.
+ -\frac{\sum_{k,b,j}\alpha_{kbj}
+    \log p_\theta(i_{kbj}\mid\widehat z^{(k-1)},k,\mathcal G)}
+ {\safe{\sum_{k,b,j}\alpha_{kbj}}}.
 \end{equation}
 ``Next'' refers to the next hierarchy level, not a one-position shift within
 that level. A separate shifted token cross-entropy helper exists for an
 optional token-causal extension; it is not the NCM prior objective.
 
-One optimizer state holds encoder, decoder, projection, and prior parameters.
+The baseline optimizer holds encoder, decoder, projection and prior parameters;
+the maintained path separates neural and coarse-centroid groups.
 However, the hard indices and prior codebook gathers are stop-gradient values.
 Thus prior CE trains the generator, not the encoder through code identities.
 The codec still changes through reconstruction and auxiliary terms, so the
-prior sees moving targets in joint training. A frozen-tokenizer prior phase
-is an important future controlled comparison, not a completed training result.
+prior sees moving targets in joint training. Frozen-codec prior training is implemented and was used in the text and
+finite-domain runs. Its checkpoint includes the frozen codec identity; joint
+training remains an available interface rather than the protocol for those runs.
 
 \section{Runtime Phases and Byte Routing}
 \subsection{Phase-dependent EMA eligibility}
-Let \(\phi\) be a scalar runtime integer. Level \(k\), using one-based indexing,
+Let \(\varphi\) be a scalar runtime integer. Level \(k\), using one-based indexing,
 is eligible for EMA if
 \begin{equation}
- e_k=\Ind[\phi=0\ \lor\ k>K-2]\,
+ e_k=\Ind[\varphi=0\ \lor\ k>K-2]\,
      \Ind\!\left[\sum_v c_{kv}>0\right].
 \end{equation}
 If \(e_k=0\), all three tensors \(E_k,C_k,S_k\) retain their old values.
@@ -401,7 +442,7 @@ For \(K\leq2\), all levels remain eligible. The final phase freezes coarse
 During joint-phase training, a Bernoulli selector with configured probability
 \(p_d\) chooses whether to sample a per-example prefix cutoff uniformly from
 \(\{1,\ldots,K\}\); otherwise all levels are retained. The mask enforces the
-cutoff without changing array sizes. For \(\phi\ne0\), the retained depth is
+cutoff without changing array sizes. For \(\varphi\ne0\), the retained depth is
 always \(K\). The scalar predicate changes values inside the executable rather
 than changing a static Python argument. If the finest level is dropped, the
 prior still needs the original learned-path source mask; it must not infer
@@ -409,11 +450,11 @@ that mask from the dropped level alone.
 
 \subsection{Fixed-shape fallback representation}
 \label{sec:fallback}
-Let \(b_{bt}\in\{0,\ldots,255\}\) be a byte ID supplied by the data producer
+Let \(b_{bj}\in\{0,\ldots,255\}\) be a byte ID supplied by the data producer
 and \(F\in\R^{256\times D}\) its embedding table. The decoder input is
 \begin{equation}
- \widetilde z_{bt}=m_{bt}\left[
-    f_{bt}F_{b_{bt}}+(1-f_{bt})z_{\mathrm{ST},bt}\right].
+ \widetilde z_{bj}=m_{bj}\left[
+    f_{bj}F_{b_{bj}}+(1-f_{bj})z_{\mathrm{ST},bj}\right].
 \end{equation}
 This selection occurs in the compiled graph. Fallback slots are excluded from
 the learned encoder inputs, quantizer assignments, and EMA statistics; they
@@ -429,15 +470,15 @@ and a policy for selecting unsuitable regions remain unimplemented.
 
 \section{Functional Execution and SPMD Placement}
 The train state is a pytree containing neural parameters \(\Theta\), optimizer
-state \(\Omega\), codebook state \((E,C,S)\), and a step counter. The transition
+state \(\Omega\), including maintained coarse buffers when enabled, codebook state \((E,C,S)\), and a step counter. The transition
 has the form
 \begin{equation}
- (\Theta',\Omega',E',C',S',t';\mathcal{D})
- =\operatorname{Step}(\Theta,\Omega,E,C,S,t;\mathcal B,\phi,\xi),
+ (\Theta',\Omega',E',C',S',a';\mathcal{D})
+ =\operatorname{Step}(\Theta,\Omega,E,C,S,a;\mathcal B,\varphi,\xi),
 \end{equation}
 where \(\xi\) is a random key and \(\mathcal D\) contains diagnostics.
 Targets and gradients are computed from the old state, the optimizer updates
-neural parameters, and EMA updates the explicit codebooks once. An all-padding
+neural parameters, and codebook maintenance updates the explicit codebooks once. An all-padding
 global batch preserves optimizer state, parameters, EMA state, and the step
 counter. It is a semantic skip; this branch does not guarantee that all
 otherwise-computed arithmetic is avoided by the compiled executable.
@@ -517,9 +558,12 @@ fixed feed-forward expansion, padded attention/MLP work is approximately
  O\!\left(KJB(L^2H+LH^2)+KBLHV\right).
 \end{equation}
 This is an operation-count model of the source layout, not a measurement of
-the compiler's memory schedule or realized device throughput. Implementing
-true per-level lengths could replace the repeated \(L\) terms with sums over
-\(n_k\), but would change the compilation organization.
+the compiler's memory schedule or realized device throughput. The implemented optional actual-length inference path instead uses a static
+Python level loop with the same parameters and attention work proportional to
+\(JB\sum_k(n_k^2H+n_kH^2)\). Sparse area-pooling/interpolation plans remove
+the dense resampling layout on this path; dense nearest-neighbor distances
+remain. Greedy outputs are checked against the padded reference. Different
+stochastic key-consumption layouts need not give identical sampled sequences.
 
 Two simple useful-position fractions are
 \begin{equation}
@@ -536,33 +580,14 @@ imply a corresponding wall-clock improvement over token-autoregressive models.
 
 \section{Software Validation}
 \label{sec:validation}
-The local validation environment was macOS 26.6.2 on arm64, Python 3.12.16,
-JAX/jaxlib 0.10.2, Flax 0.12.8, Optax 0.2.8~\citep{optax}, and NumPy 2.5.4. Computation used
-the CPU backend and float32 arithmetic. The full test suite was rerun for this
-manuscript and reported \textbf{11 passed}. Test duration is deliberately not
-used as an algorithmic benchmark.
-
-\begin{table}[t]
-\centering\small
-\caption{Observed software validation. Counts are pytest test functions;
-each function contains multiple assertions. Virtual devices are CPU devices,
-not TPU chips.}
-\label{tab:tests}
-\begin{tabularx}{\linewidth}{@{}lclY@{}}
-\toprule
-Test module & Count & Result & Main checked properties\\
-\midrule
-\code{test_rvq.py} & 4 & Pass & Nearest neighbors, residual sums, EMA equations,
-freezing, padding, gradients, and dropout phases\\
-\code{test_losses.py} & 3 & Pass & Empty masks, valid adjacent-token CE,
-entropy gradients, cosine loss, and exact-match denominators\\
-\code{test_model.py} & 3 & Pass & Label isolation, byte routing, decoder reuse,
-compiled optimizer updates, and all-padding state preservation\\
-\code{test_spmd.py} & 1 & Pass & Full training-state comparison on a virtual
-\(2\times2\) mesh; explicit manual reductions\\
-\bottomrule
-\end{tabularx}
-\end{table}
+The implementation's November 12 validation record reports \textbf{\TestCases{}
+passed}, with zero failures; manuscript revision did not change model code.
+The environment and evidence are detailed in the completed experiments section.
+Counts include parameterized pytest cases, not only Python test functions.
+The suite covers VQ/loss behavior, deterministic distinct-centroid initialization,
+dead-code replacement and hard usage, generation, benchmark implementations,
+coverage/dependence controls, canonical checkpoint hashes and exact continuation.
+A newly collected test inventory agrees with the recorded 44-case suite.
 
 \subsection{Distributed comparison protocol}
 A fresh interpreter exposes four virtual CPU devices using the setting
@@ -585,6 +610,8 @@ uses Adam with learning rate \(10^{-3}\) and \(\epsilon_{\mathrm{Adam}}=10^{-5}\
 to avoid amplifying roundoff in near-zero gradients. It does not assert
 bitwise equivalence between reduction orders.
 
+A second integrated virtual-device test enables coarse maintenance with
+\(V=2\), checking its complete state against the same global reference.
 Additional local-array \code{pmap} checks sum artificial EMA statistics and
 compare them against a direct global update. They also compare quantizer
 counts, sums, soft counts, and commitment numerators/denominators across the
@@ -601,7 +628,11 @@ The example completes with finite reported objectives. It is an execution
 check with a reused toy batch, not a corpus experiment, convergence study,
 or held-out generalization result.
 
-\section{Research Evaluation Plan}
+\section{Completed CPU Experiments}
+\label{sec:experiments}
+\input{shared_experiments.tex}
+
+\section{Future Work and Research Evaluation Plan}
 \label{sec:plan}
 The central hypothesis is that a hierarchy with explicitly controlled shapes
 and placement can offer useful generation quality at favorable measured
@@ -635,8 +666,8 @@ Record TPU generation, host count, mesh dimensions, runtime versions,
 precision, batch sizes, and all sequence shapes. Report compilation time
 separately from synchronized steady-state throughput and latency; include
 peak memory, collective costs, useful-token fractions, and checkpoint/input
-overheads. Compare the padded scan against per-level static executables and
-more efficient resampling/distance kernels. Sweep \code{dp}/\code{fsdp} meshes
+overheads. Carry the completed CPU comparison of padded versus actual-length/sparse
+execution to TPU, and investigate more efficient distance kernels. Sweep \code{dp}/\code{fsdp} meshes
 and compare float32 with appropriate mixed-precision alternatives.
 
 \paragraph{Matched end-to-end baselines.}
@@ -644,59 +675,60 @@ Compare against token-autoregressive Transformers, diffusion language models,
 and the original NCM implementation under matched datasets, model capacities,
 training budgets, and generation protocols. Report quality--cost curves rather
 than a single speed ratio. Use multiple independent seeds where feasible and
-report uncertainty and failures. No target threshold, including a requested
-99.5\% token exact-match rate, is an achieved result for this repository.
+report uncertainty and failures. Toy training reconstruction is not a held-out language threshold or a matched
+quality baseline. Prioritize a fixed real-corpus protocol before larger models.
 
-\section{Limitations and Research Integrity}
+\section{Discussion and Limitations}
 \label{sec:limitations}
-The current evidence supports a small tested reference implementation. It
-does not establish TPU execution, multi-host reliability, useful learned
-concepts, or competitive language modeling. CPU virtual devices exercise
-sharding semantics but cannot stand in for TPU interconnects or memory limits.
+The completed CPU milestones make the reference program runnable and resumable.
+The collision ceiling identified a representation bottleneck that decoder-only
+replay could not repair. Balanced coverage and maintained coarse codebooks
+addressed that failure on a tiny complete domain. Marginal entropy, conditional
+TC and output fidelity measure different properties: improving one cannot stand
+in for the others. Hard stability passed while reliable alignment still failed.
+The maintenance package has not been decomposed into causal component ablations.
 
-The text codec is deliberately small and local. The prior has no user-prompt
-cross-attention interface, learned length prediction, or stochastic sampling
-policy in the evaluated code path. Its default first-level predictions are
-unconditional on text content for fixed geometry. The joint interface also
-does not automatically provide the staged training used by the original NCM
-work. These are concrete boundaries for future extensions.
+The 26-byte fixture overfit, and the finite-domain studies share a 16-state
+support. Neither establishes useful pretrained transfer or competitive language
+modeling. Different follow-ups used different seed cohorts and samplers;
+within-protocol paired comparisons are valid, but row-to-row TV changes do not
+isolate the effect of one intervention. Compiler step estimates verify local
+arm parity, not total adaptation savings. The SCALE companion~\citep{scalecompanion}
+formalizes broader hypotheses without presenting them as completed experiments.
 
-The dense resampling and common-length attention layout may become expensive
-well before a useful language-model scale. There is no vocabulary-sharded
-codebook lookup, dead-code recovery, fault-tolerant checkpoint lifecycle, or
-corpus ingestion implementation. Byte routing is present, but the complete
-mixed-symbol codec and fallback selection policy remain external. No Rust
-performance or functionality is reported.
+No TPU, multi-host throughput or fault-injection recovery was evaluated.
+Virtual CPU devices test placement semantics, not accelerator interconnects.
+Atomic local checkpoints and exact resume are implemented, but a distributed
+fault-tolerant lifecycle remains future work. The generator has no prompt,
+learned-length or EOS interface. Complete mixed-symbol byte serialization,
+fallback selection, vocabulary-sharded lookup and Rust orchestration are open.
+Actual-length inference reduces the padded cost locally; large-vocabulary
+distance and dense attention costs still need investigation.
 
-This paper credits the underlying NCM method to its original authors and
-describes Fabian Balensiefer's project as an independent systems adaptation.
-No text-generation benchmark, performance advantage, or novel semantic
-capability is inferred from passing tests. The public repository citation and
-source hashes provide provenance for this manuscript. The project URL is a
-mutable development location; an archived release with a persistent identifier
-would further improve long-term reproducibility.
+The original NCM authors retain credit for the method; this is an independent
+systems adaptation. Sources, exact evidence inputs and synchronized manuscript
+builds accompany the PDFs. An archival DOI and evaluation on a fixed real corpus
+would improve reproducibility and scientific reach.
 
 \section{Conclusion}
-The repository makes a multiscale NCM-style computation explicit as a
-functional JAX/Flax program. Its core properties are mask-aware quantization,
-EMA state returned from training steps, earlier-level-only prior conditioning,
-runtime phase predicates, and declared distributed array placement. Eleven
-passing CPU tests provide evidence for these behaviors, including a virtual
-four-device state comparison. The next research step is a controlled training
-and TPU evaluation program that measures representation utility and execution
-cost while completing the surrounding data and byte-stream contracts.
+The system now includes deterministic data experiments, frozen-codec training,
+seeded generation, resumable state and measured CPU inference paths in addition
+to the original functional quantization and SPMD contracts. The recorded
+\TestCases{} tests support software behavior. On the finite A/B domain,
+\StabilityModels{} new-seed models passed the shared coarse-stability gate, but
+the reliable teacher-alignment gate failed. The next scientific stages are
+component ablations, held-out real-corpus quality/cost evaluation and actual TPU
+measurements, followed by external pretrained-transfer tests where justified.
 
 \appendix
 \section{Repository Map and Reproduction}
 \label{app:repro}
-The package version is 0.1.0. The companion
-\code{source_manifest.sha256} records SHA-256 hashes of the source, tests,
-example, package configuration, and repository README inspected for this
-paper. It identifies the implementation snapshot independently of the current
-head of the public repository:
-\begin{center}
-\url{https://github.com/fbalensiefer/Next-Concept-Modeling-for-TPU}
-\end{center}
+The implementation reference is revision \code{1d600d7}, package version 0.1.0.
+\path{paper/source_manifest.sha256} identifies the unchanged implementation files;
+\path{paper/validation.json} links the recorded suite to the current evidence.
+Shared notation, metrics, report-derived tables and bibliography metadata are
+included in both sources. \path{paper/README.md} documents builds and the
+cross-paper audit. Relative paths below are repository paths.
 
 \begin{table}[h]
 \centering\small
@@ -710,11 +742,15 @@ Path & Responsibility\\
 \code{src/ncm/grids.py} & Area-pooling and interpolation matrices; mask normalization\\
 \code{src/ncm/rvq.py} & Quantizer scan, sufficient statistics, explicit EMA\\
 \code{src/ncm/tokenizer.py} & Token codec, byte embedding selection, separate decoder API\\
-\code{src/ncm/generator.py} & Shared Transformer level scan and greedy generation\\
+\code{src/ncm/generator.py} & Shared Transformer scan and seeded generation\\
 \code{src/ncm/losses.py} & Normalized reconstruction, commitment, entropy, concept, and CE terms\\
 \code{src/ncm/training.py} & Joint model, complete training state, optimizer/EMA step\\
 \code{src/ncm/sharding.py} & Mesh, placement, process-local input helper, compiled contract\\
 \code{src/ncm/metrics.py} & Exact match, hard usage, and perplexity utilities\\
+\code{src/ncm/coarse.py} & Deterministic warmup, hard usage and centroid maintenance\\
+\code{src/ncm/experiment.py} & Byte experiments and atomic checkpoints\\
+\code{src/ncm/scale_experiment.py} & Paired finite-domain teacher studies\\
+\code{reports/} & Frozen protocols, metrics and benchmark evidence\\
 \code{tests/} & Unit, integration, and virtual multi-device checks\\
 \code{examples/train.py} & Three-step synthetic execution example\\
 \bottomrule
@@ -730,126 +766,33 @@ pytest -q
 python examples/train.py
 \end{lstlisting}
 The declared dependency ranges permit versions other than the tested stack;
-pin the versions listed in Section~\ref{sec:validation} for closer
+pin the versions listed in Section~\ref{sec:experiments} for closer
 reproduction. The multi-device pytest entry launches its own CPU subprocess.
-For manuscript compilation, this single file uses standard LaTeX packages
-and embeds the bibliography; no external figure or bibliography file is needed.
+Both manuscripts use standard LaTeX packages with shared local inputs and
+generated embedded bibliographies. No BibTeX run or external raster figure is
+needed; see \path{paper/README.md} for the two-document build and audit commands.
 
-\section{Global Training Transition}
+\section{Global Training Transition and Resume Contract}
 \begin{lstlisting}[language=Python]
+# Schematic: exact implementation is in training.py and coarse.py.
+# Warmup uses initial training batches before the saved initialized step 0.
 def step(state, batch, phase, key):
-    # Global arrays: no explicit data-axis psum here.
-    (loss, (metrics, rvq)), grads = value_and_grad(
-        objective, has_aux=True)(state.params)
-    updates, opt_state = optimizer.update(
-        grads, state.opt_state, state.params)
-    params = apply_updates(state.params, updates)
-    codebooks = ema_update(
-        state.codebooks, rvq.counts, rvq.sums,
-        config, phase=phase)  # statistics already global
-    candidate = TrainState(
-        params, opt_state, codebooks, state.step + 1)
-    return cond(any(batch.mask), candidate, state), metrics
+    loss, diagnostics, grads, stats = objective_and_grad(state, batch, key)
+    params, neural_state = update_neural(state, grads)
+    books, coarse_state = maintain_codebooks(state, stats, phase, key)
+    candidate = pack(params, neural_state, books, coarse_state, state.step + 1)
+    return select_global_nonempty(batch.mask, candidate, state), diagnostics
 \end{lstlisting}
-This schematic omits the objective closure and JAX call syntax details;
-\code{make_train_step} is the executable implementation. State is returned
-explicitly and can be supplied to the next compiled call. A scalable
-checkpointing layer must additionally retain configuration, random-key
-progression, and data-iterator position to reproduce an interrupted run.
+Checkpoint state retains configuration and data hashes, step-addressed batch
+selection, serialized random-key state, codebooks, optimizer state, warmup flags,
+usage/replacement counts and schedule progress. The initialized step-zero
+checkpoint is persisted, and resume does not rerun warmup. Frozen prior and
+decoder replay checkpoints retain their respective stage and source identities.
+Bit-exact same-backend replay and compatibility with a legacy 500-step
+checkpoint are part of the recorded verification; cross-platform bit identity
+is not asserted.
 
-\begingroup
-\raggedright
-\begin{thebibliography}{99}
-
-\bibitem[Kumbong et~al.(2026)]{kumbong2026ncm}
-Hermann Kumbong, Ishan S. Khare, Iddah Mlauzi, Andrew Woen, Charles Ding,
-E. Kelly Buchanan, Simran Arora, Azalia Mirhoseini, and Christopher R\'e.
-\newblock Next-Concept Modeling: Fast, Parallel Coarse-to-Fine Text Generation.
-\newblock \emph{arXiv preprint arXiv:2610.14162}, 2026.
-\newblock \url{https://arxiv.org/abs/2610.14162}.
-
-\bibitem[van~den Oord et~al.(2017)]{oord2017vqvae}
-Aaron van~den Oord, Oriol Vinyals, and Koray Kavukcuoglu.
-\newblock Neural Discrete Representation Learning.
-\newblock \emph{Advances in Neural Information Processing Systems}, 30, 2017.
-\newblock \url{https://arxiv.org/abs/1711.00937}.
-
-\bibitem[Zeghidour et~al.(2021)]{zeghidour2021soundstream}
-Neil Zeghidour, Alejandro Luebs, Ahmed Omran, Jan Skoglund, and Marco
-Tagliasacchi.
-\newblock SoundStream: An End-to-End Neural Audio Codec.
-\newblock \emph{arXiv preprint arXiv:2107.03312}, 2021.
-\newblock \url{https://arxiv.org/abs/2107.03312}.
-
-\bibitem[Vaswani et~al.(2017)]{vaswani2017attention}
-Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones,
-Aidan N. Gomez, \L{}ukasz Kaiser, and Illia Polosukhin.
-\newblock Attention Is All You Need.
-\newblock \emph{Advances in Neural Information Processing Systems}, 30, 2017.
-\newblock \url{https://arxiv.org/abs/1706.03762}.
-
-\bibitem[Lepikhin et~al.(2020)]{lepikhin2020gshard}
-Dmitry Lepikhin, HyoukJoong Lee, Yuanzhong Xu, Dehao Chen, Orhan Firat,
-Yanping Huang, Maxim Krikun, Noam Shazeer, and Zhifeng Chen.
-\newblock GShard: Scaling Giant Models with Conditional Computation and
-Automatic Sharding.
-\newblock \emph{arXiv preprint arXiv:2006.16668}, 2020.
-\newblock \url{https://arxiv.org/abs/2006.16668}.
-
-\bibitem[Bradbury et~al.(2018)]{jax}
-James Bradbury, Roy Frostig, Peter Hawkins, Matthew James Johnson,
-Yash Katariya, Chris Leary, Dougal Maclaurin, George Necula, Adam Paszke,
-Jake VanderPlas, Skye Wanderman-Milne, and Qiao Zhang.
-\newblock JAX: Composable transformations of Python+NumPy programs.
-\newblock Software, 2018; version 0.10.2 used in this work.
-\newblock \url{https://github.com/jax-ml/jax}.
-
-\bibitem[Heek et~al.(2020)]{flax}
-Jonathan Heek, Anselm Levskaya, Avital Oliver, Marvin Ritter,
-Bertrand Rondepierre, Andreas Steiner, and Marc van~Zee.
-\newblock Flax: A neural network library and ecosystem for JAX.
-\newblock Software, 2020; version 0.12.8, Linen API, used in this work.
-\newblock \url{https://github.com/google/flax}.
-
-\bibitem[OpenXLA Project(2026)]{xla}
-OpenXLA Project.
-\newblock XLA documentation.
-\newblock \url{https://openxla.org/xla}. Accessed November 11, 2026.
-
-\bibitem[Optax Developers(2026)]{optax}
-Optax Developers.
-\newblock Optax: A gradient processing and optimization library for JAX.
-\newblock Software, version 0.2.8 used in this work.
-\newblock \url{https://github.com/google-deepmind/optax}.
-Accessed November 11, 2026.
-
-\bibitem[JAX Authors(2026a)]{jaxsharding}
-JAX Authors.
-\newblock \code{jax.sharding} module: Mesh, NamedSharding, and PartitionSpec.
-\newblock \url{https://docs.jax.dev/en/latest/jax.sharding.html}.
-Accessed November 11, 2026.
-
-\bibitem[JAX Authors(2026b)]{jaxmanual}
-JAX Authors.
-\newblock Manual parallelism with \code{shard_map}.
-\newblock \url{https://docs.jax.dev/en/latest/201/shard-map.html}.
-Accessed November 11, 2026.
-
-\bibitem[Flax Authors(2026)]{flaxscan}
-Flax Authors.
-\newblock Linen transformations: \code{flax.linen.scan}.
-\newblock \url{https://flax-linen.readthedocs.io/en/latest/api_reference/flax.linen/transformations.html}.
-Accessed November 11, 2026.
-
-\bibitem[Balensiefer(2026)]{localrepo}
-Fabian Balensiefer.
-\newblock Next-Concept Modeling for TPU.
-\newblock Public software repository, package \code{tpu-ncm}, version 0.1.0,
-snapshot of November 11, 2026.
-\newblock \url{https://github.com/fbalensiefer/Next-Concept-Modeling-for-TPU}.
-\newblock Source, tests, and example accompany this manuscript; snapshot hashes
-are recorded in \code{paper/source_manifest.sha256}. Accessed November 11, 2026.
-
-\end{thebibliography}
+\begingroup\raggedright
+\input{generated/bibliography_systems.tex}
 \endgroup
 \end{document}
