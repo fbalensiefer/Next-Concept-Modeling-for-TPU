@@ -1,0 +1,66 @@
+{
+  "data_hashes": {
+    "runs/real-text-pilot/train.jsonl": "9b9b640d78534c383583b720752ed3cde1599e49f8d6c5f1ebe17c18b7481093",
+    "runs/real-text-pilot/validation.jsonl": "c6c72478d8e39d2b71fdfe923d43dd08da32d4dc59378f47ce221d63a8b811e6"
+  },
+  "codec_hashes": {
+    "runs/reconstruction-capacity-v1/codes-64-seed-0": "4ccfa263b6ee0510deb74d6e3ee592be7b8717ef9f3706d207b61bc97afcbb9f",
+    "runs/reconstruction-capacity-v1/codes-64-seed-1": "d875bd00deb2174b2c507ecf96cc0850fce8c72244f67ccd5c6acc97a32943c7",
+    "runs/reconstruction-capacity-v1/codes-64-seed-2": "dd807be521ef5f0780c37923f95b1e3033a33393c4678de7f7dd51293498196f"
+  },
+  "sources": {
+    "src/ncm/prior_experiment.py": "4906f396d8f273102dd75d6b689f322ddcfc30ff33a023f3dffa43a24276292f",
+    "src/ncm/metrics.py": "be204442a808f33322cf4aeae50905127b53f715b19c1d79e7f1e4edefd855ed",
+    "src/ncm/sharding.py": "085df4a615b7e7985c4dc3be91cb1529260eced9d713a87ea81d68ff40419674",
+    "src/ncm/autoregressive.py": "c7e2d32886808941de90a836345a1a6031c3cd61d9a2cc990019ad19aa71eb27",
+    "src/ncm/grids.py": "45c4da3d4224335ff0b50f8bf0fcfbd190daa7c949dd5dc690189f4121749d30",
+    "src/ncm/config.py": "17b585e6ba81c55a61717c51950c37f970677400fe0ad0107e444ab45503a063",
+    "src/ncm/generation.py": "1c7c739a34be3c84768afc49b6a5863d09091af9f55b8bdea0cf2a53a796c44a",
+    "src/ncm/benchmark.py": "84ed1ed5c6818584b5cceaa4830b838931a25239fe140f13443f0ad70399aae7",
+    "src/ncm/domain_validation.py": "19abadaf9edb9163ccaa4e5c133a755dd4291c74ff199d6fd2e37ae6e70cf05e",
+    "src/ncm/maintenance_experiment.py": "4750668671099b55e2789c63efb6c28f9ce3b7ae37b1e0bb6af8fcb8ed1017b9",
+    "src/ncm/__init__.py": "63bcdb4720f957c8a3e14aa6e0f901e0dbfd616eb18273d2ab91ca4550910453",
+    "src/ncm/coverage.py": "bd75ec017eeeba62d0419fda3aab92bcf3d76010de90043877c151de6b8ff422",
+    "src/ncm/coarse.py": "517a5b741741893a1d3dad3c1c488c2253228f6b0b097532e2a7c9be60b5e1dc",
+    "src/ncm/experiment.py": "0ebc40f671118650501b9e398633a373e9d132538c35581c7135e2bd1ee6e19c",
+    "src/ncm/tokenizer.py": "ced3cbc58a6a6b2ff8a33f6ed96152302e8732f6a7edba246b909df2a8c67110",
+    "src/ncm/generator.py": "50bc977d8522578bbaba4e3a27c4627459c21d72032b4bd952881ef0feb911e8",
+    "src/ncm/dependency_validation.py": "63fd0ca5ab1227fa42c449560a766ed160d67deb84a6572b18e5cc3b6f92d1de",
+    "src/ncm/sparse_grids.py": "a20fd5247df0ef52895e3cb6cc6e6e3f0e753a4790fef22c689acfb10bc5af8c",
+    "src/ncm/dependence.py": "c7c9df1f405e2e56854f1679167f7b7a67d59f9b00bcc4ec75619f2af451e597",
+    "src/ncm/sample.py": "ab960dd114d5cf53930307f2a0c32c522487d6d92698e88f072f8746e0134188",
+    "src/ncm/scale_experiment.py": "4113314420a122e2118db03488bc1f42845405c8466dda6ef5bcc8aee779411b",
+    "src/ncm/fast_generation.py": "cd5d925c0c4d971a4ece9b00f67d3e14aa842e02bc0d17670ed788b5d6e6c378",
+    "src/ncm/losses.py": "a52b17f683b3d5a4e6eec704b5f055ecd57edcff1474ec4732035886c31f6771",
+    "src/ncm/representations.py": "ef3c6241deae00a4a2189d8fca172645a9b57d4eb560b19caff384989bc00c16",
+    "src/ncm/text_data.py": "e4eb728833319b93b9b52893e8726a3735d92a6cb9824937aaa9f23a4d19d7b8",
+    "src/ncm/table_prior.py": "2309573faeee7f203d74ae97d3509d79f605a15b2979c07e5c762760d4eff84b",
+    "src/ncm/training.py": "1d43febd96b2a1703a2670f609a9a7bde6ed7c4f01bd16c8a6a44c15dad3bcfd",
+    "src/ncm/rvq.py": "a66c08bc993eda484f3a7e13fdc82be5b967064c3945df481d4ba85df8328883",
+    "examples/text_dependency_priors.py": "8af711f82c865ba7afe35e815a7fbea7b01f3f9c24abe60c65493d57ffa690ff"
+  },
+  "alpha": 1.0,
+  "sample_seeds": [
+    0,
+    1,
+    2
+  ],
+  "samples_per_seed": 256,
+  "timing_batch": 16,
+  "timed_repeats": 7,
+  "length": 128,
+  "devices": [
+    "cpu:0"
+  ],
+  "versions": {
+    "jax": "0.10.2",
+    "jaxlib": "0.10.2",
+    "flax": "0.12.8",
+    "optax": "0.2.8",
+    "numpy": "2.5.4"
+  },
+  "factorization": "Stationary marginal or first-order within each sequence; RVQ levels independent",
+  "nll_rule": "Compare iid versus Markov only within the same representation and codec",
+  "selection": "All 64-entry codecs retained; no quality or timing selection; no test evaluation",
+  "limitations": "One training and validation book; stationary table controls; no quality-matched neural AR or TPU comparison"
+}

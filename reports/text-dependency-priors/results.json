@@ -1,0 +1,616 @@
+[
+  {
+    "representation": "raw_bytes",
+    "prior": "independent",
+    "vocabulary": 256,
+    "sequence_lengths": [
+      128
+    ],
+    "validation_nll_per_code": 3.267525621260789,
+    "validation_nll_per_sequence": 418.243279521381,
+    "level_nll": [
+      3.267525621260789
+    ],
+    "validation_reconstruction_byte_accuracy": 1.0,
+    "encode_wall_seconds": 0.0,
+    "fit_wall_seconds": 0.0030153749976307154,
+    "warmup_seconds": 0.00014595899847336113,
+    "generation_seconds_batch16": [
+      9.637497714720666e-05,
+      9.170800331048667e-05,
+      8.91250092536211e-05,
+      8.749999688006938e-05,
+      9.195800521411002e-05,
+      9.087499347515404e-05,
+      8.979201084002852e-05
+    ],
+    "numeric_prior_payload_bytes": 4096,
+    "samples": [
+      {
+        "seed": 0,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.0,
+          "byte_bigram_tv_to_heldout": 0.494238632947707,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.0601316437007874
+        }
+      },
+      {
+        "seed": 1,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.0,
+          "byte_bigram_tv_to_heldout": 0.49795126110475535,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.06114665354330709
+        }
+      },
+      {
+        "seed": 2,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.0,
+          "byte_bigram_tv_to_heldout": 0.4993919106745738,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.06046998031496063
+        }
+      }
+    ]
+  },
+  {
+    "representation": "raw_bytes",
+    "prior": "markov",
+    "vocabulary": 256,
+    "sequence_lengths": [
+      128
+    ],
+    "validation_nll_per_code": 2.407543714718689,
+    "validation_nll_per_sequence": 308.1655954839922,
+    "level_nll": [
+      2.407543714718689
+    ],
+    "validation_reconstruction_byte_accuracy": 1.0,
+    "encode_wall_seconds": 0.0,
+    "fit_wall_seconds": 0.1012684160086792,
+    "warmup_seconds": 0.003523999999742955,
+    "generation_seconds_batch16": [
+      0.003395084000658244,
+      0.0034273749915882945,
+      0.003325750003568828,
+      0.003295374976005405,
+      0.0032829580013640225,
+      0.0033472090144641697,
+      0.003401416994165629
+    ],
+    "numeric_prior_payload_bytes": 23216,
+    "samples": [
+      {
+        "seed": 0,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.8828125,
+          "byte_bigram_tv_to_heldout": 0.09051942000636226,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.02642101377952756
+        }
+      },
+      {
+        "seed": 1,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.8984375,
+          "byte_bigram_tv_to_heldout": 0.0873719706344157,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.027159202755905512
+        }
+      },
+      {
+        "seed": 2,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.8984375,
+          "byte_bigram_tv_to_heldout": 0.08613987723481377,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.02808193897637795
+        }
+      }
+    ]
+  },
+  {
+    "representation": "fixed_pairs",
+    "prior": "independent",
+    "vocabulary": 65536,
+    "sequence_lengths": [
+      64
+    ],
+    "validation_nll_per_code": 5.709087406436432,
+    "validation_nll_per_sequence": 365.38159401193167,
+    "level_nll": [
+      5.709087406436432
+    ],
+    "validation_reconstruction_byte_accuracy": 1.0,
+    "encode_wall_seconds": 0.0,
+    "fit_wall_seconds": 0.0027977910067420453,
+    "warmup_seconds": 0.00013041700003668666,
+    "generation_seconds_batch16": [
+      9.554100688546896e-05,
+      9.049999061971903e-05,
+      0.00010125001426786184,
+      8.862497634254396e-05,
+      0.00010529099381528795,
+      8.862500544637442e-05,
+      8.804199751466513e-05
+    ],
+    "numeric_prior_payload_bytes": 1048576,
+    "samples": [
+      {
+        "seed": 0,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.00390625,
+          "byte_bigram_tv_to_heldout": 0.260701346105018,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.04669045275590551
+        }
+      },
+      {
+        "seed": 1,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.0,
+          "byte_bigram_tv_to_heldout": 0.26082834488801854,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.04515255905511811
+        }
+      },
+      {
+        "seed": 2,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.01171875,
+          "byte_bigram_tv_to_heldout": 0.2549483240355936,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.04422982283464567
+        }
+      }
+    ]
+  },
+  {
+    "representation": "fixed_pairs",
+    "prior": "markov",
+    "vocabulary": 65536,
+    "sequence_lengths": [
+      64
+    ],
+    "validation_nll_per_code": 4.107125153973119,
+    "validation_nll_per_sequence": 262.8560098542796,
+    "level_nll": [
+      4.107125153973119
+    ],
+    "validation_reconstruction_byte_accuracy": 1.0,
+    "encode_wall_seconds": 0.0,
+    "fit_wall_seconds": 0.08220833400264382,
+    "warmup_seconds": 0.0021567909861914814,
+    "generation_seconds_batch16": [
+      0.0019918750040233135,
+      0.002149625011952594,
+      0.001983666996238753,
+      0.0019117079791612923,
+      0.001974042010260746,
+      0.0019249589822720736,
+      0.001956332998815924
+    ],
+    "numeric_prior_payload_bytes": 1276944,
+    "samples": [
+      {
+        "seed": 0,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.87109375,
+          "byte_bigram_tv_to_heldout": 0.08687254849027859,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.026390255905511813
+        }
+      },
+      {
+        "seed": 1,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.85546875,
+          "byte_bigram_tv_to_heldout": 0.08635908123836264,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.029312253937007874
+        }
+      },
+      {
+        "seed": 2,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.84375,
+          "byte_bigram_tv_to_heldout": 0.0948570554595705,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.025590551181102362
+        }
+      }
+    ]
+  },
+  {
+    "representation": "rvq_seed_0",
+    "prior": "independent",
+    "vocabulary": 64,
+    "sequence_lengths": [
+      32,
+      64,
+      128
+    ],
+    "validation_nll_per_code": 4.022921823678277,
+    "validation_nll_per_sequence": 901.1344885039341,
+    "level_nll": [
+      3.6386497949735115,
+      4.109032578636836,
+      4.075934453375189
+    ],
+    "validation_reconstruction_byte_accuracy": 0.9933110174203114,
+    "encode_wall_seconds": 0.7470527080004103,
+    "fit_wall_seconds": 0.008243042015237734,
+    "warmup_seconds": 0.0012940839806105942,
+    "generation_seconds_batch16": [
+      0.0015530419768765569,
+      0.001425750000635162,
+      0.0011908340093214065,
+      0.0011865829874295741,
+      0.0013851250114385039,
+      0.001310332998400554,
+      0.0013780829904135317
+    ],
+    "numeric_prior_payload_bytes": 3072,
+    "samples": [
+      {
+        "seed": 0,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.1640625,
+          "byte_bigram_tv_to_heldout": 0.5163337307308418,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.03810900590551181
+        }
+      },
+      {
+        "seed": 1,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.16015625,
+          "byte_bigram_tv_to_heldout": 0.5117493026695189,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.03820127952755906
+        }
+      },
+      {
+        "seed": 2,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.12890625,
+          "byte_bigram_tv_to_heldout": 0.5114877125371374,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.038662647637795276
+        }
+      }
+    ]
+  },
+  {
+    "representation": "rvq_seed_0",
+    "prior": "markov",
+    "vocabulary": 64,
+    "sequence_lengths": [
+      32,
+      64,
+      128
+    ],
+    "validation_nll_per_code": 3.5950003139210955,
+    "validation_nll_per_sequence": 805.2800703183254,
+    "level_nll": [
+      3.584867045324374,
+      3.91795167904026,
+      3.4360579485106943
+    ],
+    "validation_reconstruction_byte_accuracy": 0.9933110174203114,
+    "encode_wall_seconds": 0.7470527080004103,
+    "fit_wall_seconds": 0.1808458749728743,
+    "warmup_seconds": 0.0073929580103140324,
+    "generation_seconds_batch16": [
+      0.007085541990818456,
+      0.007105541997589171,
+      0.007290833978913724,
+      0.007059666997520253,
+      0.007083792006596923,
+      0.0069966670125722885,
+      0.007349999999860302
+    ],
+    "numeric_prior_payload_bytes": 156896,
+    "samples": [
+      {
+        "seed": 0,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.1640625,
+          "byte_bigram_tv_to_heldout": 0.4074033404738418,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.019592765748031496
+        }
+      },
+      {
+        "seed": 1,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.15234375,
+          "byte_bigram_tv_to_heldout": 0.4074547328000327,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.019008366141732284
+        }
+      },
+      {
+        "seed": 2,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.171875,
+          "byte_bigram_tv_to_heldout": 0.4098858360742574,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.02026943897637795
+        }
+      }
+    ]
+  },
+  {
+    "representation": "rvq_seed_1",
+    "prior": "independent",
+    "vocabulary": 64,
+    "sequence_lengths": [
+      32,
+      64,
+      128
+    ],
+    "validation_nll_per_code": 3.985902634444701,
+    "validation_nll_per_sequence": 892.842190115613,
+    "level_nll": [
+      3.3492611467491007,
+      4.107442560943361,
+      4.084293043119271
+    ],
+    "validation_reconstruction_byte_accuracy": 0.9937453669384729,
+    "encode_wall_seconds": 0.6944499159872066,
+    "fit_wall_seconds": 0.008028042007936165,
+    "warmup_seconds": 0.0015148329839576036,
+    "generation_seconds_batch16": [
+      0.0012883330055046827,
+      0.0015180839982349426,
+      0.001566583989188075,
+      0.0015254580066539347,
+      0.0012082909815944731,
+      0.0011512499768286943,
+      0.001167667011031881
+    ],
+    "numeric_prior_payload_bytes": 3072,
+    "samples": [
+      {
+        "seed": 0,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.09765625,
+          "byte_bigram_tv_to_heldout": 0.52314214232765,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.04299950787401575
+        }
+      },
+      {
+        "seed": 1,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.09375,
+          "byte_bigram_tv_to_heldout": 0.5268426634193891,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.04164616141732284
+        }
+      },
+      {
+        "seed": 2,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.1015625,
+          "byte_bigram_tv_to_heldout": 0.5254572822607005,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.04247662401574803
+        }
+      }
+    ]
+  },
+  {
+    "representation": "rvq_seed_1",
+    "prior": "markov",
+    "vocabulary": 64,
+    "sequence_lengths": [
+      32,
+      64,
+      128
+    ],
+    "validation_nll_per_code": 3.5397953938769526,
+    "validation_nll_per_sequence": 792.9141682284373,
+    "level_nll": [
+      3.3108527325684434,
+      3.9042325744055395,
+      3.414812468939786
+    ],
+    "validation_reconstruction_byte_accuracy": 0.9937453669384729,
+    "encode_wall_seconds": 0.6944499159872066,
+    "fit_wall_seconds": 0.1831631249806378,
+    "warmup_seconds": 0.007229584007291123,
+    "generation_seconds_batch16": [
+      0.007427375006955117,
+      0.007046250015264377,
+      0.007060459000058472,
+      0.006935292010894045,
+      0.0069919579837005585,
+      0.007046415994409472,
+      0.007192999997641891
+    ],
+    "numeric_prior_payload_bytes": 141088,
+    "samples": [
+      {
+        "seed": 0,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.02734375,
+          "byte_bigram_tv_to_heldout": 0.4225739493164957,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.02186884842519685
+        }
+      },
+      {
+        "seed": 1,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.05859375,
+          "byte_bigram_tv_to_heldout": 0.4284279547988302,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.023160679133858268
+        }
+      },
+      {
+        "seed": 2,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.02734375,
+          "byte_bigram_tv_to_heldout": 0.4202596302014323,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.021284448818897638
+        }
+      }
+    ]
+  },
+  {
+    "representation": "rvq_seed_2",
+    "prior": "independent",
+    "vocabulary": 64,
+    "sequence_lengths": [
+      32,
+      64,
+      128
+    ],
+    "validation_nll_per_code": 4.0360852477472315,
+    "validation_nll_per_sequence": 904.0830954953799,
+    "level_nll": [
+      3.6968603939710354,
+      4.109344043766677,
+      4.0842620631815585
+    ],
+    "validation_reconstruction_byte_accuracy": 0.9917878984432913,
+    "encode_wall_seconds": 0.7028707499848679,
+    "fit_wall_seconds": 0.0081240409926977,
+    "warmup_seconds": 0.001289666019147262,
+    "generation_seconds_batch16": [
+      0.0014339170011226088,
+      0.0014655410195700824,
+      0.001453999982913956,
+      0.0012542920012492687,
+      0.0013974579924251884,
+      0.0013547920098062605,
+      0.001236457988852635
+    ],
+    "numeric_prior_payload_bytes": 3072,
+    "samples": [
+      {
+        "seed": 0,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.09375,
+          "byte_bigram_tv_to_heldout": 0.5326614421297783,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.03740157480314961
+        }
+      },
+      {
+        "seed": 1,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.05859375,
+          "byte_bigram_tv_to_heldout": 0.5277602011259435,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.034602608267716536
+        }
+      },
+      {
+        "seed": 2,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.0625,
+          "byte_bigram_tv_to_heldout": 0.5350020730214274,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.03564837598425197
+        }
+      }
+    ]
+  },
+  {
+    "representation": "rvq_seed_2",
+    "prior": "markov",
+    "vocabulary": 64,
+    "sequence_lengths": [
+      32,
+      64,
+      128
+    ],
+    "validation_nll_per_code": 3.6181295517789445,
+    "validation_nll_per_sequence": 810.4610195984835,
+    "level_nll": [
+      3.6616543860868536,
+      3.884508170607573,
+      3.4740590337876527
+    ],
+    "validation_reconstruction_byte_accuracy": 0.9917878984432913,
+    "encode_wall_seconds": 0.7028707499848679,
+    "fit_wall_seconds": 0.18881479199626483,
+    "warmup_seconds": 0.007550709007773548,
+    "generation_seconds_batch16": [
+      0.007149542012484744,
+      0.007037832983769476,
+      0.007231833005789667,
+      0.007328375009819865,
+      0.007566541986307129,
+      0.007175250008003786,
+      0.007163834001403302
+    ],
+    "numeric_prior_payload_bytes": 157072,
+    "samples": [
+      {
+        "seed": 0,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.0234375,
+          "byte_bigram_tv_to_heldout": 0.4453019661691658,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.01660925196850394
+        }
+      },
+      {
+        "seed": 1,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.0703125,
+          "byte_bigram_tv_to_heldout": 0.4518101635872008,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.0187623031496063
+        }
+      },
+      {
+        "seed": 2,
+        "diagnostics": {
+          "distinct_fraction": 1.0,
+          "valid_utf8_fraction": 0.0625,
+          "byte_bigram_tv_to_heldout": 0.4446227620853593,
+          "exact_training_window_match_fraction": 0.0,
+          "adjacent_equal_byte_fraction": 0.019346702755905512
+        }
+      }
+    ]
+  }
+]

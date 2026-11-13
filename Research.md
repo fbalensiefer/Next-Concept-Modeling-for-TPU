@@ -1,6 +1,6 @@
 # Research
 
-This project explores hierarchical discrete representations for parallel text generation and representation transfer between generative architectures. Both papers are by Fabian Balensiefer.
+This project asks whether a learned hierarchy can accelerate text generation while preserving information and modeling the dependencies that matter. Representation transfer is a later, conditional hypothesis. Both papers are by Fabian Balensiefer.
 
 ## NCM systems paper
 
@@ -26,4 +26,4 @@ The original coarse-codebook stability result holds within its tested domain. Su
 
 [Exact invertible innovation controls](https://github.com/fbalensiefer/Next-Concept-Modeling-for-TPU/blob/main/docs/invertible-baselines.md) show that Markov and parity benchmarks admit independent coordinates with inexpensive exact inverses. A [causal alignment-target diagnosis](https://github.com/fbalensiefer/Next-Concept-Modeling-for-TPU/blob/main/reports/alignment-diagnosis/report.md) identifies information absent from the current feature target. These are mechanism studies and classical mathematical controls, not evidence of natural-language quality, universal transfer or TPU speedup.
 
-The priority is information preservation, uncertainty-aware fidelity checks and dependency structure. Production defaults remain unchanged. Both papers share the updated evidence; they are not independent replications.
+The priority is a modest real-text reconstruction study, raw/fixed-block versus learned representations, minimally structured priors, and an accompanying small TPU feasibility check. The [experimental contract](docs/experimental-contract.md) defines the decision gates and remaining prerequisites. Exact invertibility remains a control rather than a universal requirement. Production defaults remain unchanged. Both papers share the updated evidence; they are not independent replications.

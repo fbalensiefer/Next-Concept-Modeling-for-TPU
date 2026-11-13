@@ -36,8 +36,20 @@ def run(config, output, resume=False):
     output = Path(output)
     output.mkdir(parents=True, exist_ok=True)
     cfg = dict(config)
-    train = dataset(cfg['train_file'], cfg['lengths'][-1])
-    valid = dataset(cfg['validation_file'], cfg['lengths'][-1])
+    from .text_data import document_dataset, validate_splits, reconstruction_metrics
+    metadata = {}
+    if cfg.get('data_format', 'text') == 'documents_jsonl':
+        paths = [cfg['train_file'], cfg['validation_file']]
+        if cfg.get('test_file'):
+            paths.append(cfg['test_file'])
+        validate_splits(paths)
+        train, metadata['train'] = document_dataset(paths[0], cfg['lengths'][-1])
+        valid, metadata['validation'] = document_dataset(paths[1], cfg['lengths'][-1])
+    elif cfg.get('data_format', 'text') == 'text':
+        train = dataset(cfg['train_file'], cfg['lengths'][-1])
+        valid = dataset(cfg['validation_file'], cfg['lengths'][-1])
+    else:
+        raise ValueError('Unknown data_format')
     if train[2] == valid[2]:
         raise ValueError('Training and validation files must differ')
     identity = dict(cfg, train_sha256=train[2], validation_sha256=valid[2])
@@ -74,18 +86,24 @@ def run(config, output, resume=False):
             variables, batch.tokens, batch.mask, batch.fallback_bytes,
             batch.fallback_mask, state.codebooks)
         from .losses import cross_entropy
-        hits = ((result.logits.argmax(-1) == batch.tokens) & batch.mask).sum()
-        return cross_entropy(result.logits, batch.tokens, batch.mask), hits, batch.mask.sum()
+        return cross_entropy(result.logits, batch.tokens, batch.mask), result.logits.argmax(-1)
 
-    def report(data):
-        loss = hits = count = 0.
+    def report(data, split):
+        loss = count = 0.
+        predictions = []
         for i in range(0, len(data[0]), cfg['batch_size']):
             b = batch_at(data, np.arange(i, min(i + cfg['batch_size'], len(data[0]))))
-            ce, h, n = map(float, evaluate(state, b))
-            loss += ce * n
-            hits += h
+            ce, predicted = evaluate(state, b)
+            n = int(b.mask.sum())
+            loss += float(ce) * n
             count += n
-        return {'byte_cross_entropy': loss / count, 'byte_accuracy': hits / count}
+            predictions.append(np.asarray(predicted))
+        result = reconstruction_metrics(data[0], np.concatenate(predictions), data[1],
+                                        metadata.get(split, {}).get('document_ids'))
+        result['byte_cross_entropy'] = loss / count
+        if split in metadata:
+            result['dropped_tail_bytes'] = metadata[split]['dropped_tail_bytes']
+        return result
 
     for index in range(int(state.step), cfg['steps']):
         # Step-addressed randomness also reproduces batch order after resume.
@@ -97,7 +115,7 @@ def run(config, output, resume=False):
             temporary = output / 'checkpoint.tmp'
             temporary.write_bytes(serialization.to_bytes(state))
             temporary.replace(checkpoint)
-            record = {'step': int(state.step), 'train': report(train), 'validation': report(valid)}
+            record = {'step': int(state.step), 'train': report(train, 'train'), 'validation': report(valid, 'validation')}
             with (output / 'metrics.jsonl').open('a') as stream:
                 stream.write(json.dumps(record) + '\n')
             print(json.dumps(record), flush=True)

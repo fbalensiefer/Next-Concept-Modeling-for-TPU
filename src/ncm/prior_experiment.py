@@ -15,6 +15,7 @@ import optax
 from . import LossConfig, NCM, RVQConfig, TransformerConfig, initialize
 from .experiment import batch_at, dataset
 from .generation import PriorState, bytes_to_text, evaluate_prior, generate, make_prior_step
+from .text_data import document_dataset, validate_splits
 
 
 def load_codec(directory):
@@ -33,8 +34,22 @@ def load_codec(directory):
 def run(config, output, resume=False):
     cfg = dict(config)
     model, codec, source_cfg, source_hash = load_codec(cfg['codec_run'])
-    train = dataset(cfg.get('train_file', source_cfg['train_file']), model.rvq.max_length)
-    valid = dataset(cfg.get('validation_file', source_cfg['validation_file']), model.rvq.max_length)
+    train_path = cfg.get('train_file', source_cfg['train_file'])
+    valid_path = cfg.get('validation_file', source_cfg['validation_file'])
+    data_format = cfg.get('data_format', source_cfg.get('data_format', 'text'))
+    if data_format == 'documents_jsonl':
+        paths = [train_path, valid_path]
+        test_path = cfg.get('test_file', source_cfg.get('test_file'))
+        if test_path:
+            paths.append(test_path)
+        validate_splits(paths)
+        train, _ = document_dataset(train_path, model.rvq.max_length)
+        valid, _ = document_dataset(valid_path, model.rvq.max_length)
+    elif data_format == 'text':
+        train = dataset(train_path, model.rvq.max_length)
+        valid = dataset(valid_path, model.rvq.max_length)
+    else:
+        raise ValueError('Unknown data_format')
     if train[2] == valid[2]:
         raise ValueError('Training and validation files must differ')
     identity = dict(cfg, codec_sha256=source_hash, train_sha256=train[2], validation_sha256=valid[2])
