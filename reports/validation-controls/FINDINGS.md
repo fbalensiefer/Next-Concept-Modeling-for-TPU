@@ -11,3 +11,11 @@ single-level case and preserves the multi-level computation. The existing
 cross-bucket regression test is retained. This fix is committed separately.
 
 Further study outcomes will be appended without deleting failures.
+
+## Smoke attempt 1: report serialization failure
+
+git_commit: 2c9fd78. Seed 200 completed all smoke timing cases, but the final
+JSON writer rejected a NumPy boolean teacher-warning statistic. This is an
+infrastructure failure, not an altered test threshold or a new seed. The writer
+now converts NumPy scalars/arrays to JSON values, with a regression test. The
+same seed and protocol are rerun after the fix; the failed attempt remains here.

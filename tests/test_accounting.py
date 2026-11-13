@@ -35,3 +35,13 @@ def test_flop_estimates_include_prerequisites_and_rounds():
     round=speculative_round(100,200,3.5)
     assert round['analytic_flops']==1050
     assert round['analytic_label']=='analytic estimate'
+
+
+def test_report_serializes_numpy_statistics(tmp_path):
+    import json
+    from ncm.validation_io import write_json
+    path=tmp_path/'report.json'
+    write_json(path,dict(warning=np.bool_(True),count=np.int64(3),values=np.array([.1,.2])))
+    report=json.loads(path.read_text())
+    assert report['warning'] is True and report['count']==3
+    assert report['values']==[.1,.2] and report['git_commit']

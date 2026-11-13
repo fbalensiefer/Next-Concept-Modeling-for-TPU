@@ -16,7 +16,11 @@ def identity():
 
 def write_json(path, data):
     path=Path(path); path.parent.mkdir(parents=True,exist_ok=True)
-    path.write_text(json.dumps(dict(**identity(), **data),indent=2,allow_nan=False)+'\n')
+    def native(value):
+        if isinstance(value,np.generic):return value.item()
+        if isinstance(value,np.ndarray):return value.tolist()
+        raise TypeError(f'unsupported report value: {type(value).__name__}')
+    path.write_text(json.dumps(dict(**identity(), **data),indent=2,allow_nan=False,default=native)+'\n')
 
 
 def write_csv(path, rows):
