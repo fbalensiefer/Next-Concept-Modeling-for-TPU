@@ -38,3 +38,6 @@ See [Research.md](Research.md) for brief introductions and [paper sources](paper
 [Source](src/ncm/) · [Examples](examples/) · [Documentation](docs/) · [Experiment reports](reports/README.md)
 
 [Citation](CITATION.cff) · [MIT license](LICENSE)
+
+Hybrid coarse-AR generation, exact teacher verification, and the real-text experiment
+are described in [the decisive benchmark guide](docs/decisive-benchmark.md).

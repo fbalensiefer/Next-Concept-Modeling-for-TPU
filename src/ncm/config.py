@@ -105,3 +105,15 @@ def experiment_rvq_config(config):
     """Shared loader for flat experiment dimensions and optional coarse settings."""
     return RVQConfig(tuple(config['lengths']), config['codebook_size'], config['dim'],
                      coarse=CoarseConfig(**config.get('coarse', {})))
+
+
+@dataclass(frozen=True)
+class NCMConfig:
+    """Static prompt bucket and number of autoregressive coarse grids."""
+    ar_coarse_levels: int = 0
+    prompt_len: int = 0
+
+    def __post_init__(self):
+        for name in ('ar_coarse_levels', 'prompt_len'):
+            if not isinstance(getattr(self, name), int) or getattr(self, name) < 0:
+                raise ValueError(f'{name} must be a nonnegative integer')

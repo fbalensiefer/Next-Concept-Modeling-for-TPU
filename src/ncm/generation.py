@@ -26,7 +26,7 @@ def encode(model, codec_params, codebooks, batch):
 
 def make_prior_step(model, optimizer, codec_params, codebooks):
     """Only prior parameters enter autodiff/optimizer; codec and EMA are immutable."""
-    generator = SharedLevelGenerator(model.rvq, model.transformer)
+    generator = SharedLevelGenerator(model.rvq, model.transformer, model.config)
 
     def step(state, batch, key):
         target = encode(model, codec_params, codebooks, batch)
@@ -34,7 +34,8 @@ def make_prior_step(model, optimizer, codec_params, codebooks):
         def objective(params):
             predicted = generator.apply({'params': params}, codebooks, target.mask,
                                         target.indices, source_mask=batch.mask,
-                                        deterministic=False, rngs={'dropout': key})
+                                        deterministic=False, prompt_ids=batch.prompt_ids, prompt_mask=batch.prompt_mask,
+                                        rngs={'dropout': key})
             return cross_entropy(predicted.logits, target.indices, target.mask)
 
         loss, grads = jax.value_and_grad(objective)(state.params)
@@ -50,7 +51,7 @@ def level_geometry(config, mask):
 
 
 def generate(model, codec_params, prior_params, codebooks, key, *, batch_size=1,
-             length=None, temperature=1.0, top_k=0):
+             length=None, temperature=1.0, top_k=0, prompt_ids=None, prompt_mask=None):
     """Generate unconditioned fixed-length bytes; temperature=0 selects greedy codes.
 
     Length is caller-supplied, not inferred from an evaluation target. Decode uses
@@ -62,10 +63,10 @@ def generate(model, codec_params, prior_params, codebooks, key, *, batch_size=1,
     mask = jnp.broadcast_to(jnp.arange(model.rvq.max_length) < length,
                             (batch_size, model.rvq.max_length))
     levels = level_geometry(model.rvq, mask)
-    result = SharedLevelGenerator(model.rvq, model.transformer).apply(
+    result = SharedLevelGenerator(model.rvq, model.transformer, model.config).apply(
         {'params': prior_params}, codebooks, levels, jnp.zeros(levels.shape, jnp.int32),
         teacher_forcing=False, source_mask=mask, temperature=temperature, top_k=top_k,
-        rngs={'sample': key})
+        prompt_ids=prompt_ids, prompt_mask=prompt_mask, rngs={'sample': key})
     logits = MultiscaleTokenizer(model.rvq, model.token_vocab_size).apply(
         {'params': codec_params}, result.representation, mask, method=MultiscaleTokenizer.decode)
     return jnp.where(mask, logits.argmax(-1), -1), result.indices
@@ -84,11 +85,12 @@ def evaluate_prior(model, codec_params, prior_params, codebooks, batch):
     paths use target geometry and evaluate prediction of the same target codes.
     """
     target = encode(model, codec_params, codebooks, batch)
-    generator = SharedLevelGenerator(model.rvq, model.transformer)
+    generator = SharedLevelGenerator(model.rvq, model.transformer, model.config)
     reports = {}
     for name, forced in [('teacher', True), ('free', False)]:
         result = generator.apply({'params': prior_params}, codebooks, target.mask,
-                                 target.indices, teacher_forcing=forced, source_mask=batch.mask)
+                                 target.indices, teacher_forcing=forced, source_mask=batch.mask,
+                                 prompt_ids=batch.prompt_ids, prompt_mask=batch.prompt_mask)
         ce = optax.softmax_cross_entropy_with_integer_labels(result.logits, jnp.maximum(target.indices, 0))
         count = target.mask.sum(axis=(1, 2))
         reports[name + '_nll_sum'] = jnp.where(target.mask, ce, 0).sum(axis=(1, 2))

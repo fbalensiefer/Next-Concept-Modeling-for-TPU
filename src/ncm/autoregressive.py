@@ -28,12 +28,13 @@ class CausalBlock(nn.Module):
         x = x + self.attention_out(attended.reshape(x.shape))
         return x + self.contract(nn.gelu(self.expand(self.mlp_norm(x))))
 
-    def __call__(self, x, valid):
+    def __call__(self, x, valid, causal=True):
         qkv = self.projections(x)
         q, k, v = qkv[:, :, 0], qkv[:, :, 1], qkv[:, :, 2]
         logits = jnp.einsum('bthd,bshd->bhts', q, k) / q.shape[-1]**.5
+        causal_enabled = causal
         causal = jnp.arange(x.shape[1])[:, None] >= jnp.arange(x.shape[1])[None, :]
-        mask = causal[None, None] & valid[:, None, None, :]
+        mask = (causal[None, None] if causal_enabled else True) & valid[:, None, None, :]
         probabilities = jax.nn.softmax(jnp.where(mask, logits, -1e30), -1)
         attended = jnp.einsum('bhts,bshd->bthd', probabilities, v)
         return jnp.where(valid[..., None], self.finish(x, attended), 0)

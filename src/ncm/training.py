@@ -4,7 +4,7 @@ import jax.numpy as jnp
 import optax
 from flax import linen as nn, struct
 
-from .config import LossConfig, RVQConfig, TransformerConfig
+from .config import LossConfig, RVQConfig, TransformerConfig, NCMConfig
 from .coarse import ensure_initialized, maintain_coarse, optimizer_state, schedules, warmup_codebooks
 from .generator import SharedLevelGenerator
 from .losses import combined_loss
@@ -18,6 +18,8 @@ class Batch:
     mask: jax.Array  # bool [B,L], True = valid
     fallback_bytes: jax.Array  # int32 [B,L], IDs in 0..255 at fallback slots
     fallback_mask: jax.Array  # bool [B,L]
+    prompt_ids: object = None  # optional int32 [B,P], fixed prompt bucket
+    prompt_mask: object = None
 
 
 @struct.dataclass
@@ -33,17 +35,22 @@ class NCM(nn.Module):
     transformer: TransformerConfig
     token_vocab_size: int
     losses: LossConfig = LossConfig()
+    config: NCMConfig = NCMConfig()
 
     @nn.compact
     def __call__(self, batch: Batch, codebooks, phase=0, *, training=False,
-                 coarse_beta=None, coarse_temperature=None, return_latent=False):
+                 coarse_beta=None, coarse_temperature=None, return_latent=False,
+                 prompt_ids=None, prompt_embeddings=None, prompt_mask=None):
+        prompt_ids = batch.prompt_ids if prompt_ids is None and prompt_embeddings is None else prompt_ids
+        prompt_mask = batch.prompt_mask if prompt_mask is None else prompt_mask
         tokenizer = MultiscaleTokenizer(self.rvq, self.token_vocab_size)(
             batch.tokens, batch.mask, batch.fallback_bytes, batch.fallback_mask,
             codebooks, phase=phase, training=training, coarse_temperature=coarse_temperature)
-        prior = SharedLevelGenerator(self.rvq, self.transformer)(
+        prior = SharedLevelGenerator(self.rvq, self.transformer, self.config)(
             codebooks, tokenizer.rvq.mask, tokenizer.rvq.indices,
             teacher_forcing=True, deterministic=not training,
-            source_mask=batch.mask & ~batch.fallback_mask)
+            source_mask=batch.mask & ~batch.fallback_mask, prompt_ids=prompt_ids,
+            prompt_embeddings=prompt_embeddings, prompt_mask=prompt_mask)
         loss, metrics = combined_loss(
             tokenizer.logits, batch.tokens, batch.mask, tokenizer.rvq,
             prior.logits, self.losses, coarse=tokenizer.coarse,
