@@ -1,0 +1,9 @@
+{
+  "git_commit": "8f1fddc",
+  "status": "frozen_before_execution",
+  "seeds": [
+    {"seed":200,"studies":["power","negative_controls","probe","smoke","real128"],"outcome":"pending"},
+    {"seed":201,"studies":["direct_sampling_floor","probe","real128"],"outcome":"pending"},
+    {"seed":202,"studies":["greedy_prompts","probe","real128","paired_bootstrap"],"outcome":"pending"}
+  ]
+}
