@@ -22,7 +22,7 @@ def write_json(path, data):
 def write_csv(path, rows):
     path=Path(path); path.parent.mkdir(parents=True,exist_ok=True)
     commit=identity()['git_commit']
-    rows=[dict(git_commit=commit,**row) for row in rows]
+    rows=[dict(row,git_commit=row.get('git_commit',commit)) for row in rows]
     fields=list(dict.fromkeys(k for row in rows for k in row)) or ['git_commit']
     with path.open('w',newline='') as stream:
         writer=csv.DictWriter(stream,fieldnames=fields); writer.writeheader(); writer.writerows(rows)
