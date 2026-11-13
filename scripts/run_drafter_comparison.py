@@ -266,7 +266,7 @@ def run_seed(seed,profile,out,progress):
                     ns=rvq.lengths if p or coarse else (length,)*3
                     infer_analytic=ncm_prior_forward(FlopModel(8,1,2,vocabulary=4),1,ns,4,p,coarse,cached=True)+codec_forward(1,length,4,encoder=False)
                 timing=measure(sample,(vx[:1,:p],key),5,30)
-                row=dict(seed=seed,prompt_len=p,arm=arm,checkpoint=checkpoint,bpb=checkpoint_bpb,bpb_kind=kind,
+                row=dict(seed=seed,prompt_len=p,length=length,arm=arm,checkpoint=checkpoint,bpb=checkpoint_bpb,bpb_kind=kind,
                     median_ms=timing['median_ms'],compiler_flops=timing['compiler_flops'],analytic_flops=infer_analytic,
                     total_training_flops=train_costs[arm]-(steps-checkpoint)*analytic_steps[arm],**LABELS)
                 checkpoint_rows.append(row);curves[arm].append(row)
@@ -277,10 +277,12 @@ def run_seed(seed,profile,out,progress):
             prompt=vx[jnp.arange(size)%len(vx),:p]
             timing=measure(lambda prompt,rng:sample_conditioned(teacher,tp,prompt,length,rng),(prompt,key),5,30)
             teacher_reference[size]=timing['median_ms']
-            output_rows.append(dict(seed=seed,drafter='cached_teacher_reference',draft_len=0,prompt_len=p,batch=size,
+            output_rows.append(dict(seed=seed,drafter='cached_teacher_reference',draft_len=0,prompt_len=p,length=length,batch=size,
                 acceptance=1.,tokens_per_pass=1.,per_position_acceptance=[],median_ms=timing['median_ms'],
                 speedup_vs_cached_teacher=1.,compiler_flops=timing['compiler_flops'],
                 analytic_flops=ar_cached_generation(teacher_shape,size,capacity,p,length),
+                analytic_flops_per_round=ar_cached_decode_step(teacher_shape,size,capacity),measured_rounds=length,
+                analytic_prefill_flops=p*ar_cached_decode_step(teacher_shape,size,capacity,head=False),
                 bpb_kind='exact',teacher_bpb=teacher_bpb,teacher_warning=teacher_warning,**LABELS))
         teacher_adapter=ar_adapter(teacher,tp)
         for drafter in ('ncm','ar_distilled','ncm_sequence_distilled'):
@@ -318,7 +320,7 @@ def run_seed(seed,profile,out,progress):
                         draft_cost=total_draft/batch_rounds
                     else:
                         draft_cost=ncm_prior_forward(FlopModel(8,1,2,vocabulary=4),size,rvq.lengths,4,p,1,cached=True)+codec_forward(size,length,4,encoder=False)
-                    row=dict(seed=seed,drafter=drafter,draft_len=draft_len,prompt_len=p,batch=size,
+                    row=dict(seed=seed,drafter=drafter,draft_len=draft_len,prompt_len=p,length=length,batch=size,
                         acceptance=float(accepted.sum()/proposed.sum()),tokens_per_pass=length/passes,
                         per_position_acceptance=(accepted/np.maximum(proposed,1)).tolist(),
                         acceptance_kind='accepted-prefix survival fraction per eligible draft position',
