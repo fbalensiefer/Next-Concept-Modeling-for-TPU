@@ -14,7 +14,7 @@ import numpy as np
 import optax
 
 from run_decisive_benchmark import measure,compiler_flops,batch
-from ncm.accounting import continuation_mask,matched_latency_rows
+from ncm.accounting import continuation_mask,matched_latency_rows,speculative_batch_observation
 from ncm.baselines import CausalAR,matched_ar_config,parameter_count,sample_conditioned,shifted_inputs
 from ncm.config import NCMConfig,RVQConfig,TransformerConfig
 from ncm.data import load_text
@@ -202,7 +202,7 @@ def run_seed(seed,profile,out,progress):
         name='ncm_sequence_distilled';priors[name]=payload['prior'];decoders[name]=payload['decoder']
         prior_saved[name]={i:params['prior'] for i,params in saved.items()}
         seq_analytic=ncm_prior_step(FlopModel(8,1,2,vocabulary=4),4,rvq.lengths,4,p,
-            parameter_count(payload),ar_coarse_levels=1,codes=4)
+            parameter_count(payload),ar_coarse_levels=1,codes=4,decoder_trainable=True)
         analytic_steps[name]=seq_analytic;compiler_steps[name]=seq_compiler
         train_costs[name]=codec_cost+teacher_cost+generation_analytic+steps*seq_analytic
         comp_costs[name]=codec_compiler_cost+teacher_compiler_cost+generation_compiler+steps*seq_compiler
@@ -239,7 +239,8 @@ def run_seed(seed,profile,out,progress):
             kind='exact' if is_ar else 'upper_bound'
             qrow=dict(seed=seed,prompt_len=p,arm=arm,heldout_bpb=bpb,bpb_kind=kind,
                 continuation_bytes=denominator,continuation_sha256=provenance[1]['continuation_sha256'],
-                available_prompt_bytes=p,teacher_bpb=teacher_bpb,teacher_steps=steps,teacher_parameters=parameter_count(tp),
+                available_prompt_bytes=p,parameters=parameter_count(all_params[arm]) if is_ar else parameter_count(cp)+parameter_count(priors[arm])+parameter_count(books.embeddings),
+                parameter_match_target=target_params,teacher_bpb=teacher_bpb,teacher_steps=steps,teacher_parameters=parameter_count(tp),
                 teacher_warning='teacher within 0.3 BPB of small AR' if teacher_warning else '',**LABELS)
             quality_rows.append(qrow)
             training_rows.append(dict(**qrow,total_training_flops=train_costs[arm],
@@ -301,25 +302,32 @@ def run_seed(seed,profile,out,progress):
                     return jax.vmap(lambda row,k:speculative_generate(adapter,verifier,row,draft_len,length,k))(prompt,keys)
                 for size in (1,16,128):
                     prompt=vx[jnp.arange(size)%len(vx),:p]
-                    stats=jax.jit(sampled)(dp,tp,prompt,key)
-                    timing=measure(sampled,(dp,tp,prompt,key),5,30)
-                    passes=float(stats.teacher_forward_passes.mean())
-                    accepted=np.asarray(stats.accepted_by_position).sum(0)
-                    proposed=np.asarray(stats.proposed_by_position).sum(0)
-                    mean_prefix=float(stats.mean_prefix_length.mean())
+                    observe=lambda stats:speculative_batch_observation(stats,p,length)
+                    timing=measure(sampled,(dp,tp,prompt,key),5,30,collect=observe)
+                    observations=timing.pop('observations')
+                    passes=float(np.mean([v['mean_rounds'] for v in observations]))
+                    batch_rounds=float(np.mean([v['batch_rounds'] for v in observations]))
+                    accepted=np.sum([v['accepted'] for v in observations],axis=0)
+                    proposed=np.sum([v['proposed'] for v in observations],axis=0)
+                    mean_prefix=sum(v['prefix_sum'] for v in observations)/sum(v['sequence_rounds'] for v in observations)
                     verify=transformer_forward(teacher_shape,size,p+length+draft_len+1)
                     if drafter=='ar_distilled':
-                        draft_cost=(mean_prefix+draft_len)*ar_cached_decode_step(small_shape,size,capacity)
+                        prefill_steps=float(np.mean([v['prefill_iterations'] for v in observations]))
+                        total_draft=prefill_steps*ar_cached_decode_step(small_shape,size,capacity,head=False)
+                        total_draft+=batch_rounds*draft_len*ar_cached_decode_step(small_shape,size,capacity)
+                        draft_cost=total_draft/batch_rounds
                     else:
                         draft_cost=ncm_prior_forward(FlopModel(8,1,2,vocabulary=4),size,rvq.lengths,4,p,1,cached=True)+codec_forward(size,length,4,encoder=False)
                     row=dict(seed=seed,drafter=drafter,draft_len=draft_len,prompt_len=p,batch=size,
-                        acceptance=float(stats.acceptance_rate.mean()),tokens_per_pass=float(stats.tokens_per_forward_pass.mean()),
+                        acceptance=float(accepted.sum()/proposed.sum()),tokens_per_pass=length/passes,
                         per_position_acceptance=(accepted/np.maximum(proposed,1)).tolist(),
                         acceptance_kind='accepted-prefix survival fraction per eligible draft position',
                         median_ms=timing['median_ms'],speedup_vs_cached_teacher=teacher_reference[size]/timing['median_ms'],
-                        compiler_flops=timing['compiler_flops'],**speculative_round(draft_cost,verify,passes),
+                        compiler_flops=timing['compiler_flops'],**speculative_round(draft_cost,verify,batch_rounds),
                         bpb_kind='exact_teacher',teacher_bpb=teacher_bpb,teacher_warning=teacher_warning,
-                        measured_rounds_kind='mean per-sequence; vmapped wall time follows slowest sequence',
+                        measured_rounds_kind='mean of maximum batched rounds across all 30 timed observations',
+                        mean_sequence_rounds=passes,batch_tokens_per_teacher_call=size*length/batch_rounds,
+                        timing_observations=30,
                         mean_prefix_length=mean_prefix,latency_note='coarse KV cache measured' if drafter!='ar_distilled' else 'prefix cache rebuilt each round',
                         compiler_label='compiler estimate')
                     output_rows.append(row)

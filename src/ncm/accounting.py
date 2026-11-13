@@ -33,3 +33,17 @@ def matched_latency_rows(curves):
             bpb_kind_a=ca[0]['bpb_kind'],bpb_kind_b=cb[0]['bpb_kind'],
             quality_matched_claim_permitted=comparable))
     return rows
+
+
+def speculative_batch_observation(stats,prompt_len,new_tokens):
+    """Host-side counters after synchronization; never part of timed latency."""
+    rounds=np.asarray(stats.teacher_forward_passes)
+    trace=np.asarray(stats.round_prefix_lengths)
+    r=int(rounds.max())
+    active=np.arange(r)[None]<rounds[:,None]
+    positions=np.where(active,trace[:,:r],prompt_len+new_tokens)
+    return dict(mean_rounds=float(rounds.mean()),batch_rounds=r,
+        prefill_iterations=int(positions.max(0).sum()),
+        accepted=np.asarray(stats.accepted_by_position).sum(0).tolist(),
+        proposed=np.asarray(stats.proposed_by_position).sum(0).tolist(),
+        prefix_sum=int(np.maximum(trace,0).sum()),sequence_rounds=int(rounds.sum()))

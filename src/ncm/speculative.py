@@ -28,6 +28,7 @@ class SpeculativeOutput:
     accepted_by_position: object = None
     proposed_by_position: object = None
     mean_prefix_length: object = None
+    round_prefix_lengths: object = None
 
 
 def speculative_generate(ncm_params, ar_params, prompt_ids, draft_len, max_new_tokens, key):
@@ -47,7 +48,7 @@ def speculative_generate(ncm_params, ar_params, prompt_ids, draft_len, max_new_t
         return state[1] < end
 
     def step(state):
-        buffer, position, accepted_total, proposed_total, passes, rng, accepted_positions, proposed_positions, prefix_sum = state
+        buffer, position, accepted_total, proposed_total, passes, rng, accepted_positions, proposed_positions, prefix_sum, prefix_trace = state
         rng, latent_key, token_key, accept_key, bonus_key = jax.random.split(rng, 5)
         if ncm_params.draft_fn is None:
             q = jax.nn.softmax(ncm_params.apply_fn(ncm_params.params, buffer, position, draft_len, latent_key), -1)
@@ -80,13 +81,15 @@ def speculative_generate(ncm_params, ar_params, prompt_ids, draft_len, max_new_t
         return (updated, jnp.minimum(position + prefix + 1, end), accepted_total,
                 proposed_total, passes + 1, rng,
                 accepted_positions + ((jnp.arange(draft_len) < prefix) & (jnp.arange(draft_len) < remaining)),
-                proposed_positions + (jnp.arange(draft_len) < remaining), prefix_sum + position)
+                proposed_positions + (jnp.arange(draft_len) < remaining), prefix_sum + position,
+                prefix_trace.at[passes].set(position))
 
-    buffer, _, accepted, proposed, passes, _, accepted_positions, proposed_positions, prefix_sum = jax.lax.while_loop(condition, step,
+    buffer, _, accepted, proposed, passes, _, accepted_positions, proposed_positions, prefix_sum, prefix_trace = jax.lax.while_loop(condition, step,
         (buffer, jnp.asarray(prompt_len, jnp.int32), jnp.asarray(0), jnp.asarray(0), jnp.asarray(0), key,
-         jnp.zeros(draft_len,jnp.int32),jnp.zeros(draft_len,jnp.int32),jnp.asarray(0)))
+         jnp.zeros(draft_len,jnp.int32),jnp.zeros(draft_len,jnp.int32),jnp.asarray(0),
+         jnp.full(max_new_tokens,-1,jnp.int32)))
     return SpeculativeOutput(buffer[prompt_len:end], accepted / jnp.maximum(proposed, 1),
-                             max_new_tokens / passes, passes, accepted_positions, proposed_positions, prefix_sum / passes)
+                             max_new_tokens / passes, passes, accepted_positions, proposed_positions, prefix_sum / passes, prefix_trace)
 
 
 def ar_adapter(model, params, *, draft=False):

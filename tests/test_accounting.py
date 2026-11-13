@@ -45,3 +45,15 @@ def test_report_serializes_numpy_statistics(tmp_path):
     report=json.loads(path.read_text())
     assert report['warning'] is True and report['count']==3
     assert report['values']==[.1,.2] and report['git_commit']
+
+
+def test_vmapped_rounds_charge_finished_lanes():
+    from types import SimpleNamespace
+    from ncm.accounting import speculative_batch_observation
+    stats=SimpleNamespace(teacher_forward_passes=np.array([2,4]),
+        round_prefix_lengths=np.array([[16,20,-1,-1],[16,18,21,23]]),
+        accepted_by_position=np.array([[1,0],[2,1]]),proposed_by_position=np.array([[2,1],[4,3]]))
+    row=speculative_batch_observation(stats,16,10)
+    assert row['batch_rounds']==4 and row['mean_rounds']==3
+    assert row['prefill_iterations']==16+20+26+26
+    assert row['prefix_sum']==114 and row['sequence_rounds']==6

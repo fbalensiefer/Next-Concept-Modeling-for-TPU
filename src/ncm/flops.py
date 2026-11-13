@@ -30,14 +30,14 @@ def ar_training_step(config,batch,length,parameters):
     return 3*transformer_forward(config,batch,length)+10*parameters
 
 
-def ar_cached_decode_step(config,batch,capacity):
+def ar_cached_decode_step(config,batch,capacity,*,head=True):
     w,r=config.width,config.mlp_ratio
     return float(config.layers*((8+4*r)*batch*w*w+4*batch*capacity*w+
-        20*batch*w+8*batch*r*w+5*batch*config.heads*capacity)+2*batch*w*config.vocabulary+5*batch*config.vocabulary)
+        20*batch*w+8*batch*r*w+5*batch*config.heads*capacity)+(2*batch*w*config.vocabulary+5*batch*config.vocabulary)*int(head))
 
 
 def ar_cached_generation(config,batch,capacity,prompt_len,new_tokens):
-    return (prompt_len+new_tokens)*ar_cached_decode_step(config,batch,capacity)
+    return prompt_len*ar_cached_decode_step(config,batch,capacity,head=False)+new_tokens*ar_cached_decode_step(config,batch,capacity)
 
 
 def codec_forward(batch,length,dim,vocabulary=256,*,levels=3,codes=64,lengths=None,encoder=True,decoder=True):
@@ -57,17 +57,17 @@ def ncm_prior_forward(config,batch,lengths,dim,prompt_len,ar_coarse_levels=0,*,c
     count=0.
     for k,n in enumerate(lengths):
         if cached and k<ar_coarse_levels:
-            count+=(prompt_len+n)*ar_cached_decode_step(config,batch,prompt_len+n)
-        else:count+=transformer_forward(config,batch,prompt_len+n)
+            count+=prompt_len*ar_cached_decode_step(config,batch,prompt_len+n,head=False)+n*ar_cached_decode_step(config,batch,prompt_len+n)
+        else:count+=transformer_forward(config,batch,prompt_len+n,head=False)+2*batch*n*config.width*config.vocabulary+5*batch*n*config.vocabulary
         count+=2*batch*n*dim*config.width+4*batch*n*max(lengths)*dim
     return count
 
 
 def ncm_prior_step(config,batch,lengths,dim,prompt_len,parameters,*,ar_coarse_levels=0,
-                   codes=64,teacher=None,teacher_length=None):
+                   codes=64,teacher=None,teacher_length=None,decoder_trainable=False):
     count=3*ncm_prior_forward(config,batch,lengths,dim,prompt_len,ar_coarse_levels)+10*parameters
     count+=codec_forward(batch,max(lengths),dim,levels=len(lengths),codes=codes,lengths=lengths,decoder=False)
-    count+=2*codec_forward(batch,max(lengths),dim,encoder=False)
+    count+=(3 if decoder_trainable else 2)*codec_forward(batch,max(lengths),dim,encoder=False)
     if teacher is not None:count+=transformer_forward(teacher,batch,teacher_length)
     return count
 

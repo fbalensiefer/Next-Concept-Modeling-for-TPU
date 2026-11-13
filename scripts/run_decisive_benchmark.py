@@ -43,7 +43,7 @@ def compiler_flops(lowered):
     return analysis.get('flops') if analysis else None
 
 
-def measure(fn, args, warmups, runs):
+def measure(fn, args, warmups, runs, collect=None):
     lowered = jax.jit(fn).lower(*args)
     executable = lowered.compile()
     keys = list(jax.random.split(args[-1], warmups + runs))
@@ -51,12 +51,15 @@ def measure(fn, args, warmups, runs):
     for rng in keys[:warmups]:
         jax.block_until_ready(executable(*args[:-1], rng))
     times = []
+    observations = []
     for rng in keys[warmups:]:
         start = time.perf_counter()
-        jax.block_until_ready(executable(*args[:-1], rng))
+        result = executable(*args[:-1], rng)
+        jax.block_until_ready(result)
         times.append(time.perf_counter() - start)
+        if collect is not None:observations.append(collect(result))
     return dict(compiler_flops=compiler_flops(lowered), median_ms=float(np.median(times)*1000),
-                latency_seconds=times)
+                latency_seconds=times, **({'observations':observations} if collect is not None else {}))
 
 
 def batch(tokens, mask):
