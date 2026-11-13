@@ -262,7 +262,8 @@ def run(args):
         for size in args.batch_sizes:
             prompt = hx[jnp.arange(size) % len(hx), :p]
             result = measure(sampler, (prompt, key), args.warmups, args.runs)
-            records.append(dict(arm=name, batch_size=size, length=length, **result))
+            records.append(dict(arm=name, batch_size=size, length=length, **result,
+                **({'latency_note':'pessimistic: no coarse KV cache'} if name in ('ncm_coarse_1','ncm_speculative') else {})))
     teacher_reference = []
     def direct_teacher(prompt, rng):
         return sample_conditioned(teacher, teacher_params, prompt, length, rng)

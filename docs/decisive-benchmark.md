@@ -96,3 +96,68 @@ Tests cover future-code masking, prompt sensitivity, inference target invariance
 zero-mass draft proposals, a history-dependent teacher's joint distribution,
 all-acceptance bonus/truncation, gradients, dp/fsdp agreement, hash verification,
 and padded document tails.
+
+## Frozen validation controls
+
+The protocol and all root seeds are frozen in
+`reports/validation-controls/protocol.md`. New study seeds are 200–202; existing
+regression tests retain their historical seeds. No network is needed by the
+studies. The real-text control runner requires the already-local processed
+Gutenberg books under `runs/real-text-pilot/`, pinned to the protocol's hashes.
+
+```sh
+XLA_FLAGS=--xla_force_host_platform_device_count=4 \
+  python -m pytest -q
+python scripts/run_tc_probe.py
+python scripts/run_drafter_comparison.py --profile smoke \
+  --output reports/validation-controls/smoke
+python scripts/run_drafter_comparison.py --profile real128 \
+  --output reports/validation-controls/real128
+```
+
+CI runs the full test suite, including the powered 200,000-sequence verifier
+study and four-device tests, on every push and pull request. The full model
+sweeps and TC training study are explicit experiments, not CI jobs.
+
+`DistributionAdapter.draft_fn`, when supplied, returns sampled tokens and their
+true sequential conditional logits. It is used by the KV-cached distilled AR
+control. The independent decoded-logit adapter remains unchanged. The verifier
+reports accepted-prefix counts by position and actual teacher round counts.
+Both AR draft and teacher prefixes are rebuilt per speculative round; no teacher
+cache rollback is claimed. `ar_adapter` and the direct cached-teacher reference
+use exactly the same Transformer projections.
+
+Coarse inference accepts `use_cache=True`. This is opt-in to preserve existing
+sampling paths. Cache equivalence tests cover two coarse grids, prompt masks,
+padding holes, greedy sampling and seeds 200–202. The new drafter comparison
+measures the cache path. The original benchmark's uncached hybrid rows are
+explicitly labeled `pessimistic: no coarse KV cache`.
+
+The comparison outputs `drafter_comparison.csv`, `bpb_vs_train_flops.csv`,
+`checkpoint_curves.csv`, `latency_at_matched_bpb.csv`, `paired_statistics.json`,
+per-seed checkpoints with commit metadata, and detailed results JSON. The draft
+grid is 2/4/8/16; prompt grid is 0/16/64; batches are 1/16/128. A teacher-sampled
+sequence distillation ablation trains a prior and decoder with encoder/codebooks
+frozen. Its 32 teacher generations and prerequisite teacher/codec training are
+charged. Ordinary logit distillation teacher forwards are already inside the
+compiled training step and are not charged twice.
+
+Every reported compiler FLOP value is a **compiler estimate**. Analytic estimates
+use MAC=2, dense stored attention capacity, an approximate backward cost of twice
+forward cost, and an explicit Adam operation allowance. They exclude memory,
+communication, RNG and indexing. Loop inference reports per-round estimates and
+measured rounds. The per-sequence round average is a compute diagnostic; vmapped
+batch latency follows the slowest sequence. These estimates are not hardware
+counters. NCM BPB is always an **upper bound**. A numerical intersection with an
+AR likelihood curve does not establish equal quality. The matched table reports
+non-overlap without extrapolation and disallows exact-quality claims for bounds.
+Three-seed bootstrap intervals are explicitly exploratory.
+
+The learned TC probe compares a trained causal within-level model with a frozen
+parallel reference, using the same block primitives. Enumeration uses float64
+source laws and lossless contiguous partitions. The real-text gate is closed if
+either the fixed numerical threshold or strict sequence-identity disjointness
+fails. Copied-bit's two-point support makes literal disjoint identity sets
+incompatible with evaluating the same nondegenerate source law; this is recorded
+as a failed condition, not silently reinterpreted. Consult `FINDINGS.md`,
+`claims.md`, and `tc_probe_decision.md` before making any TC or performance claim.

@@ -277,7 +277,7 @@ def run_seed(seed,profile,out,progress):
             timing=measure(lambda prompt,rng:sample_conditioned(teacher,tp,prompt,length,rng),(prompt,key),5,30)
             teacher_reference[size]=timing['median_ms']
             output_rows.append(dict(seed=seed,drafter='cached_teacher_reference',draft_len=0,prompt_len=p,batch=size,
-                acceptance=1.,tokens_per_pass=1.,per_position_acceptance='[]',median_ms=timing['median_ms'],
+                acceptance=1.,tokens_per_pass=1.,per_position_acceptance=[],median_ms=timing['median_ms'],
                 speedup_vs_cached_teacher=1.,compiler_flops=timing['compiler_flops'],
                 analytic_flops=ar_cached_generation(teacher_shape,size,capacity,p,length),
                 bpb_kind='exact',teacher_bpb=teacher_bpb,teacher_warning=teacher_warning,**LABELS))
@@ -314,7 +314,7 @@ def run_seed(seed,profile,out,progress):
                         draft_cost=ncm_prior_forward(FlopModel(8,1,2,vocabulary=4),size,rvq.lengths,4,p,1,cached=True)+codec_forward(size,length,4,encoder=False)
                     row=dict(seed=seed,drafter=drafter,draft_len=draft_len,prompt_len=p,batch=size,
                         acceptance=float(stats.acceptance_rate.mean()),tokens_per_pass=float(stats.tokens_per_forward_pass.mean()),
-                        per_position_acceptance=json.dumps((accepted/np.maximum(proposed,1)).tolist()),
+                        per_position_acceptance=(accepted/np.maximum(proposed,1)).tolist(),
                         acceptance_kind='accepted-prefix survival fraction per eligible draft position',
                         median_ms=timing['median_ms'],speedup_vs_cached_teacher=teacher_reference[size]/timing['median_ms'],
                         compiler_flops=timing['compiler_flops'],**speculative_round(draft_cost,verify,passes),
