@@ -170,7 +170,7 @@ class HybridGenerator(nn.Module):
         for k, n in enumerate(self.rvq.lengths):
             valid = masks[k, :, :n]
             context, _ = align(cumulative, source_mask, down[k, :n])
-            base = projection(context) + level_embed(jnp.asarray(k)) + position[None, :n]
+            base = projection(context) + level_embed(jnp.asarray([k]))[0] + position[None, :n]
             causal = k < self.config.ar_coarse_levels
             def predict(codes):
                 h = base
