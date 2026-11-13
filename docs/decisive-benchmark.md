@@ -161,3 +161,12 @@ fails. Copied-bit's two-point support makes literal disjoint identity sets
 incompatible with evaluating the same nondegenerate source law; this is recorded
 as a failed condition, not silently reinterpreted. Consult `FINDINGS.md`,
 `claims.md`, and `tc_probe_decision.md` before making any TC or performance claim.
+
+For the zero-prompt fairness control, the runner directly selects the existing
+HybridGenerator core for both parallel and hybrid priors. It does not select the
+legacy auto(0,0) padded path. Empty prompt embeddings avoid counting an unused
+lookup table at P=0. No public generator default is changed. Discarded timings
+from overlapping validation jobs are retained in `real128-contended/`; the clean
+run starts only after all 118 four-device tests complete. Use
+`python scripts/summarize_validation_controls.py` after all three seeds finish
+to assemble the claim ledger, seed outcomes, paired intervals, and final tables.

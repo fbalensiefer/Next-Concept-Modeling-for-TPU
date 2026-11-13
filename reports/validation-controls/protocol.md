@@ -111,3 +111,13 @@ Teacher and real-text codec are trained once per seed and reused across P.
 Smoke P=2, L=8, draft lengths 2,4,8; real L=128 uses the full frozen grids.
 All original thresholds, root seeds, timing repetitions, and real training
 budgets remain unchanged. This is an availability clarification, not tuning.
+
+## Implementation fairness clarification before the clean real128 execution
+
+All parallel and hybrid benchmark priors instantiate the existing HybridGenerator
+core directly, including the P=0 parallel arm. This avoids accidentally comparing
+the historical padded auto(0,0) implementation to the actual-grid hybrid core.
+The public default generator path is unchanged. P=0 uses the existing empty prompt
+embedding API, avoiding unused byte-embedding parameters in parameter matching.
+No threshold, seed, training budget, or sweep case is changed. Discarded first
+attempt artifacts remain explicitly separate and are not pooled with this run.

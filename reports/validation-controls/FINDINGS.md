@@ -29,3 +29,14 @@ The run was interrupted, without replacing any seed or altering a threshold.
 The complete frozen grid is rerun with the same seeds after tests finish and
 without other agent-started compute jobs. This records an execution/fairness
 failure rather than silently keeping favorable timing observations.
+
+## Zero-prompt architecture fairness
+
+git_commit: 95ce7e5 (before clean real128). The auto(0,0) public generator selects
+the historical padded implementation. A naive zero-prompt parallel comparison
+would therefore change attention primitives and grid execution as well as AR
+factorization. The control runner now instantiates the existing HybridGenerator
+core for both arms and uses empty prompt embeddings at P=0 to avoid unused prompt
+lookup weights in parameter matching. Existing public defaults remain unchanged.
+The discarded attempt's P=0 quality contrast is not interpreted as an AR-only
+effect. This fixes experiment construction, not a statistical threshold.

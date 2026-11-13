@@ -22,7 +22,7 @@ from ncm.data import load_text
 from ncm.flops import (FlopModel,transformer_forward,ar_training_step,ar_cached_generation,
     ar_cached_decode_step,ncm_codec_step,ncm_prior_forward,ncm_prior_step,codec_forward,speculative_round)
 from ncm.generation import encode,level_geometry
-from ncm.generator import SharedLevelGenerator
+from ncm.generator import HybridGenerator
 from ncm.grids import align,grid_matrices
 from ncm.losses import cross_entropy
 from ncm.speculative import DistributionAdapter,speculative_generate,ar_adapter
@@ -137,9 +137,12 @@ def run_seed(seed,profile,out,progress):
         x=tx[:,max_prompt-p:];mask=tm[:,max_prompt-p:]
         vx=hx[:,max_prompt-p:];vm=hm[:,max_prompt-p:]
         teacher_bpb,denominator=ar_bpb(teacher,tp,vx,vm,p)
-        gens={k:SharedLevelGenerator(rvq,config,NCMConfig(k,p)) for k in (0,1)}
+        gens={k:HybridGenerator(rvq,config,NCMConfig(k,p)) for k in (0,1)}
+        def conditioning(ids):
+            if p==0:return dict(prompt_embeddings=jnp.zeros((len(ids),0,config.width)))
+            return dict(prompt_ids=ids)
         target=encode(codec_model,cp,books,initial_batch)
-        initial_gp={k:g.init(key,books,target.mask,target.indices,prompt_ids=x[:1,:p])['params'] for k,g in gens.items()}
+        initial_gp={k:g.init(key,books,target.mask,target.indices,**conditioning(x[:1,:p]))['params'] for k,g in gens.items()}
         target_params=parameter_count(cp)+parameter_count(books.embeddings)+parameter_count(initial_gp[1])
         ac,_=matched_ar_config(target_params,heads=2,layers=1,max_length=capacity)
         small=CausalAR(ac,capacity); small_shape=FlopModel(ac.width,ac.layers,ac.heads)
@@ -170,7 +173,7 @@ def run_seed(seed,profile,out,progress):
             gen=gens[coarse];name=f'ncm_coarse_{coarse}'
             def objective(gp,bx,bm):
                 targets=encode(codec_model,cp,books,batch(bx[:,p:],bm[:,p:]))
-                result=gen.apply({'params':gp},books,targets.mask,targets.indices,prompt_ids=bx[:,:p])
+                result=gen.apply({'params':gp},books,targets.mask,targets.indices,**conditioning(bx[:,:p]))
                 logits=soft_decode(result.logits,targets.mask,cp['decoder'])
                 teacher_logits=teacher.apply({'params':tp},shifted_inputs(bx),bm)[:,p:]
                 probabilities=jax.nn.softmax(teacher_logits,-1)
@@ -178,7 +181,7 @@ def run_seed(seed,profile,out,progress):
                 return cross_entropy(result.logits,targets.indices,targets.mask)+jnp.where(bm[:,p:],kl,0).sum()/bm[:,p:].sum()
             gp,saved,compiler=fit(initial_gp[coarse],objective,optimizer,(x,mask),key,steps,checkpoints)
             priors[name]=gp;prior_saved[name]=saved;decoders[name]=cp['decoder']
-            storage=rvq.lengths if p or coarse else (length,)*3
+            storage=rvq.lengths
             analytic=ncm_prior_step(FlopModel(8,1,2,vocabulary=4),4,storage,4,p,parameter_count(gp),
                 ar_coarse_levels=coarse,codes=4,teacher=teacher_shape,teacher_length=p+length)
             analytic_steps[name]=analytic;compiler_steps[name]=compiler
@@ -194,7 +197,7 @@ def run_seed(seed,profile,out,progress):
         gen=gens[1]
         def sequence_objective(payload,bx,bm):
             targets=encode(codec_model,cp,books,batch(bx[:,p:],bm[:,p:]))
-            result=gen.apply({'params':payload['prior']},books,targets.mask,targets.indices,prompt_ids=bx[:,:p])
+            result=gen.apply({'params':payload['prior']},books,targets.mask,targets.indices,**conditioning(bx[:,:p]))
             decoded=decode(result.representation,bm[:,p:],payload['decoder'])
             return cross_entropy(result.logits,targets.indices,targets.mask)+cross_entropy(decoded,bx[:,p:],bm[:,p:])
         payload,saved,seq_compiler=fit(dict(prior=initial_gp[1],decoder=cp['decoder']),sequence_objective,
@@ -216,7 +219,7 @@ def run_seed(seed,profile,out,progress):
             @jax.jit
             def score(bx,bm):
                 targets=encode(codec_model,cp,books,batch(bx[:,p:],bm[:,p:]))
-                result=gen.apply({'params':gp},books,targets.mask,targets.indices,prompt_ids=bx[:,:p])
+                result=gen.apply({'params':gp},books,targets.mask,targets.indices,**conditioning(bx[:,:p]))
                 logits=decode(result.representation,bm[:,p:],decoder)
                 code_ce=optax.softmax_cross_entropy_with_integer_labels(result.logits,jnp.maximum(targets.indices,0))
                 token_ce=optax.softmax_cross_entropy_with_integer_labels(logits,bx[:,p:])
@@ -230,7 +233,7 @@ def run_seed(seed,profile,out,progress):
         def ncm_logits(gen,payload,prompt,rng):
             valid=jnp.ones((len(prompt),length),bool);geometry=level_geometry(rvq,valid)
             result=gen.apply({'params':payload['prior']},books,geometry,jnp.zeros_like(geometry,jnp.int32),
-                prompt_ids=prompt,teacher_forcing=False,temperature=1.,use_cache=True,rngs={'sample':rng})
+                **conditioning(prompt),teacher_forcing=False,temperature=1.,use_cache=True,rngs={'sample':rng})
             return decode(result.representation,valid,payload['decoder'])
         all_params=dict(ar_parameters,**priors)
         for arm in ('ar_scratch','ar_distilled','ncm_coarse_0','ncm_coarse_1','ncm_sequence_distilled'):
@@ -265,7 +268,7 @@ def run_seed(seed,profile,out,progress):
                     def sample(prompt,rng,params=params,decoder=decoder,arm_gen=arm_gen):
                         latent,token=jax.random.split(rng)
                         return jax.random.categorical(token,ncm_logits(arm_gen,dict(prior=params,decoder=decoder),prompt,latent))
-                    ns=rvq.lengths if p or coarse else (length,)*3
+                    ns=rvq.lengths
                     infer_analytic=ncm_prior_forward(FlopModel(8,1,2,vocabulary=4),1,ns,4,p,coarse,cached=True)+codec_forward(1,length,4,encoder=False)
                 timing=measure(sample,(vx[:1,:p],key),5,30)
                 row=dict(seed=seed,prompt_len=p,length=length,arm=arm,checkpoint=checkpoint,bpb=checkpoint_bpb,bpb_kind=kind,
