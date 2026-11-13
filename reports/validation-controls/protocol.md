@@ -10,7 +10,7 @@ are also recorded. Existing regression tests retain their original seeds.
 New root seeds: 200, 201, 202. Streams use fold-in study/case indices; these are
 not replacement seeds. Power: speculative root 200, direct-floor root 201,
 negative controls root 200, greedy prompts root 202. N=200000 sequences,
-vocabulary 3, output length 3, draft length 3, latent cardinality 2; 20 direct
+vocabulary 3, output length 4, draft length 3, latent cardinality 2; 20 direct
 multinomial floor repetitions. The fixed pass threshold is the empirical 95th
 percentile of the direct-TV floor, with no multiple-testing relaxation. Report
 sqrt(support/(2*N)) as a descriptive conservative scale. A negative control is
@@ -90,3 +90,8 @@ Quality matching uses checkpoint curves only within overlapping BPB ranges;
 no extrapolation. Exact AR BPB and NCM upper bounds are NOT commensurate exact
 quality and do not support a quality-matched speedup claim. Report that limitation
 alongside any numerical upper-bound intersection. No TPU or compute-saving claim.
+
+Pre-execution clarification: output length is four, with draft blocks of three.
+A three-token output cannot observe the first all-accepted bonus, so it cannot
+identify the required bonus negative control. No statistical result existed
+when this clarification was committed. All controls use the same four-token law.
