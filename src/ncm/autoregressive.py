@@ -39,16 +39,21 @@ class CausalBlock(nn.Module):
         attended = jnp.einsum('bhts,bshd->bthd', probabilities, v)
         return jnp.where(valid[..., None], self.finish(x, attended), 0)
 
-    def decode(self, x, position, cache):
+    def decode(self, x, position, cache, valid=None):
         qkv = self.projections(x)
         q, k, v = qkv[:, 0], qkv[:, 1], qkv[:, 2]
         cached_k = jax.lax.dynamic_update_slice(cache[0], k[:, None], (0, position, 0, 0))
         cached_v = jax.lax.dynamic_update_slice(cache[1], v[:, None], (0, position, 0, 0))
         logits = jnp.einsum('bhd,bshd->bhs', q, cached_k) / q.shape[-1]**.5
-        probabilities = jax.nn.softmax(jnp.where(
-            jnp.arange(cached_k.shape[1])[None, None] <= position, logits, -1e30), -1)
+        mask = jnp.arange(cached_k.shape[1])[None, None] <= position
+        if valid is not None:
+            mask = mask & valid[:, None, :]
+        probabilities = jax.nn.softmax(jnp.where(mask, logits, -1e30), -1)
         attended = jnp.einsum('bhs,bshd->bhd', probabilities, cached_v)
-        return self.finish(x, attended), (cached_k, cached_v)
+        output = self.finish(x, attended)
+        if valid is not None:
+            output = jnp.where(valid[:, position, None], output, 0)
+        return output, (cached_k, cached_v)
 
 
 class AutoregressiveBytes(nn.Module):
@@ -73,11 +78,11 @@ class AutoregressiveBytes(nn.Module):
     def __call__(self, inputs, valid):
         return self.head(self.represent(inputs, valid))
 
-    def decode_step(self, token, position, cache):
+    def decode_step(self, token, position, cache, valid=None):
         h = self.embedding(token) + jnp.asarray(self.position)[position]
         updated = []
         for block, values in zip(self.blocks, cache):
-            h, values = block.decode(h, position, values)
+            h, values = block.decode(h, position, values, valid=valid)
             updated.append(values)
         return self.head(self.norm(h)), tuple(updated)
 

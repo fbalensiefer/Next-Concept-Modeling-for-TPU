@@ -82,7 +82,8 @@ class SharedLevelGenerator(nn.Module):
     @nn.compact
     def __call__(self, codebooks, level_mask, target_codes, *,
                  teacher_forcing=True, deterministic=True, source_mask=None,
-                 temperature=0.0, top_k=0, prompt_ids=None, prompt_embeddings=None, prompt_mask=None):
+                 temperature=0.0, top_k=0, prompt_ids=None, prompt_embeddings=None, prompt_mask=None,
+                 use_cache=False):
         """Predict all positions at a level together, using earlier levels only.
 
         target_codes are required as a shape-stable dummy even at inference.
@@ -99,7 +100,8 @@ class SharedLevelGenerator(nn.Module):
             return HybridGenerator(self.rvq, self.transformer, self.config)(
                 codebooks, level_mask, target_codes, teacher_forcing=teacher_forcing,
                 source_mask=source_mask, temperature=temperature, top_k=top_k,
-                prompt_ids=prompt_ids, prompt_embeddings=prompt_embeddings, prompt_mask=prompt_mask)
+                prompt_ids=prompt_ids, prompt_embeddings=prompt_embeddings, prompt_mask=prompt_mask,
+                use_cache=use_cache)
         down, up = grid_matrices(self.rvq)
         # Enforce structural padding even for caller-provided inference masks.
         structural = jnp.arange(self.rvq.max_length)[None, :] < jnp.asarray(self.rvq.lengths)[:, None]
@@ -134,7 +136,7 @@ class HybridGenerator(nn.Module):
     @nn.compact
     def __call__(self, books, masks, targets, *, teacher_forcing=True,
                  source_mask=None, temperature=0., top_k=0,
-                 prompt_ids=None, prompt_embeddings=None, prompt_mask=None):
+                 prompt_ids=None, prompt_embeddings=None, prompt_mask=None, use_cache=False):
         from .autoregressive import CausalBlock
         if self.config.ar_coarse_levels > self.rvq.levels:
             raise ValueError('ar_coarse_levels exceeds RVQ levels')
@@ -199,6 +201,36 @@ class HybridGenerator(nn.Module):
             forced_logits = predict(targets[k, :, :n])
             if causal:
                 def decode(_):
+                    if use_cache:
+                        capacity = self.config.prompt_len + n
+                        shape = (b, capacity, self.transformer.heads,
+                                 self.transformer.width // self.transformer.heads)
+                        cache = tuple((jnp.zeros(shape), jnp.zeros(shape)) for _ in blocks)
+                        attention_valid = jnp.concatenate([pm, valid], 1)
+                        def advance(x, i, cache):
+                            updated = []
+                            for block, values in zip(blocks, cache):
+                                x, values = block.decode(x, i, values, valid=attention_valid)
+                                updated.append(values)
+                            return x, tuple(updated)
+                        if self.config.prompt_len:
+                            def prefill(i, cache):
+                                _, cache = advance(prompt[:, i], i, cache)
+                                return cache
+                            cache = jax.lax.fori_loop(0, self.config.prompt_len, prefill, cache)
+                        def cached_step(i, state):
+                            codes, logits, cache = state
+                            previous = codes[:, jnp.maximum(i-1, 0)]
+                            previous = jnp.where(i == 0, self.rvq.codebook_size, previous)
+                            h, cache = advance(base[:, i] + code_embed(previous),
+                                               self.config.prompt_len + i, cache)
+                            step_logits = head(norm(h))
+                            token = draw(step_logits, i)
+                            codes = codes.at[:, i].set(jnp.where(valid[:, i], token, 0))
+                            return codes, logits.at[:, i].set(step_logits), cache
+                        codes, logits, _ = jax.lax.fori_loop(0, n, cached_step,
+                            (jnp.zeros((b, n), jnp.int32), jnp.zeros_like(forced_logits), cache))
+                        return logits, codes
                     def step(i, codes):
                         logits = predict(codes)
                         token = draw(logits[:, i], i)
