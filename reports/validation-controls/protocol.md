@@ -95,3 +95,19 @@ Pre-execution clarification: output length is four, with draft blocks of three.
 A three-token output cannot observe the first all-accepted bonus, so it cannot
 identify the required bonus negative control. No statistical result existed
 when this clarification was committed. All controls use the same four-token law.
+
+## Local corpus availability clarification (before any model benchmark)
+
+git_commit at clarification: ca7308c.
+The originally named examples/text files contain only 26 and 13 bytes, so cannot
+supply a 128-byte experiment. Use the already-local, previously processed
+runs/real-text-pilot/train.jsonl and validation.jsonl (no download), pinned to
+SHA256 9b9b640d78534c383583b720752ed3cde1599e49f8d6c5f1ebe17c18b7481093
+and c6c72478d8e39d2b71fdfe923d43dd08da32d4dc59378f47ce221d63a8b811e6.
+For the bounded first run select the first 31 windows and the final eligible
+window of each split, retaining its masked tail. The same selection is shared
+by all P buckets. This is 32 windows per split, not the full books.
+Teacher and real-text codec are trained once per seed and reused across P.
+Smoke P=2, L=8, draft lengths 2,4,8; real L=128 uses the full frozen grids.
+All original thresholds, root seeds, timing repetitions, and real training
+budgets remain unchanged. This is an availability clarification, not tuning.

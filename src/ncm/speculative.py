@@ -16,6 +16,7 @@ from flax import struct
 class DistributionAdapter:
     params: object
     apply_fn: object = struct.field(pytree_node=False)
+    draft_fn: object = struct.field(pytree_node=False, default=None)
 
 
 @struct.dataclass
@@ -24,6 +25,9 @@ class SpeculativeOutput:
     acceptance_rate: jax.Array
     tokens_per_forward_pass: jax.Array
     teacher_forward_passes: jax.Array
+    accepted_by_position: object = None
+    proposed_by_position: object = None
+    mean_prefix_length: object = None
 
 
 def speculative_generate(ncm_params, ar_params, prompt_ids, draft_len, max_new_tokens, key):
@@ -43,12 +47,16 @@ def speculative_generate(ncm_params, ar_params, prompt_ids, draft_len, max_new_t
         return state[1] < end
 
     def step(state):
-        buffer, position, accepted_total, proposed_total, passes, rng = state
+        buffer, position, accepted_total, proposed_total, passes, rng, accepted_positions, proposed_positions, prefix_sum = state
         rng, latent_key, token_key, accept_key, bonus_key = jax.random.split(rng, 5)
-        q = jax.nn.softmax(ncm_params.apply_fn(ncm_params.params, buffer, position, draft_len, latent_key), -1)
+        if ncm_params.draft_fn is None:
+            q = jax.nn.softmax(ncm_params.apply_fn(ncm_params.params, buffer, position, draft_len, latent_key), -1)
+            draft = jax.random.categorical(token_key, jnp.log(q)).astype(jnp.int32)
+        else:
+            draft, logits = ncm_params.draft_fn(ncm_params.params, buffer, position, draft_len, token_key)
+            q = jax.nn.softmax(logits, -1)
         if q.ndim != 2 or q.shape[0] != draft_len:
             raise ValueError('draft logits must have shape [draft_len,vocab]')
-        draft = jax.random.categorical(token_key, jnp.log(q)).astype(jnp.int32)
         proposed = jax.lax.dynamic_update_slice(buffer, draft, (position,))
         p = jax.nn.softmax(ar_params.apply_fn(ar_params.params, proposed, position, draft_len), -1)
         if p.shape != (draft_len + 1, q.shape[-1]):
@@ -70,9 +78,45 @@ def speculative_generate(ncm_params, ar_params, prompt_ids, draft_len, max_new_t
         accepted_total += jnp.minimum(prefix, remaining)
         proposed_total += jnp.minimum(draft_len, remaining)
         return (updated, jnp.minimum(position + prefix + 1, end), accepted_total,
-                proposed_total, passes + 1, rng)
+                proposed_total, passes + 1, rng,
+                accepted_positions + ((jnp.arange(draft_len) < prefix) & (jnp.arange(draft_len) < remaining)),
+                proposed_positions + (jnp.arange(draft_len) < remaining), prefix_sum + position)
 
-    buffer, _, accepted, proposed, passes, _ = jax.lax.while_loop(condition, step,
-        (buffer, jnp.asarray(prompt_len, jnp.int32), jnp.asarray(0), jnp.asarray(0), jnp.asarray(0), key))
+    buffer, _, accepted, proposed, passes, _, accepted_positions, proposed_positions, prefix_sum = jax.lax.while_loop(condition, step,
+        (buffer, jnp.asarray(prompt_len, jnp.int32), jnp.asarray(0), jnp.asarray(0), jnp.asarray(0), key,
+         jnp.zeros(draft_len,jnp.int32),jnp.zeros(draft_len,jnp.int32),jnp.asarray(0)))
     return SpeculativeOutput(buffer[prompt_len:end], accepted / jnp.maximum(proposed, 1),
-                             max_new_tokens / passes, passes)
+                             max_new_tokens / passes, passes, accepted_positions, proposed_positions, prefix_sum / passes)
+
+
+def ar_adapter(model, params, *, draft=False):
+    """Full-prefix teacher, or a true sequential KV-cached AR proposal.
+
+    The optional draft_fn returns samples AND the logits that sampled them.
+    q_t may depend on earlier draft tokens, but never later ones. Existing
+    independent-logit adapters retain their original RNG and sampling behavior.
+    Prefix caches are rebuilt each round; no rollback/reuse claim is made.
+    """
+    def forward(params, buffer, position, length):
+        inputs=jnp.concatenate([jnp.array([256],jnp.int32),buffer[:-1]])[None]
+        valid=jnp.arange(len(buffer))[None] <= position+length
+        logits=model.apply({'params':params},inputs,valid)[0]
+        return jax.lax.dynamic_slice(logits,(position,0),(length+1,256))
+    def propose(params,buffer,position,length,key):
+        shape=(1,model.max_length,model.config.heads,model.config.width//model.config.heads)
+        cache=tuple((jnp.zeros(shape),jnp.zeros(shape)) for _ in range(model.config.layers))
+        def prefill(i,cache):
+            token=jnp.where(i==0,256,buffer[jnp.maximum(i-1,0)])[None]
+            _,cache=model.apply({'params':params},token,i,cache,method=model.decode_step)
+            return cache
+        cache=jax.lax.fori_loop(0,position,prefill,cache)
+        previous=jnp.where(position==0,256,buffer[jnp.maximum(position-1,0)])
+        def step(carry,i):
+            previous,cache=carry
+            logits,cache=model.apply({'params':params},previous[None],position+i,cache,method=model.decode_step)
+            logits=logits[0]
+            token=jax.random.categorical(jax.random.fold_in(key,i),logits).astype(jnp.int32)
+            return (token,cache),(token,logits)
+        _,(tokens,logits)=jax.lax.scan(step,(previous,cache),jnp.arange(length))
+        return tokens,logits
+    return DistributionAdapter(params,forward,propose if draft else None)
