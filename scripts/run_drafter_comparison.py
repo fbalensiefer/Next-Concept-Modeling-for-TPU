@@ -4,6 +4,7 @@ import argparse
 from dataclasses import asdict
 import hashlib
 import json
+import importlib.metadata
 from pathlib import Path
 import time
 
@@ -239,7 +240,8 @@ def run_seed(seed,profile,out,progress):
             kind='exact' if is_ar else 'upper_bound'
             qrow=dict(seed=seed,prompt_len=p,arm=arm,heldout_bpb=bpb,bpb_kind=kind,
                 continuation_bytes=denominator,continuation_sha256=provenance[1]['continuation_sha256'],
-                available_prompt_bytes=p,parameters=parameter_count(all_params[arm]) if is_ar else parameter_count(cp)+parameter_count(priors[arm])+parameter_count(books.embeddings),
+                available_prompt_bytes=p,compiler_flops=compiler_steps[arm],analytic_flops=analytic_steps[arm],
+                flop_scope='training_step',parameters=parameter_count(all_params[arm]) if is_ar else parameter_count(cp)+parameter_count(priors[arm])+parameter_count(books.embeddings),
                 parameter_match_target=target_params,teacher_bpb=teacher_bpb,teacher_steps=steps,teacher_parameters=parameter_count(tp),
                 teacher_warning='teacher within 0.3 BPB of small AR' if teacher_warning else '',**LABELS)
             quality_rows.append(qrow)
@@ -363,7 +365,8 @@ def main():
     parser.add_argument('--profile',choices=['smoke','real128'],default='smoke')
     parser.add_argument('--output',required=True)
     args=parser.parse_args();out=Path(args.output);out.mkdir(parents=True,exist_ok=True)
-    progress=dict(profile=args.profile,seeds=[200] if args.profile=='smoke' else [200,201,202],
+    progress=dict(profile=args.profile,backend=jax.default_backend(),devices=[str(d) for d in jax.devices()],
+        dtype='float32',versions={name:importlib.metadata.version(name) for name in ('jax','jaxlib','flax','optax','numpy')},seeds=[200] if args.profile=='smoke' else [200,201,202],
         drafter_rows=[],quality_rows=[],training_rows=[],checkpoint_rows=[],matched_rows=[],outcomes=[],
         limitations=['All NCM BPB values are upper bounds, not exact quality measures.',
           'Compiler estimates are static costs; analytic estimates multiply explicit measured rounds.',

@@ -128,3 +128,24 @@ def test_supported_exact_bucket_and_partial_window(tmp_path):
     np.testing.assert_array_equal(sample(4),sample(8)[:4])
     np.testing.assert_array_equal(jax.nn.log_softmax(teacher(None,jnp.zeros(16),1,3)),
                                   jax.nn.log_softmax(teacher(None,jnp.zeros(8),1,3)))
+
+
+def test_sharded_history_conditioned_sampled_logits():
+    if jax.device_count()<4:
+        pytest.skip('requires four virtual devices')
+    from jax.sharding import NamedSharding,PartitionSpec as P
+    from ncm.sharding import create_mesh
+    mesh=create_mesh(2,2,jax.devices()[:4])
+    rows=jnp.array([[0,1,2],[1,2,0],[2,0,1],[0,2,1]],jnp.int32)
+    keys=jax.random.split(jax.random.key(202),4)
+    def logits(row,key):
+        # Both history and a sampled latent affect each proposal position.
+        latent=jax.random.normal(key,(3,3))*.1
+        proposal=jnp.sin(row[:,None]+jnp.arange(3)[None]*.7)+latent
+        teacher=jnp.cos(row[:,None]*.3+jnp.arange(3)[None])
+        return proposal,teacher
+    function=jax.vmap(logits)
+    expected=jax.jit(function)(rows,keys)
+    actual=jax.jit(function,in_shardings=(NamedSharding(mesh,P('dp',None)),NamedSharding(mesh,P('dp'))))(rows,keys)
+    for a,b in zip(actual,expected):
+        np.testing.assert_allclose(a,b,atol=1e-5,rtol=1e-5)
