@@ -11,6 +11,7 @@ use serde_json::{Value, json};
 use std::{
     fs,
     path::{Path, PathBuf},
+    time::Instant,
 };
 
 #[derive(Clone, Debug)]
@@ -55,6 +56,23 @@ fn document_dataset(path: &Path, length: usize) -> Result<Dataset, String> {
             .map(|row| row.into_iter().map(i32::from).collect())
             .collect(),
         mask: windows.masks,
+        sha256: windows.sha256,
+    })
+}
+fn full_document_dataset(path: &Path, length: usize) -> Result<Dataset, String> {
+    let windows = corpus::document_byte_windows(path, length).map_err(|e| e.to_string())?;
+    let mask = windows
+        .rows
+        .iter()
+        .map(|row| vec![true; row.len()])
+        .collect();
+    Ok(Dataset {
+        tokens: windows
+            .rows
+            .into_iter()
+            .map(|row| row.into_iter().map(i32::from).collect())
+            .collect(),
+        mask,
         sha256: windows.sha256,
     })
 }
@@ -257,6 +275,19 @@ pub fn train_codec(
                 document_dataset(&valid_path, sequence_length)?,
             )
         }
+        "documents_full_windows" => {
+            let test_file = config
+                .get("test_file")
+                .and_then(Value::as_str)
+                .ok_or("test_file is required for documents_full_windows")?;
+            let test_path = resolve_path(root, PathBuf::from(test_file));
+            corpus::validate_disjoint_splits(&[&train_path, &valid_path, &test_path])
+                .map_err(|e| e.to_string())?;
+            (
+                full_document_dataset(&train_path, sequence_length)?,
+                full_document_dataset(&valid_path, sequence_length)?,
+            )
+        }
         _ => return Err(format!("unsupported data_format: {data_format}")),
     };
     if train.sha256 == valid.sha256 {
@@ -337,7 +368,17 @@ pub fn train_codec(
     let manifest_path = output.join("config.json");
     let checkpoint = output.join("checkpoint.msgpack");
     let metrics_path = output.join("metrics.jsonl");
-    let identity = json!({"config":config,"provenance":crate::validation_io::identity(root)?,"train_sha256":train.sha256,"validation_sha256":valid.sha256,"train_windows":train.tokens.len(),"validation_windows":valid.tokens.len()});
+    let test_identity = config
+        .get("test_file")
+        .and_then(Value::as_str)
+        .map(|path| {
+            let path = resolve_path(root, PathBuf::from(path));
+            fs::read(path)
+                .map(|bytes| corpus::sha256(&bytes))
+                .map_err(|e| e.to_string())
+        })
+        .transpose()?;
+    let identity = json!({"config":config,"provenance":crate::validation_io::identity(root)?,"train_sha256":train.sha256,"validation_sha256":valid.sha256,"test_sha256":test_identity,"train_windows":train.tokens.len(),"validation_windows":valid.tokens.len()});
     if manifest_path.exists() {
         let previous: Value =
             serde_json::from_slice(&fs::read(&manifest_path).map_err(|e| e.to_string())?)
@@ -396,4 +437,117 @@ pub fn train_codec(
         }
     }
     Ok(())
+}
+
+fn process_gutenberg(raw: &[u8], identifier: u32) -> Result<(String, usize), String> {
+    let text = std::str::from_utf8(raw.strip_prefix(&[0xef, 0xbb, 0xbf]).unwrap_or(raw))
+        .map_err(|e| format!("Gutenberg {identifier} is not UTF-8: {e}"))?
+        .replace("\r\n", "\n");
+    let mut start = None;
+    let mut end = None;
+    let mut offset = 0usize;
+    for line in text.split_inclusive('\n') {
+        let trimmed = line.trim_end_matches('\n');
+        if start.is_none() && trimmed.starts_with("*** START OF ") && trimmed.contains("***") {
+            start = Some(offset + line.len());
+        }
+        if start.is_some() && trimmed.starts_with("*** END OF ") && trimmed.contains("***") {
+            end = Some(offset);
+            break;
+        }
+        offset += line.len();
+    }
+    let from = start.ok_or_else(|| format!("Gutenberg {identifier} start marker not found"))?;
+    let to = end.ok_or_else(|| format!("Gutenberg {identifier} end marker not found"))?;
+    if from >= to {
+        return Err(format!("invalid Gutenberg boundaries for {identifier}"));
+    }
+    let body = text[from..to].trim().to_owned();
+    if body.is_empty() {
+        return Err(format!("Gutenberg {identifier} body is empty"));
+    }
+    let bytes = body.len();
+    Ok((body, bytes))
+}
+
+/// Prepare the three Gutenberg splits and train nine Rust-scheduled codecs via the JAX RPC worker.
+pub fn run_real_text_reconstruction(
+    root: &Path,
+    output: &Path,
+    steps: usize,
+) -> Result<(), String> {
+    if steps == 0 {
+        return Err("steps must be positive".into());
+    }
+    let output = if output.is_absolute() {
+        output.to_owned()
+    } else {
+        root.join(output)
+    };
+    if output.join("protocol.json").exists() {
+        return Err("Existing protocol; use a new output directory".into());
+    }
+    let mut corpus_rows = Vec::new();
+    for (split, id) in [("train", 11u32), ("validation", 12), ("test", 13)] {
+        let raw_path = output.join("raw").join(format!("{id}.txt"));
+        let raw = fs::read(&raw_path).map_err(|e| format!("{}: {e}", raw_path.display()))?;
+        let (text, byte_count) = process_gutenberg(&raw, id)?;
+        let document = json!({"id":format!("gutenberg-{id}"),"text":text});
+        let mut line = serde_json::to_string(&document).map_err(|e| e.to_string())?;
+        line.push('\n');
+        let processed = output.join(format!("{split}.jsonl"));
+        fs::write(&processed, &line).map_err(|e| e.to_string())?;
+        corpus_rows.push(json!({"split":split,"id":id,"source":format!("https://www.gutenberg.org/ebooks/{id}"),"raw_sha256":corpus::sha256(&raw),"processed_sha256":corpus::sha256(line.as_bytes()),"bytes":byte_count}));
+    }
+    let mut engine = EngineClient::start(root)?;
+    let engine_info = engine.describe()?;
+    drop(engine);
+    let identity = crate::validation_io::identity(root)?;
+    let mut sources = identity["source_sha256"].clone();
+    let workload_path = root.join("rust/src/workloads.rs");
+    sources["rust/src/workloads.rs"] = json!(corpus::sha256(
+        &fs::read(workload_path).map_err(|e| e.to_string())?
+    ));
+    let protocol = json!({"corpus":corpus_rows,"lengths":[32,128,512],"seeds":[0,1,2],"steps":steps,"batch_size":4,"sources":sources,"python":engine_info["python"],"versions":{"jax":engine_info["jax"],"jaxlib":engine_info["jaxlib"],"flax":engine_info["flax"],"optax":engine_info["optax"],"numpy":engine_info["numpy"]},"devices":engine_info["devices"],"selection":"Final checkpoint; validation is descriptive; no test reconstruction","limitations":"One book per split, one author, short bounded fits; not a quality or speed comparison"});
+    write_json(&output.join("protocol.json"), &protocol)?;
+    let mut summary = Vec::new();
+    for length in [32usize, 128, 512] {
+        for seed in [0u64, 1, 2] {
+            let config = json!({"data_format":"documents_full_windows","train_file":output.join("train.jsonl"),"validation_file":output.join("validation.jsonl"),"test_file":output.join("test.jsonl"),"lengths":[length/4,length/2,length],"codebook_size":16,"dim":16,"width":16,"heads":2,"layers":1,"batch_size":4,"seed":seed,"learning_rate":0.003,"steps":steps,"checkpoint_every":steps,"entropy":0.0,"prior":0.0});
+            let config_path = output.join(format!("config-length-{length}-seed-{seed}.json"));
+            write_json(&config_path, &config)?;
+            let destination = output.join(format!("length-{length}-seed-{seed}"));
+            let started = Instant::now();
+            train_codec(root, &config_path, &destination, false)?;
+            let elapsed = started.elapsed().as_secs_f64();
+            let metrics =
+                fs::read_to_string(destination.join("metrics.jsonl")).map_err(|e| e.to_string())?;
+            let record = metrics
+                .lines()
+                .last()
+                .ok_or("training produced no metric record")?;
+            let record: Value = serde_json::from_str(record).map_err(|e| e.to_string())?;
+            summary.push(json!({"length":length,"seed":seed,"elapsed_seconds":elapsed,"training_byte_exposure":steps*4*length,"metrics":record}));
+            write_json(&output.join("summary.json"), &Value::Array(summary.clone()))?;
+        }
+    }
+    Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::process_gutenberg;
+
+    #[test]
+    fn strips_gutenberg_headers_and_normalizes_line_endings() {
+        let input = b"\xef\xbb\xbfHeader\r\n*** START OF THE BOOK ***\r\n\r\nText\r\n*** END OF THE BOOK ***\r\nFooter\r\n";
+        let (body, bytes) = process_gutenberg(input, 11).unwrap();
+        assert_eq!(body, "Text");
+        assert_eq!(bytes, 4);
+    }
+
+    #[test]
+    fn rejects_missing_gutenberg_boundaries() {
+        assert!(process_gutenberg(b"plain text", 13).is_err());
+    }
 }

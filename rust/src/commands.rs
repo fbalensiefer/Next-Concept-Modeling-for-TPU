@@ -28,10 +28,6 @@ pub const COMMANDS: &[(&str, &str)] = &[
         "ncm.workloads.research.summarize_text_dependency_priors",
     ),
     (
-        "real-text-reconstruction",
-        "ncm.workloads.research.real_text_reconstruction",
-    ),
-    (
         "write-domain-report",
         "ncm.workloads.research.write_domain_report",
     ),

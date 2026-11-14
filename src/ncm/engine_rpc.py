@@ -73,15 +73,21 @@ def dispatch(method, params):
     if method == "engine.ping":
         return {"status": "ready"}
     if method == "engine.describe":
+        import platform
         import flax
         import jax
         import jaxlib
+        import numpy
+        import optax
 
         return {
             "engine": "ncm-jax-flax",
             "jax": jax.__version__,
             "jaxlib": jaxlib.__version__,
             "flax": flax.__version__,
+            "optax": optax.__version__,
+            "numpy": numpy.__version__,
+            "python": platform.python_version(),
             "backend": jax.default_backend(),
             "devices": [str(device) for device in jax.devices()],
             "methods": [
@@ -149,6 +155,7 @@ def dispatch(method, params):
             "state": state,
             "sharding": sharding,
             "train_step": None,
+            "forward": None,
         }
         return {
             "engine_id": engine_id,
@@ -166,12 +173,19 @@ def dispatch(method, params):
         entry = _entry(params)
         if method == "forward":
             batch = jax.device_put(_batch(params["batch"]), entry["sharding"])
-            loss, (metrics, output) = entry["model"].apply(
-                {"params": entry["state"].params},
-                batch,
-                entry["state"].codebooks,
-                training=False,
-                return_latent=False,
+            if entry["forward"] is None:
+                model = entry["model"]
+                entry["forward"] = jax.jit(
+                    lambda model_params, codebooks, batch: model.apply(
+                        {"params": model_params},
+                        batch,
+                        codebooks,
+                        training=False,
+                        return_latent=False,
+                    )
+                )
+            loss, (metrics, output) = entry["forward"](
+                entry["state"].params, entry["state"].codebooks, batch
             )
             return {
                 "loss": _json_value(loss),

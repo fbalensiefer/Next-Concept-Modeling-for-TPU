@@ -8,6 +8,7 @@ Run commands from the repository or a subdirectory:
 export NCM_PYTHON="$PWD/.venv312/bin/python"
 cargo run --bin ncm-run -- --list
 cargo run --bin ncm-run -- train --config examples/text/config.json --output runs/text-rust
+cargo run --bin ncm-run -- real-text-reconstruction --output runs/real-text-pilot-rust --steps 100
 cargo run --bin ncm-run -- replay-dependency-results
 cargo run --bin ncm-run -- build-papers --build-dir /tmp/ncm-papers
 cargo run --bin ncm-run -- generate-bibliographies --check
@@ -16,7 +17,7 @@ cargo run --bin ncm-run -- audit-papers
 
 `NCM_PYTHON` selects the Python environment and defaults to `python3`. `NCM_TECTONIC` selects the paper compiler and defaults to `tectonic`. Paper builds accept `--offline` once the Tectonic resource cache is populated. The training command reads text or document JSONL inputs in Rust, and sends batches, optimizer steps, evaluation requests, and checkpoint operations through the JSON-RPC worker. Its manifest records input hashes and implementation provenance.
 
-Legacy Python scripts remain in the repository for output-parity checks. Codec training, maintenance and domain summaries, dependency-prior summaries, source-law baselines, alignment diagnostics, reconstruction-capacity reporting, paper result generation, bibliography generation, paper auditing, and manifest refreshes run in Rust. Specialized model-backed benchmark and reconstruction runners, along with other historical diagnostics, still use the compatibility launcher while their host protocols and JAX worker operations are migrated.
+Legacy Python scripts remain in the repository for output-parity checks. Codec training, the bounded real-text reconstruction pilot, maintenance and domain summaries, dependency-prior summaries, source-law baselines, alignment diagnostics, reconstruction-capacity reporting, paper result generation, bibliography generation, paper auditing, and manifest refreshes run in Rust. The decisive benchmark, drafter comparison, TC probe, and other historical diagnostics still use the compatibility launcher while their host protocols and JAX worker operations are migrated.
 
 Configuration and text fixtures remain in `examples/`; manuscript sources and evidence inputs remain in `paper/`. The initial duplicate Rust model primitives were removed because model execution belongs to JAX.
 
