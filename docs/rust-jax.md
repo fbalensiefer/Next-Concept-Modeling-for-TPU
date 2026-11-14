@@ -19,3 +19,9 @@ The former `examples/*.py`, `scripts/*.py`, and `paper/*.py` entrypoints have be
 Configuration and text fixtures remain in `examples/`; manuscript sources and evidence inputs remain in `paper/`. The initial duplicate Rust model primitives were removed because model execution belongs to JAX.
 
 Rust library modules `corpus` and `evaluation` provide the first native host-side data and metric implementations. The Python research workers still use Python data helpers; migrating those remaining workflows is ongoing.
+
+## Model-engine IPC
+
+Rust starts one `ncm.engine_rpc` process and exchanges one JSON-RPC 2.0 request and response per line over stdin/stdout. Diagnostics belong on stderr. The initial methods are `engine.ping` and `engine.describe`; this is the boundary for adding model operations such as initialization, train steps, and inference. Tensor payloads and checkpoint transfer formats must be specified per method before workloads move across the boundary. Existing research commands still launch packaged Python workloads and have not all been migrated to this protocol.
+
+Run `cargo run --bin ncm-run -- engine-info` to check that Rust can start the configured JAX/Flax engine and query its devices.
