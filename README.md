@@ -1,50 +1,47 @@
 # Next-Concept Modeling for TPU
 
-A research implementation of [Next-Concept Modeling](https://arxiv.org/abs/2610.14162). The target architecture assigns orchestration, corpus preparation, statistics, reporting, and experiment protocols to Rust, with Python/JAX/Flax as the model engine for tensor computation, gradients, and accelerator execution. The migration is in progress; Rust now owns core host utilities and the codec-training runner, while specialized legacy runners remain available during parity work.
+A research implementation of [Next-Concept Modeling](https://arxiv.org/abs/2610.14162). Rust owns experiment orchestration, corpus preparation, statistics, and reports. A headless Python/JAX/Flax worker owns model definitions, tensor computation, gradients, optimizer updates, and accelerator execution. Rust communicates with that worker only through JSON-RPC over stdio.
 
-The central question is: **can a learned hierarchy make text generation faster while preserving information and modeling the dependencies that matter?**
-
-The immediate focus is a modest real-text experiment comparing raw bytes, fixed blocks and learned RVQ representations, followed by minimal dependency-aware priors and a small end-to-end TPU feasibility check. Success means a better quality–latency tradeoff for the complete generator and decoder. SCALE and pretrained-model conversion are later, conditional extensions.
-
-See the [experimental contract and decision gates](docs/experimental-contract.md) for the next work package, measurement rules, existing evidence and open execution prerequisites. Current CPU and synthetic-domain results do not establish real-text quality or TPU acceleration.
-
-Project by Fabian Balensiefer. The underlying NCM method is due to Kumbong et al.
+The central research question is whether a learned hierarchy can improve the quality–latency tradeoff for complete text generation, including its decoder. Current CPU and synthetic-domain results do not establish real-text quality or TPU acceleration. See the [experimental contract](docs/experimental-contract.md) for measurement rules, evidence, and open gates.
 
 ## Quick start
 
-Python 3.12 is the tested development environment.
+Install Rust and Python 3.12. Set up the JAX model-engine environment, then use the native Rust CLI for research commands:
 
-```bash
+```sh
 python3.12 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[test]'
-python -m pytest -q
-cargo run --bin ncm-run -- train --config examples/text/config.json --output runs/text-rust
+export NCM_PYTHON="$PWD/.venv/bin/python"
+
+cargo run --bin ncm-run -- --list
+cargo run --bin ncm-run -- engine-info
+cargo run --bin ncm-run -- train \
+  --config examples/text/config.json \
+  --output runs/text-rust
 ```
 
-The [first document-separated real-text pilot](reports/real-text-reconstruction/report.md) records substantial reconstruction errors after short training runs. See the [reproduction instructions](docs/real-text-reconstruction.md). A [paired duration/capacity follow-up](reports/reconstruction-capacity/report.md) tests longer training and larger codebooks against exact representation controls.
+`NCM_PYTHON` selects the JAX worker environment and defaults to `python3`. See the [Rust/JAX guide](docs/rust-jax.md) for the IPC contract, [real-text pilot guide](docs/real-text-reconstruction.md), and [benchmark guide](docs/decisive-benchmark.md).
 
-The [real-text dependency controls](reports/text-dependency-priors/report.md) compare independent and first-order priors on all three representations; they show local dependency gains without establishing a learned-code generation advantage.
+## Research status
 
-## Research papers
+The [document-separated real-text pilot](reports/real-text-reconstruction/report.md) records reconstruction errors after short training runs. The [dependency controls](reports/text-dependency-priors/report.md) show local dependency gains without establishing a learned-code generation advantage.
+
+Research papers:
 
 - [NCM systems paper (PDF)](output/pdf/ncm_systems_paper.pdf)
 - [SCALE research paper (PDF)](output/pdf/SCALE_research_paper.pdf)
+- [Research overview](Research.md)
+- [Paper source and build guide](paper/README.md)
 
-See [Research.md](Research.md) for brief introductions and [paper sources](paper/README.md) for build instructions.
+## Repository layout
 
-## Explore
+- `rust/`: native command line, orchestration, data and report logic
+- `src/ncm/`: JAX/Flax engine modules and the headless JSON-RPC worker
+- `src/ncm/workloads/`: historical sources for experiments without a native Rust replacement; not packaged or exposed by the CLI
+- `tests/`: Rust contract tests and Python model-engine tests
+- `examples/`, `paper/`, and `reports/`: configurations, manuscripts, and evidence
 
-[Source](src/ncm/) · [Examples](examples/) · [Documentation](docs/) · [Experiment reports](reports/README.md)
+Historical Python research scripts that have native Rust replacements are removed. Remaining legacy research files are not used by `ncm-run`; all supported commands are listed by `cargo run --bin ncm-run -- --list`.
 
-[Citation](CITATION.cff) · [MIT license](LICENSE)
-
-Hybrid coarse-AR generation, exact teacher verification, and the real-text experiment
-are described in [the decisive benchmark guide](docs/decisive-benchmark.md).
-
-Use `cargo run --bin ncm-run -- train` to launch a JAX
-workload through the Rust orchestrator. Set `NCM_PYTHON` to choose the Python
-environment. JAX and Flax remain the model engine; Research workloads live in `src/ncm/workloads/`; use `--list` to see the
-Rust commands. Standalone Python entrypoints have been removed. The Rust crate is in [`rust/src`](rust/src/).
-
-See the [Rust/JAX command guide](docs/rust-jax.md) for environment selection and the removed-script command mapping.
+Project by Fabian Balensiefer. The underlying NCM method is due to Kumbong et al.

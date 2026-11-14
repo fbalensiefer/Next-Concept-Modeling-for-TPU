@@ -1,5 +1,4 @@
 //! Command dispatch and paper-build orchestration. Model computation stays in JAX.
-use ncm::commands::COMMANDS;
 use ncm::rpc::{Request, Response};
 use serde_json::{Value, json};
 use std::{
@@ -9,27 +8,6 @@ use std::{
     path::{Path, PathBuf},
     process::{Command, ExitCode, Stdio},
 };
-fn worker(root: &Path, module: &str, args: &[OsString]) -> Result<(), String> {
-    let python = env::var_os("NCM_PYTHON").unwrap_or_else(|| "python3".into());
-    let mut paths = vec![root.join("src")];
-    if let Some(old) = env::var_os("PYTHONPATH") {
-        paths.extend(env::split_paths(&old));
-    }
-    let status = Command::new(python)
-        .args(["-m", module])
-        .args(args)
-        .current_dir(root)
-        .env(
-            "PYTHONPATH",
-            env::join_paths(paths).map_err(|e| e.to_string())?,
-        )
-        .status()
-        .map_err(|e| format!("could not start worker: {e}"))?;
-    if !status.success() {
-        std::process::exit(status.code().unwrap_or(1));
-    }
-    Ok(())
-}
 fn engine_call(root: &Path, method: &str) -> Result<Value, String> {
     let python = env::var_os("NCM_PYTHON").unwrap_or_else(|| "python3".into());
     let mut paths = vec![root.join("src")];
@@ -286,11 +264,8 @@ fn main() -> ExitCode {
     let args: Vec<_> = env::args_os().skip(1).collect();
     if args.is_empty() || args[0] == "--help" || args[0] == "--list" {
         println!(
-            "ncm-run <command> [arguments]\n\nCommands:\n  engine-info\n  build-papers\n  train\n  real-text-reconstruction\n  run-tc-probe\n  run-decisive-benchmark\n  run-drafter-comparison\n  summarize-maintenance\n  summarize-domain-validation\n  summarize-dependency-results\n  domain-source-baselines\n  generate-bibliographies\n  update-manifests\n  audit-papers"
+            "ncm-run <command> [arguments]\n\nCommands:\n  engine-info\n  build-papers\n  train\n  real-text-reconstruction\n  run-tc-probe\n  run-decisive-benchmark\n  run-drafter-comparison\n  summarize-maintenance\n  summarize-domain-validation\n  summarize-dependency-results\n  domain-source-baselines\n  alignment-diagnosis\n  summarize-reconstruction-capacity\n  generate-results\n  generate-recent-results\n  generate-bibliographies\n  update-manifests\n  audit-papers"
         );
-        for (name, _) in COMMANDS {
-            println!("  {name}");
-        }
         return ExitCode::SUCCESS;
     }
     let root = env::current_dir().ok().and_then(|p| {
@@ -480,8 +455,6 @@ fn main() -> ExitCode {
         update_manifests(&root, &args[1..])
     } else if name == "audit-papers" {
         audit_papers(&root, &args[1..])
-    } else if let Some((_, module)) = COMMANDS.iter().find(|(n, _)| *n == name) {
-        worker(&root, module, &args[1..])
     } else {
         eprintln!("unknown command: {name}; use --list");
         return ExitCode::from(2);

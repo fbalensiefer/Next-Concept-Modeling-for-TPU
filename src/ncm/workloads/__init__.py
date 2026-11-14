@@ -1,1 +1,1 @@
-"""Packaged research workloads launched by the Rust orchestrator."""
+"""Historical research scripts; not packaged or launched by the Rust CLI."""

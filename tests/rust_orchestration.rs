@@ -34,6 +34,14 @@ fn native_drafter_command_does_not_invoke_python_launcher() {
         assert!(output.stdout.is_empty());
         assert!(String::from_utf8_lossy(&output.stderr).contains(expected_error));
     }
+    let old_command = Command::new(env!("CARGO_BIN_EXE_ncm-run"))
+        .current_dir(root)
+        .env("NCM_PYTHON", &fake)
+        .arg("audit-maintenance")
+        .output()
+        .unwrap();
+    assert_eq!(old_command.status.code(), Some(2));
+    assert!(String::from_utf8_lossy(&old_command.stderr).contains("unknown command"));
     assert!(!dir.join("calls").exists());
     fs::remove_dir_all(dir).unwrap();
 }
@@ -55,6 +63,10 @@ fn unknown_command_fails_and_help_lists_commands() {
     let listing = String::from_utf8(output.stdout).unwrap();
     assert!(listing.contains("build-papers"));
     assert!(listing.contains("summarize-maintenance"));
+    assert!(listing.contains("run-decisive-benchmark"));
+    assert!(listing.contains("run-drafter-comparison"));
+    assert!(!listing.contains("audit-maintenance"));
+    assert!(!listing.contains("text-dependency-priors"));
 }
 
 #[cfg(unix)]

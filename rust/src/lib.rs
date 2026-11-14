@@ -1,6 +1,5 @@
-//! Rust orchestration for packaged Python/JAX research workloads.
+//! Native Rust research orchestration with a headless JAX model engine.
 pub mod accounting;
-pub mod commands;
 pub mod corpus;
 pub mod dependence;
 pub mod evaluation;

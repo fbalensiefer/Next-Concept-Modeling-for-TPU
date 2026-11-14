@@ -12,12 +12,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      - run: cargo fmt -- --check
+        with:
+          components: clippy, rustfmt
+      - run: cargo fmt --check
+      - run: cargo clippy --all-targets --locked -- -D warnings
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - run: python -m pip install -c .github/validation-constraints.txt '.[test]'
       - run: cargo test --locked
+      - run: cargo test --locked --test rust_engine_ipc
       - run: python -m pytest -q
       - uses: actions/upload-artifact@v4
         if: always()

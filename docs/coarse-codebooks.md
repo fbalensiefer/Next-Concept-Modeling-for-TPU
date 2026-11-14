@@ -5,13 +5,14 @@ tracks hard assignments independently of centroid learning, and recovers dead
 codes using current training activations. Fine codebooks retain the existing EMA
 algorithm. Neural parameters keep their existing optimizer.
 
-## Enable and run
+## Archived experiment
 
-```bash
-python -m ncm.scale_experiment --config examples/scale/coarse_stability.json --output runs/coarse-stability
-python -m ncm.scale_experiment --config examples/scale/coarse_stability.json --output runs/coarse-stability --resume
-python -m pytest -q
-```
+The coarse-codebook stability study and its Python experiment runner are
+historical artifacts, not a supported `ncm-run` workload. The recorded protocol
+and results are in
+[`reports/coarse-codebook-stability`](../reports/coarse-codebook-stability/).
+The model components remain in the JAX core and can be initialized and trained
+through the Rust worker interface documented in [Rust/JAX](rust-jax.md).
 
 The preset applies the same maintenance configuration to `reconstruction`,
 `alignment`, `dependency`, and `alignment_dependency`. It uses known-seed checks

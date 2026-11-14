@@ -1,0 +1,11 @@
+{
+  "transformer": {
+    "width": 8,
+    "heads": 2,
+    "layers": 1,
+    "mlp_ratio": 2,
+    "dropout": 0.0
+  },
+  "max_length": 32,
+  "learning_rate": 0.001
+}

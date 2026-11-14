@@ -83,6 +83,25 @@ fn native_drafter_runner_verifies_jsonl_prompt_suites_and_matches_archived_csv_c
     assert_eq!(report["aggregates"].as_array().unwrap().len(), 1);
     assert_eq!(report["aggregates"][0]["prompt_count"], 2);
     assert!(report["paired_throughput_vs_teacher"]["small_ar"]["ci95"].is_array());
+    let drafter_rows = report["rows"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|row| row["drafter"] == "small_ar")
+        .collect::<Vec<_>>();
+    assert_eq!(drafter_rows.len(), 2);
+    for row in drafter_rows {
+        assert!(row["analytic_flops"].as_f64().unwrap() > 0.0);
+        assert!(row["analytic_flops_per_round"].as_f64().unwrap() > 0.0);
+        assert!(row.get("teacher_bpb").is_none());
+        assert!(row.get("compiler_flops").is_none());
+    }
+    assert!(
+        report["aggregates"][0]["mean_analytic_flops"]
+            .as_f64()
+            .unwrap()
+            > 0.0
+    );
     assert!(output.join("paired_statistics.json").is_file());
     let csv = fs::read_to_string(output.join("drafter_comparison.csv")).unwrap();
     let header = csv.lines().next().unwrap();
@@ -109,5 +128,10 @@ fn native_drafter_runner_verifies_jsonl_prompt_suites_and_matches_archived_csv_c
         assert!(old.split(',').any(|x| x == field), "baseline lacks {field}");
     }
     assert!(output.join("summary.md").is_file());
+    assert!(
+        fs::read_to_string(output.join("summary.md"))
+            .unwrap()
+            .contains("Analytic FLOPs")
+    );
     let _ = fs::remove_dir_all(d);
 }

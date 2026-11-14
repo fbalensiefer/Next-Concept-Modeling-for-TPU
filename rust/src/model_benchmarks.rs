@@ -1,6 +1,7 @@
 //! Rust-owned evaluation and speculative-drafter orchestration over JAX RPC.
 use crate::{
     corpus,
+    flops::{FlopModel, ar_cached_generation, transformer_forward},
     rpc::{
         CausalArConfig, CausalArEvaluateRequest, CausalArInitRequest, CausalArTrainStepRequest,
         EngineClient, GenerateRequest, SpeculativeVerifyRequest,
@@ -70,10 +71,18 @@ fn initial_request(config: CausalArConfig, seed: u32) -> CausalArInitRequest {
         seed,
     }
 }
+fn flop_model(config: &CausalArConfig) -> FlopModel {
+    let mut model = FlopModel::new(
+        config.transformer.width,
+        config.transformer.layers,
+        config.transformer.heads,
+    );
+    model.mlp_ratio = config.transformer.mlp_ratio;
+    model
+}
 fn train(
     engine: &mut EngineClient,
     id: &str,
-    config: &CausalArConfig,
     data: &Rows,
     steps: usize,
     batch_size: usize,
@@ -101,7 +110,6 @@ fn train(
             distillation_weight: 0.,
         })?;
     }
-    let _ = config;
     Ok(())
 }
 
@@ -225,7 +233,6 @@ impl DecisiveBenchmarkRunner {
             train(
                 &mut engine,
                 &handle.engine_id,
-                &config,
                 data,
                 steps,
                 batch_size,
@@ -329,6 +336,8 @@ fn aggregate_drafter_rows(rows: &[Map<String, Value>]) -> Vec<Map<String, Value>
             let throughput = values("tokens_per_second");
             let latency = values("elapsed_seconds");
             let speedup = values("speedup_vs_cached_teacher");
+            let flops = values("analytic_flops");
+            let flops_per_round = values("analytic_flops_per_round");
             let mut times = latency.clone();
             times.sort_by(f64::total_cmp);
             let median = if times.is_empty() {
@@ -354,6 +363,11 @@ fn aggregate_drafter_rows(rows: &[Map<String, Value>]) -> Vec<Map<String, Value>
             row.insert(
                 "mean_speedup_vs_cached_teacher".into(),
                 json!(mean(&speedup)),
+            );
+            row.insert("mean_analytic_flops".into(), json!(mean(&flops)));
+            row.insert(
+                "mean_analytic_flops_per_round".into(),
+                json!(mean(&flops_per_round)),
             );
             row
         })
@@ -483,14 +497,22 @@ impl DrafterComparisonRunner {
             reference_row.insert("rounds".into(), json!(max_new_tokens));
             reference_row.insert("speedup_vs_cached_teacher".into(), json!(1.));
             reference_row.insert("measured_rounds".into(), json!(max_new_tokens));
-            reference_row.insert("compiler_flops".into(), Value::Null);
-            reference_row.insert("analytic_flops_per_round".into(), Value::Null);
-            reference_row.insert("analytic_flops".into(), Value::Null);
-            reference_row.insert("analytic_label".into(), json!("not reported"));
-            reference_row.insert("compiler_label".into(), json!("not reported"));
-            reference_row.insert("bpb_kind".into(), json!("exact_teacher"));
-            reference_row.insert("teacher_bpb".into(), Value::Null);
-            reference_row.insert("teacher_warning".into(), json!(false));
+            let target_flops = ar_cached_generation(
+                flop_model(&target_config),
+                1,
+                target_config.max_length,
+                prompt.len(),
+                max_new_tokens,
+            );
+            reference_row.insert(
+                "analytic_flops_per_round".into(),
+                json!(target_flops / max_new_tokens as f64),
+            );
+            reference_row.insert("analytic_flops".into(), json!(target_flops));
+            reference_row.insert(
+                "analytic_label".into(),
+                json!("Rust analytic cached-AR estimate"),
+            );
             reference_row.insert(
                 "measured_rounds_kind".into(),
                 json!("single direct autoregressive generation"),
@@ -521,11 +543,25 @@ impl DrafterComparisonRunner {
                 let mut accepted_by_position = vec![0usize; draft_len];
                 let mut proposed_by_position = vec![0usize; draft_len];
                 let mut prefix_sum = 0usize;
+                let mut analytic_flops = 0.0;
                 let started = Instant::now();
                 while context.len() - prompt.len() < max_new_tokens {
                     prefix_sum += context.len();
                     let remaining = max_new_tokens - (context.len() - prompt.len());
                     let d = remaining.min(draft_len);
+                    analytic_flops += ar_cached_generation(
+                        flop_model(config),
+                        1,
+                        config.max_length,
+                        context.len(),
+                        d,
+                    );
+                    analytic_flops += transformer_forward(
+                        flop_model(&target_config),
+                        1,
+                        context.len() + d + 1,
+                        true,
+                    );
                     let generated = engine.generate(&GenerateRequest {
                         engine_id: draft_id.clone(),
                         prompts: vec![context.clone()],
@@ -633,14 +669,15 @@ impl DrafterComparisonRunner {
                 );
                 row.insert("measured_rounds".into(), json!(rounds));
                 row.insert("mean_sequence_rounds".into(), json!(rounds));
-                row.insert("compiler_flops".into(), Value::Null);
-                row.insert("analytic_flops_per_round".into(), Value::Null);
-                row.insert("analytic_flops".into(), Value::Null);
-                row.insert("analytic_label".into(), json!("not reported"));
-                row.insert("compiler_label".into(), json!("not reported"));
-                row.insert("bpb_kind".into(), json!("exact_teacher"));
-                row.insert("teacher_bpb".into(), Value::Null);
-                row.insert("teacher_warning".into(), json!(false));
+                row.insert(
+                    "analytic_flops_per_round".into(),
+                    json!(analytic_flops / rounds.max(1) as f64),
+                );
+                row.insert("analytic_flops".into(), json!(analytic_flops));
+                row.insert(
+                    "analytic_label".into(),
+                    json!("Rust analytic cached-drafter plus target-verification estimate"),
+                );
                 row.insert(
                     "measured_rounds_kind".into(),
                     json!("single sequence measured round count"),
@@ -685,19 +722,32 @@ impl DrafterComparisonRunner {
             &paired_statistics,
         )?;
         let mut md = String::from(
-            "# Drafter comparison\n\n| Prompt | Drafter | Acceptance | Tokens/s | Rounds |\n|---|---|---:|---:|---:|\n",
+            "# Drafter comparison\n\n## Per-prompt results\n\n| Prompt | Drafter | Acceptance | Tokens/s | Rounds | Analytic FLOPs |\n|---|---|---:|---:|---:|---:|\n",
         );
-        md.push_str("\n## Aggregate comparison\n\n| Drafter | Prompts | Mean acceptance | Acceptance variance | Mean tokens/s | Median elapsed (s) | Mean speedup |\n|---|---:|---:|---:|---:|---:|---:|\n");
+        for row in &output_rows {
+            md.push_str(&format!(
+                "| {} | {} | {:.4} | {:.2} | {} | {:.3e} |\n",
+                row["prompt_id"].as_str().unwrap_or(""),
+                row["drafter"].as_str().unwrap_or(""),
+                row["acceptance_rate"].as_f64().unwrap_or(0.),
+                row["tokens_per_second"].as_f64().unwrap_or(0.),
+                row["rounds"].as_u64().unwrap_or(0),
+                row["analytic_flops"].as_f64().unwrap_or(0.)
+            ));
+        }
+        md.push_str("\n## Aggregate comparison\n\n| Drafter | Prompts | Mean acceptance | Acceptance variance | Mean tokens/s | Median elapsed (s) | Mean speedup | Mean analytic FLOPs | FLOPs/round |\n|---|---:|---:|---:|---:|---:|---:|---:|---:|\n");
         for row in &aggregates {
             md.push_str(&format!(
-                "| {} | {} | {:.4} | {:.6} | {:.2} | {:.4} | {:.3} |\n",
+                "| {} | {} | {:.4} | {:.6} | {:.2} | {:.4} | {:.3} | {:.3e} | {:.3e} |\n",
                 row["drafter"].as_str().unwrap_or(""),
                 row["prompt_count"].as_u64().unwrap_or(0),
                 row["mean_acceptance"].as_f64().unwrap_or(0.),
                 row["acceptance_variance"].as_f64().unwrap_or(0.),
                 row["mean_tokens_per_second"].as_f64().unwrap_or(0.),
                 row["median_elapsed_seconds"].as_f64().unwrap_or(0.),
-                row["mean_speedup_vs_cached_teacher"].as_f64().unwrap_or(0.)
+                row["mean_speedup_vs_cached_teacher"].as_f64().unwrap_or(0.),
+                row["mean_analytic_flops"].as_f64().unwrap_or(0.),
+                row["mean_analytic_flops_per_round"].as_f64().unwrap_or(0.)
             ));
         }
         md.push_str("\nPaired bootstrap mean throughput difference versus direct target generation (draft minus target, tokens/s):\n\n| Drafter | Mean difference | 95% CI | Prompts |\n|---|---:|---:|---:|\n");
@@ -712,16 +762,6 @@ impl DrafterComparisonRunner {
                     value["label"].as_str().unwrap_or("")
                 ));
             }
-        }
-        for row in &output_rows {
-            md.push_str(&format!(
-                "| {} | {} | {:.4} | {:.2} | {} |\n",
-                row["prompt_id"].as_str().unwrap_or(""),
-                row["drafter"].as_str().unwrap_or(""),
-                row["acceptance_rate"].as_f64().unwrap_or(0.),
-                row["tokens_per_second"].as_f64().unwrap_or(0.),
-                row["rounds"].as_u64().unwrap_or(0)
-            ));
         }
         fs::write(output.join("summary.md"), md).map_err(|e| e.to_string())?;
         Ok(())

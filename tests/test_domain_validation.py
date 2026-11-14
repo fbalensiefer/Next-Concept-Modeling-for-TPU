@@ -20,26 +20,3 @@ def test_domain_laws_have_full_normalized_support_and_expected_structure(name,le
         np.testing.assert_allclose(p@(bits[:,0]*bits[:,1]),.25)
     elif name=='skewed_modes':
         np.testing.assert_allclose(p[0],.8+.1/(2**length))
-
-
-@pytest.mark.parametrize('name,levels',[
-    ('noisy_parity',[list(range(7)),[7]]),
-    ('persistent_markov',[[3],[1,5],[0,2,4,6],[7]]),
-])
-def test_dependency_aware_source_schedules_recover_the_exact_law(name,levels):
-    from ncm.workloads.research.domain_source_baselines import scheduled_law
-    tokens,p=source_law(name,8)
-    q=scheduled_law(tokens,p,levels)
-    np.testing.assert_allclose(q,p,atol=1e-14,rtol=1e-14)
-
-
-@pytest.mark.parametrize('name', ['persistent_markov','noisy_parity'])
-def test_invertible_innovations_preserve_every_input_and_factorize(name):
-    from ncm.workloads.research.domain_source_baselines import innovations,invert_innovations
-    tokens,p=source_law(name,8)
-    values=innovations(name,tokens-65)
-    np.testing.assert_array_equal(invert_innovations(name,values),tokens-65)
-    assert len(np.unique(values,axis=0))==256
-    marginals=p@values
-    product=np.prod(np.where(values,marginals,1-marginals),axis=1)
-    np.testing.assert_allclose(product,p,atol=1e-14,rtol=1e-14)

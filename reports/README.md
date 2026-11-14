@@ -28,22 +28,23 @@ reports 44 passing tests, exact resume checks and virtual four-device CPU checks
 These CPU and finite-domain results do not establish TPU performance or useful
 large-language-model transfer.
 
-Run the current maintained experiment from the repository root:
+Run the native Rust training path from the repository root:
 
 ```bash
-python -m ncm.scale_experiment --config examples/scale/coarse_stability.json --output runs/coarse-stability
+cargo run --bin ncm-run -- train --config examples/text/config.json --output runs/text-rust
+cargo run --bin ncm-run -- real-text-reconstruction --output runs/real-text-pilot-rust --steps 100
 ```
 
-The experiment saves its exact package source snapshot and protocol before
-training. See the repository README and `docs/coarse-codebooks.md` for other
-experiments and configuration details.
+The scale follow-up study is a historical Python/JAX experiment and is not a
+supported `ncm-run` command. See `docs/coarse-codebooks.md` for its archived
+protocol. Current supported commands are listed by `cargo run --bin ncm-run -- --list`.
 
-## Replay without trained checkpoints
+## Native report regeneration without trained checkpoints
 
-- `python examples/replay_dependency_results.py` verifies all 480 fits from compressed committed codec tables.
-- `python examples/alignment_diagnosis.py` replays the feature-target diagnosis from committed activations.
-- `python examples/domain_source_baselines.py` verifies analytic schedule and invertible-innovation controls.
-- `python examples/summarize_maintenance.py` and `python examples/summarize_domain_validation.py --from-reports` regenerate summaries from archived observations.
+- `cargo run --bin ncm-run -- summarize-dependency-results` rebuilds the dependency analysis from committed codec tables.
+- `cargo run --bin ncm-run -- alignment-diagnosis` regenerates the feature-target diagnosis.
+- `cargo run --bin ncm-run -- domain-source-baselines` verifies analytic schedule and invertible-innovation controls.
+- `cargo run --bin ncm-run -- summarize-maintenance` and `cargo run --bin ncm-run -- summarize-domain-validation --from-reports` regenerate summaries from archived observations.
 
 The maintenance runner now includes its small historical teacher-domain input. The broader-domain runner generates its own sources and feature teachers. Training checkpoints remain ignored; the public replay inputs record their identities without requiring those checkpoints. Historical protocols and source hashes identify the actual executed versions, which can differ from later replay/diagnostic improvements. These counts are model fits, not independent dataset replications.
 
