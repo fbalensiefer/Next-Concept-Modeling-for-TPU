@@ -4,10 +4,6 @@ pub const COMMANDS: &[(&str, &str)] = &[
         "ncm.workloads.research.audit_maintenance",
     ),
     (
-        "alignment-diagnosis",
-        "ncm.workloads.research.alignment_diagnosis",
-    ),
-    (
         "write-dependency-report",
         "ncm.workloads.research.write_dependency_report",
     ),
@@ -30,10 +26,6 @@ pub const COMMANDS: &[(&str, &str)] = &[
     (
         "summarize-text-dependency-priors",
         "ncm.workloads.research.summarize_text_dependency_priors",
-    ),
-    (
-        "summarize-reconstruction-capacity",
-        "ncm.workloads.research.summarize_reconstruction_capacity",
     ),
     (
         "real-text-reconstruction",
@@ -60,9 +52,4 @@ pub const COMMANDS: &[(&str, &str)] = &[
         "run-drafter-comparison",
         "ncm.workloads.validation.run_drafter_comparison",
     ),
-    (
-        "generate-recent-results",
-        "ncm.workloads.papers.generate_recent_results",
-    ),
-    ("generate-results", "ncm.workloads.papers.generate_results"),
 ];

@@ -10,29 +10,29 @@
   "maintenance": {
     "minimal_ema": {
       "tv": 0.26848436011331667,
-      "reconstruction": 0.9999999999999999,
+      "reconstruction": 1.0,
       "usage_failures": 7
     },
     "ema_recovery": {
       "tv": 0.12293729993523914,
-      "reconstruction": 0.9995329814989423,
+      "reconstruction": 0.9995329814989425,
       "usage_failures": 0
     },
     "reference": {
-      "tv": 0.12154252884788587,
-      "reconstruction": 0.9995329814989423,
+      "tv": 0.12154252884788586,
+      "reconstruction": 0.9995329814989425,
       "usage_failures": 0
     },
     "fixed_binary": {
       "tv": 0.12216335525179123,
-      "reconstruction": 0.9999999999999999,
+      "reconstruction": 1.0,
       "usage_failures": 0
     }
   },
   "domains": {
     "original_mixture": {
       "ema_recovery": {
-        "tv": 0.1431045919968256,
+        "tv": 0.14310459199682563,
         "fidelity_failures": 2
       },
       "reference": {
@@ -40,13 +40,13 @@
         "fidelity_failures": 1
       },
       "fixed_binary": {
-        "tv": 0.11857732055263981,
+        "tv": 0.11857732055263978,
         "fidelity_failures": 0
       }
     },
     "biased_independent": {
       "ema_recovery": {
-        "tv": 0.0874051465301722,
+        "tv": 0.08740514653017223,
         "fidelity_failures": 1
       },
       "reference": {
@@ -54,13 +54,13 @@
         "fidelity_failures": 1
       },
       "fixed_binary": {
-        "tv": 0.08893659256172393,
+        "tv": 0.0889365925617239,
         "fidelity_failures": 0
       }
     },
     "persistent_markov": {
       "ema_recovery": {
-        "tv": 0.4852258627199559,
+        "tv": 0.4852258627199558,
         "fidelity_failures": 4
       },
       "reference": {
@@ -68,7 +68,7 @@
         "fidelity_failures": 6
       },
       "fixed_binary": {
-        "tv": 0.49100857234724704,
+        "tv": 0.491008572347247,
         "fidelity_failures": 0
       }
     },
@@ -78,11 +78,11 @@
         "fidelity_failures": 4
       },
       "reference": {
-        "tv": 0.4701646722901367,
+        "tv": 0.47016467229013675,
         "fidelity_failures": 4
       },
       "fixed_binary": {
-        "tv": 0.4930979373489404,
+        "tv": 0.49309793734894036,
         "fidelity_failures": 4
       }
     },
@@ -92,7 +92,7 @@
         "fidelity_failures": 2
       },
       "reference": {
-        "tv": 0.18135760881927931,
+        "tv": 0.1813576088192793,
         "fidelity_failures": 2
       },
       "fixed_binary": {
@@ -102,7 +102,7 @@
     },
     "alternating_modes": {
       "ema_recovery": {
-        "tv": 0.7047409596517096,
+        "tv": 0.7047409596517097,
         "fidelity_failures": 3
       },
       "reference": {
@@ -110,40 +110,40 @@
         "fidelity_failures": 3
       },
       "fixed_binary": {
-        "tv": 0.7058794265948083,
+        "tv": 0.7058794265948085,
         "fidelity_failures": 4
       }
     }
   },
   "priors": {
     "original_mixture": {
-      "independent": 0.13585926902229004,
-      "conditional_tree": 0.07712427488087567,
+      "independent": 0.13585926902229006,
+      "conditional_tree": 0.07712427488087568,
       "joint_fine": 0.04654940911447081
     },
     "biased_independent": {
-      "independent": 0.09554609782007902,
-      "conditional_tree": 0.08691021213890117,
-      "joint_fine": 0.05272112832348857
+      "independent": 0.09554609782007903,
+      "conditional_tree": 0.08691021213890116,
+      "joint_fine": 0.052721128323488575
     },
     "persistent_markov": {
       "independent": 0.4955718939185434,
-      "conditional_tree": 0.12319591655243267,
+      "conditional_tree": 0.12319591655243269,
       "joint_fine": 0.1444140422953154
     },
     "noisy_parity": {
       "independent": 0.46474029801780015,
-      "conditional_tree": 0.45695539992472634,
-      "joint_fine": 0.23083994217033088
+      "conditional_tree": 0.4569553999247264,
+      "joint_fine": 0.2308399421703309
     },
     "skewed_modes": {
-      "independent": 0.17462305215784074,
-      "conditional_tree": 0.11279530883465565,
+      "independent": 0.1746230521578407,
+      "conditional_tree": 0.11279530883465566,
       "joint_fine": 0.08395725515370589
     },
     "alternating_modes": {
-      "independent": 0.7526327398131759,
-      "conditional_tree": 0.2595685646728548,
+      "independent": 0.7526327398131757,
+      "conditional_tree": 0.25956856467285483,
       "joint_fine": 0.14157993986192013
     }
   },
@@ -151,7 +151,7 @@
     "first_position_target_max_range": 0.0,
     "last_bit_pair_target_max_difference": 0.0,
     "last_bit_conditional_entropy_bits": 0.4293251385861702,
-    "pca_teacher_predictive_kl_nats": 2.329195960045376e-06
+    "pca_teacher_predictive_kl_nats": 2.329195960045376e-6
   },
   "innovations": {
     "persistent_markov": {
@@ -166,7 +166,7 @@
         0.15000000000000033
       ],
       "tv": 8.023291952761785e-16,
-      "max_probability_error": 3.0531133177191805e-16,
+      "max_probability_error": 3.05311331771918e-16,
       "bijective": true
     },
     "noisy_parity": {

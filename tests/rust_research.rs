@@ -188,3 +188,101 @@ fn native_domain_source_oracles_match_archived_enumeration() {
     }
     fs::remove_dir_all(temporary).unwrap();
 }
+
+#[test]
+fn native_alignment_diagnostic_matches_archived_metrics() {
+    let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let temporary = temp_root("alignment diagnostic");
+    let folder = temporary.join("reports/alignment-diagnosis");
+    fs::create_dir_all(&folder).unwrap();
+    for name in ["inputs.json", "diagnostic_inputs.npz"] {
+        fs::copy(
+            root.join("reports/alignment-diagnosis").join(name),
+            folder.join(name),
+        )
+        .unwrap();
+    }
+    let actual = ncm::research::diagnose_alignment(&temporary).unwrap();
+    let expected: Value = serde_json::from_slice(
+        &fs::read(root.join("reports/alignment-diagnosis/results.json")).unwrap(),
+    )
+    .unwrap();
+    fn close(a: &Value, b: &Value, path: &str) {
+        let difference = (a.as_f64().unwrap() - b.as_f64().unwrap()).abs();
+        assert!(
+            difference <= 1e-12,
+            "{path}: {a} != {b} (delta {difference})"
+        );
+    }
+    for key in [
+        "first_position_target_max_range",
+        "last_bit_pair_target_max_difference",
+        "last_bit_conditional_entropy_bits",
+        "pca_teacher_predictive_kl_nats",
+    ] {
+        close(
+            &actual["invariants"][key],
+            &expected["invariants"][key],
+            key,
+        );
+    }
+    assert_eq!(actual["models"].as_array().unwrap().len(), 20);
+    for (i, (observed, archived)) in actual["models"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .zip(expected["models"].as_array().unwrap())
+        .enumerate()
+    {
+        assert_eq!(observed["seed"], archived["seed"]);
+        assert_eq!(observed["arm"], archived["arm"]);
+        for metric in [
+            "latent_mse",
+            "quantized_mse",
+            "latent_predictive_kl",
+            "quantized_predictive_kl",
+        ] {
+            close(
+                &observed[metric],
+                &archived[metric],
+                &format!("models/{i}/{metric}"),
+            );
+        }
+    }
+    fs::remove_dir_all(temporary).unwrap();
+}
+
+#[test]
+fn native_recent_manuscript_generator_passes_archived_check() {
+    let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    ncm::paper::generate_recent_results(&root, true).unwrap();
+}
+
+#[test]
+fn native_observed_manuscript_generator_passes_archived_check() {
+    let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    ncm::paper::generate_results(&root, true).unwrap();
+}
+
+#[test]
+fn native_capacity_report_generation_is_deterministic() {
+    let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let temporary = temp_root("capacity report");
+    let run = temporary.join("run");
+    let report = root.join("reports/reconstruction-capacity");
+    fs::create_dir_all(&run).unwrap();
+    for name in ["summary.json", "protocol.json", "controls.json"] {
+        fs::copy(report.join(name), run.join(name)).unwrap();
+    }
+    let first = temporary.join("first");
+    let second = temporary.join("second");
+    ncm::research::summarize_reconstruction_capacity(&run, &first).unwrap();
+    ncm::research::summarize_reconstruction_capacity(&run, &second).unwrap();
+    let a = fs::read(first.join("report.md")).unwrap();
+    let b = fs::read(second.join("report.md")).unwrap();
+    assert_eq!(a, b);
+    let report = String::from_utf8(a).unwrap();
+    assert!(report.contains("| 16 | 0 | 2000 |"));
+    assert!(report.contains("## Paired descriptive effects"));
+    fs::remove_dir_all(temporary).unwrap();
+}

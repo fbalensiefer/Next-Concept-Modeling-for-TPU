@@ -1,6 +1,471 @@
 //! Rust-native summaries for committed research workload results.
 use serde_json::{Value, json};
-use std::{collections::BTreeSet, fs, path::Path};
+use std::{collections::BTreeSet, fs, io::Read, path::Path};
+use zip::ZipArchive;
+
+struct NpyArray {
+    shape: Vec<usize>,
+    values: Vec<f32>,
+    values64: Vec<f64>,
+}
+
+fn npy_array(bytes: &[u8]) -> Result<NpyArray, String> {
+    if bytes.len() < 10 || &bytes[..6] != b"\x93NUMPY" {
+        return Err("invalid NumPy array header".into());
+    }
+    let major = bytes[6];
+    let (header_length, data_offset): (usize, usize) = if major == 1 {
+        (u16::from_le_bytes([bytes[8], bytes[9]]) as usize, 10)
+    } else if major == 2 || major == 3 {
+        if bytes.len() < 12 {
+            return Err("truncated NumPy v2 array header".into());
+        }
+        (
+            u32::from_le_bytes(bytes[8..12].try_into().unwrap()) as usize,
+            12,
+        )
+    } else {
+        return Err(format!("unsupported NumPy format version {major}"));
+    };
+    let end = data_offset
+        .checked_add(header_length)
+        .ok_or("NumPy header overflow")?;
+    let header = std::str::from_utf8(
+        bytes
+            .get(data_offset..end)
+            .ok_or("truncated NumPy header")?,
+    )
+    .map_err(|e| e.to_string())?;
+    let fortran_order =
+        header.contains("'fortran_order': True") || header.contains("\"fortran_order\": True");
+    let descr_start = header
+        .find("'descr'")
+        .or_else(|| header.find("\"descr\""))
+        .ok_or("NumPy dtype missing")?;
+    let dtype = header[descr_start..]
+        .split(':')
+        .nth(1)
+        .ok_or("NumPy dtype malformed")?
+        .trim_start();
+    let quote = dtype
+        .as_bytes()
+        .first()
+        .copied()
+        .ok_or("NumPy dtype malformed")? as char;
+    let dtype_end = dtype[1..].find(quote).ok_or("NumPy dtype malformed")? + 1;
+    let dtype = &dtype[1..dtype_end];
+    let shape_start = header
+        .find("'shape'")
+        .or_else(|| header.find("\"shape\""))
+        .ok_or("NumPy shape missing")?;
+    let shape_text = header[shape_start..]
+        .split('(')
+        .nth(1)
+        .and_then(|v| v.split(')').next())
+        .ok_or("NumPy shape malformed")?;
+    let shape = shape_text
+        .split(',')
+        .filter_map(|x| x.trim().parse::<usize>().ok())
+        .collect::<Vec<_>>();
+    let count = shape.iter().product::<usize>();
+    let data = &bytes[end..];
+    let values64 = match dtype {
+        "<f4" | "=f4" | "|f4" => data
+            .as_chunks::<4>()
+            .0
+            .iter()
+            .map(|b| f32::from_le_bytes(*b) as f64)
+            .collect::<Vec<_>>(),
+        "<f8" | "=f8" | "|f8" => data
+            .as_chunks::<8>()
+            .0
+            .iter()
+            .map(|b| f64::from_le_bytes(*b))
+            .collect::<Vec<_>>(),
+        "<i4" | "=i4" | "|i4" => data
+            .as_chunks::<4>()
+            .0
+            .iter()
+            .map(|b| i32::from_le_bytes(*b) as f64)
+            .collect::<Vec<_>>(),
+        other => return Err(format!("unsupported NumPy dtype {other}")),
+    };
+    if values64.len() != count {
+        return Err(format!(
+            "NumPy shape {:?} expects {count} values, found {}",
+            shape,
+            values64.len()
+        ));
+    }
+    let values64 = if fortran_order {
+        (0..count)
+            .map(|linear| {
+                let mut remaining = linear;
+                let mut coordinates = vec![0usize; shape.len()];
+                for axis in (0..shape.len()).rev() {
+                    coordinates[axis] = remaining % shape[axis];
+                    remaining /= shape[axis];
+                }
+                let mut stride = 1;
+                let mut offset = 0;
+                for axis in 0..shape.len() {
+                    offset += coordinates[axis] * stride;
+                    stride *= shape[axis];
+                }
+                values64[offset]
+            })
+            .collect()
+    } else {
+        values64
+    };
+    let values = values64.iter().map(|x| *x as f32).collect();
+    Ok(NpyArray {
+        shape,
+        values,
+        values64,
+    })
+}
+
+fn npz_arrays(path: &Path) -> Result<std::collections::HashMap<String, NpyArray>, String> {
+    let file = fs::File::open(path).map_err(|e| e.to_string())?;
+    let mut archive = ZipArchive::new(file).map_err(|e| e.to_string())?;
+    let mut arrays = std::collections::HashMap::new();
+    for index in 0..archive.len() {
+        let mut member = archive.by_index(index).map_err(|e| e.to_string())?;
+        let name = member
+            .name()
+            .strip_suffix(".npy")
+            .ok_or("NPZ member is not a NumPy array")?
+            .to_owned();
+        let mut bytes = Vec::new();
+        member.read_to_end(&mut bytes).map_err(|e| e.to_string())?;
+        arrays.insert(name, npy_array(&bytes)?);
+    }
+    Ok(arrays)
+}
+
+fn array<'a>(
+    arrays: &'a std::collections::HashMap<String, NpyArray>,
+    name: &str,
+    shape: &[usize],
+) -> Result<&'a [f32], String> {
+    let value = arrays
+        .get(name)
+        .ok_or_else(|| format!("NPZ is missing {name}"))?;
+    if value.shape != shape {
+        return Err(format!(
+            "NPZ {name} shape mismatch: {:?} != {shape:?}",
+            value.shape
+        ));
+    }
+    Ok(&value.values)
+}
+
+fn array64<'a>(
+    arrays: &'a std::collections::HashMap<String, NpyArray>,
+    name: &str,
+    shape: &[usize],
+) -> Result<&'a [f64], String> {
+    let value = arrays
+        .get(name)
+        .ok_or_else(|| format!("NPZ is missing {name}"))?;
+    if value.shape != shape {
+        return Err(format!(
+            "NPZ {name} shape mismatch: {:?} != {shape:?}",
+            value.shape
+        ));
+    }
+    Ok(&value.values64)
+}
+
+fn softmax2(logits: [f32; 2]) -> [f32; 2] {
+    let max = logits[0].max(logits[1]);
+    let e = [(logits[0] - max).exp(), (logits[1] - max).exp()];
+    let s = e[0] + e[1];
+    [e[0] / s, e[1] / s]
+}
+
+struct HeadDiagnostic<'a> {
+    teacher: &'a [f32],
+    scale: &'a [f32],
+    mean: &'a [f32],
+    projection: &'a [f32],
+    kernel: &'a [f32],
+    bias: &'a [f32],
+}
+
+fn predict_kl(h: &[f32], p: &[f64], head: &HeadDiagnostic<'_>) -> f64 {
+    let mut expectation = 0.;
+    for (row, weight) in p.iter().enumerate().take(16) {
+        let mut row_sum = 0.;
+        for t in 0..4 {
+            let mut restored = [0f32; 16];
+            for (j, restored_value) in restored.iter_mut().enumerate() {
+                let mut x = 0f32;
+                for k in 0..8 {
+                    x = (h[(row * 4 + t) * 8 + k] * head.scale[k])
+                        .mul_add(head.projection[j * 8 + k], x);
+                }
+                *restored_value = x + head.mean[j];
+            }
+            let mut logits = [0f32; 2];
+            for (c, logit) in logits.iter_mut().enumerate() {
+                for (j, value) in restored.iter().enumerate() {
+                    *logit = value.mul_add(head.kernel[j * 2 + c], *logit);
+                }
+                *logit += head.bias[c];
+            }
+            let q = softmax2(logits);
+            let tr = softmax2({
+                let base = (row * 4 + t) * 16;
+                let mut x = [0f32; 2];
+                for (c, value) in x.iter_mut().enumerate() {
+                    for j in 0..16 {
+                        *value = head.teacher[base + j].mul_add(head.kernel[j * 2 + c], *value);
+                    }
+                    *value += head.bias[c];
+                }
+                x
+            });
+            let mut kl = 0f32;
+            for c in 0..2 {
+                kl += tr[c] * (tr[c].ln() - q[c].max(1e-30).ln());
+            }
+            row_sum += kl;
+        }
+        expectation += weight * (row_sum / 4.) as f64;
+    }
+    expectation
+}
+
+fn weighted_mse(h: &[f32], target: &[f32], p: &[f64]) -> f64 {
+    let mut result = 0.;
+    for (row, weight) in p.iter().enumerate().take(16) {
+        let start = row * 32;
+        let mut lanes = [0f32; 8];
+        for block in 0..4 {
+            for (lane, sum) in lanes.iter_mut().enumerate() {
+                let i = start + block * 8 + lane;
+                let d = h[i] - target[i];
+                *sum += d * d;
+            }
+        }
+        let sum = ((lanes[0] + lanes[1]) + (lanes[2] + lanes[3]))
+            + ((lanes[4] + lanes[5]) + (lanes[6] + lanes[7]));
+        result += weight * (sum / 32.) as f64;
+    }
+    result
+}
+
+/// Replay the committed feature-head alignment diagnostic without importing model code.
+pub fn diagnose_alignment(root: &Path) -> Result<Value, String> {
+    let folder = root.join("reports/alignment-diagnosis");
+    let meta: Value =
+        serde_json::from_slice(&fs::read(folder.join("inputs.json")).map_err(|e| e.to_string())?)
+            .map_err(|e| e.to_string())?;
+    let path = folder.join("diagnostic_inputs.npz");
+    let bytes = fs::read(&path).map_err(|e| e.to_string())?;
+    if crate::corpus::sha256(&bytes)
+        != meta["sha256"]
+            .as_str()
+            .ok_or("inputs.json has no archive hash")?
+    {
+        return Err("alignment diagnostic archive hash mismatch".into());
+    }
+    let arrays = npz_arrays(&path)?;
+    let p = array64(&arrays, "probability", &[16])?;
+    let target = array(&arrays, "canonical", &[16, 4, 8])?;
+    let means = array(&arrays, "mean", &[16])?;
+    let projection = array(&arrays, "projection", &[16, 8])?;
+    let scale = array(&arrays, "scale", &[8])?;
+    let kernel = array(&arrays, "head_kernel", &[16, 2])?;
+    let bias = array(&arrays, "head_bias", &[2])?;
+    let teacher = array(&arrays, "teacher_hidden", &[16, 4, 16])?;
+    let head = HeadDiagnostic {
+        teacher,
+        scale,
+        mean: means,
+        projection,
+        kernel,
+        bias,
+    };
+    let mut target_range = 0f32;
+    for feature in 0..8 {
+        let lo = (0..16)
+            .map(|r| target[r * 32 + feature])
+            .fold(f32::INFINITY, f32::min);
+        let hi = (0..16)
+            .map(|r| target[r * 32 + feature])
+            .fold(f32::NEG_INFINITY, f32::max);
+        target_range = target_range.max(hi - lo);
+    }
+    let mut pair_diff = 0f32;
+    for r in (0..16).step_by(2) {
+        for i in 0..32 {
+            pair_diff = pair_diff.max((target[r * 32 + i] - target[(r + 1) * 32 + i]).abs());
+        }
+    }
+    let mut last_entropy = 0f64;
+    for i in (0..16).step_by(2) {
+        let mass = p[i] + p[i + 1];
+        let a = p[i] / mass;
+        let b = p[i + 1] / mass;
+        last_entropy -= mass * (a * a.log2() + b * b.log2());
+    }
+    let mut rows = Vec::new();
+    let models = meta["models"].as_array().ok_or("models must be array")?;
+    let latents = array(&arrays, "latents", &[20, 16, 4, 8])?;
+    let quantized = array(&arrays, "quantized", &[20, 16, 4, 8])?;
+    for (index, model) in models.iter().enumerate() {
+        let start = index * 512;
+        let latent = &latents[start..start + 512];
+        let quant = &quantized[start..start + 512];
+        rows.push(json!({"seed":model["seed"],"arm":model["arm"],"codec_sha256":model["codec_sha256"],"latent_mse":weighted_mse(latent,target,p),"quantized_mse":weighted_mse(quant,target,p),"latent_predictive_kl":predict_kl(latent,p,&head),"quantized_predictive_kl":predict_kl(quant,p,&head)}));
+    }
+    let predictive = predict_kl(target, p, &head);
+    let invariants = json!({"first_position_target_max_range":target_range,"last_bit_pair_target_max_difference":pair_diff,"last_bit_conditional_entropy_bits":last_entropy,"pca_teacher_predictive_kl_nats":predictive});
+    let arms = rows.iter().filter_map(|r| r["arm"].as_str()).fold(
+        Vec::<String>::new(),
+        |mut out, name| {
+            if !out.iter().any(|x| x == name) {
+                out.push(name.to_owned());
+            }
+            out
+        },
+    );
+    let mut means_by_arm = serde_json::Map::new();
+    for arm in arms {
+        let mut fields = serde_json::Map::new();
+        for key in [
+            "latent_mse",
+            "quantized_mse",
+            "latent_predictive_kl",
+            "quantized_predictive_kl",
+        ] {
+            let xs = rows
+                .iter()
+                .filter(|r| r["arm"] == arm)
+                .map(|r| r[key].as_f64().unwrap())
+                .collect::<Vec<_>>();
+            fields.insert(key.into(), json!(mean(&xs)?));
+        }
+        means_by_arm.insert(arm, Value::Object(fields));
+    }
+    let result = json!({"scope":"One historical teacher and finite domain; feature-head compatibility diagnostic, not a causal intervention.","invariants":invariants,"means":means_by_arm,"models":rows});
+    write_json(&folder.join("results.json"), &result)?;
+    Ok(result)
+}
+
+/// Publish the fixed reconstruction-capacity report from an immutable run ledger.
+pub fn summarize_reconstruction_capacity(run: &Path, output: &Path) -> Result<(), String> {
+    let source = if run.is_absolute() {
+        run.to_owned()
+    } else {
+        std::env::current_dir()
+            .map_err(|e| e.to_string())?
+            .join(run)
+    };
+    let destination = if output.is_absolute() {
+        output.to_owned()
+    } else {
+        std::env::current_dir()
+            .map_err(|e| e.to_string())?
+            .join(output)
+    };
+    let rows = read_rows(&source.join("summary.json"))?;
+    if rows.len() != 6
+        || rows.iter().any(|r| {
+            r["records"]
+                .as_array()
+                .and_then(|a| a.last())
+                .is_none_or(|x| x["step"] != 2000)
+        })
+    {
+        return Err("Require all six complete prespecified fits".into());
+    }
+    fs::create_dir_all(&destination).map_err(|e| e.to_string())?;
+    for name in ["protocol.json", "summary.json", "controls.json"] {
+        fs::copy(source.join(name), destination.join(name)).map_err(|e| e.to_string())?;
+    }
+    let mut lines=vec!["# Fixed-length reconstruction: duration and code capacity".into(),String::new(),"Six fresh CPU fits use the same 128-byte windows, training orders and seeds as paired controls. Codebook size (16 versus 64) is the sole architecture change. All runs use 2,000 updates, batch size four, reconstruction-first losses and the final checkpoint. Validation remains descriptive; test reconstruction is unevaluated. Source snapshots are preserved under the run directory.".into(),String::new(),"| Codebook | Seed | Step | Train byte accuracy | Validation byte accuracy | Validation exact windows | Punctuation accuracy |".into(),"|---|---|---|---|---|---|---|".into()];
+    for row in &rows {
+        for record in row["records"].as_array().unwrap() {
+            let step = record["step"].as_u64().unwrap_or(0);
+            if ![100, 500, 1000, 2000].contains(&step) {
+                continue;
+            }
+            let train = &record["train"];
+            let valid = &record["validation"];
+            lines.push(format!(
+                "| {} | {} | {step} | {:.4}% | {:.4}% | {:.4}% | {:.4}% |",
+                row["codebook_size"],
+                row["seed"],
+                train["byte_accuracy"].as_f64().unwrap() * 100.,
+                valid["byte_accuracy"].as_f64().unwrap() * 100.,
+                valid["exact_window_accuracy"].as_f64().unwrap() * 100.,
+                valid["slices"]["punctuation"]["accuracy"].as_f64().unwrap() * 100.
+            ));
+        }
+    }
+    lines.extend([
+        String::new(),
+        "## Paired descriptive effects".into(),
+        String::new(),
+    ]);
+    for size in [16, 64] {
+        let selected = rows
+            .iter()
+            .filter(|r| r["codebook_size"] == size)
+            .collect::<Vec<_>>();
+        let changes = selected
+            .iter()
+            .map(|r| {
+                r["records"].as_array().unwrap().last().unwrap()["validation"]["byte_accuracy"]
+                    .as_f64()
+                    .unwrap()
+                    - r["records"][0]["validation"]["byte_accuracy"]
+                        .as_f64()
+                        .unwrap()
+            })
+            .collect::<Vec<_>>();
+        lines.push(format!("- {size} entries, 100 to 2,000 updates: mean validation byte accuracy change {:.2} percentage points; seed range {:.2} to {:.2}.",100.*mean(&changes)?,100.*changes.iter().copied().fold(f64::INFINITY,f64::min),100.*changes.iter().copied().fold(f64::NEG_INFINITY,f64::max)));
+    }
+    let mut paired = Vec::new();
+    for seed in [0, 1, 2] {
+        let get = |size| {
+            rows.iter()
+                .find(|r| r["seed"] == seed && r["codebook_size"] == size)
+                .ok_or("missing paired seed")
+        };
+        let small = get(16)?;
+        let large = get(64)?;
+        paired.push(large["records"].as_array().unwrap().last().unwrap()["validation"]["byte_accuracy"].as_f64().unwrap()-small["records"].as_array().unwrap().last().unwrap()["validation"]["byte_accuracy"].as_f64().unwrap());
+    }
+    lines.extend([format!("- 64 versus 16 entries at 2,000 updates: mean paired difference {:.2} percentage points; seed range {:.2} to {:.2}.",100.*mean(&paired)?,100.*paired.iter().copied().fold(f64::INFINITY,f64::min),100.*paired.iter().copied().fold(f64::NEG_INFINITY,f64::max)),String::new(),"These ranges describe three model seeds on one fixed validation book. They are not population confidence intervals or independent corpus replications. The follow-up was chosen after observing the initial pilot, so its findings are exploratory.".into(),String::new(),"## Cost and controls".into(),String::new(),"| Representation | Nominal bits/input byte | Reconstruction training byte exposure |".into(),"|---|---|---|".into(),"| Raw bytes | 8 | 0 |".into(),"| Fixed byte pairs | 8 | 0 |".into(),"| RVQ, 16 entries | 7 | 1,024,000 per fit |".into(),"| RVQ, 64 entries | 10.5 | 1,024,000 per fit |".into(),String::new(),"Both exact controls reconstruct every train/validation window perfectly. Packing byte pairs does not compress them: the output vocabulary has 65,536 categories, whose prediction heads and sampling costs must be charged in any prior comparison. RVQ nominal bits exclude codec weights, codebook tables and framing. More codebook entries change both information capacity and optimization; this experiment does not isolate an information-theoretic cause.".into(),String::new(),"| Codebook | Seed | Codec parameters | Codebook embedding elements | Full run wall seconds |".into(),"|---|---|---|---|---|".into()]);
+    for row in &rows {
+        lines.push(format!(
+            "| {} | {} | {} | {} | {:.1} |",
+            row["codebook_size"],
+            row["seed"],
+            row["codec_parameters"],
+            row["codebook_embedding_elements"],
+            row["elapsed_seconds"].as_f64().unwrap()
+        ));
+    }
+    lines.extend([String::new(),"Wall time includes compilation, full train/validation evaluation every 100 steps and serialization. It is not a matched training-cost or generation-latency measure. No TPU was used.".into(),String::new(),"## Decision".into(),String::new()]);
+    let improves = rows.iter().all(|r| {
+        r["records"].as_array().unwrap().last().unwrap()["validation"]["byte_accuracy"]
+            .as_f64()
+            .unwrap()
+            > r["records"][0]["validation"]["byte_accuracy"]
+                .as_f64()
+                .unwrap()
+    });
+    let large_wins = paired.iter().all(|x| *x > 0.);
+    lines.push(format!("{}{}These observations support a bounded next check of the strongest codec on independent documents and consequential error patterns. Keep the current codecs experimental; no application fidelity tolerance has been established. Raw and fixed-block controls already offer exact reconstruction without codec training; a learned codec must still demonstrate generation value.",if improves{"Longer training improves validation byte accuracy in every seed for both codebook sizes. "}else{"Training-duration effects vary across seeds; inspect all curves. "},if large_wins{"The larger codebook also improves final byte accuracy in every paired seed. "}else{"The larger codebook does not improve final byte accuracy in every paired seed. "}));
+    lines.extend([String::new(),"The remaining real-text checks include rare patterns, UTF-8 validity, independent documents, a frozen application fidelity tolerance and trained prior comparisons. No claims about generation quality or acceleration follow from these reconstruction results.".into(),String::new(),"## Reproduction".into(),String::new(),"```sh".into(),"cargo run --bin ncm-run -- reconstruction-capacity --output runs/reconstruction-capacity-v1".into(),"cargo run --bin ncm-run -- summarize-reconstruction-capacity --run runs/reconstruction-capacity-v1 --output reports/reconstruction-capacity".into(),"```".into(),String::new(),"Use a fresh run directory. Requires the initial pilot’s processed files and protocol. [Protocol](protocol.json), [all checkpoint metrics](summary.json), [exact controls](controls.json).".into(),String::new()]);
+    fs::write(destination.join("report.md"), lines.join("\n")).map_err(|e| e.to_string())
+}
 
 fn read_rows(path: &Path) -> Result<Vec<Value>, String> {
     serde_json::from_slice(&fs::read(path).map_err(|e| e.to_string())?)

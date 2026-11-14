@@ -9,7 +9,7 @@
       ],
       "mean_output_tv": {
         "reconstruction": 0.3315752736926639,
-        "alignment": 0.333882109801121,
+        "alignment": 0.33388210980112104,
         "alignment_dependency": 0.17441718265683978
       },
       "followup_decision": null,
@@ -26,7 +26,7 @@
       "mean_output_tv": {
         "reconstruction": 0.24167338250466264,
         "alignment": 0.1453429433397166,
-        "dependency": 0.24716786238394917,
+        "dependency": 0.24716786238394914,
         "alignment_dependency": 0.15768842392473975
       },
       "followup_decision": {
@@ -68,20 +68,20 @@
           {
             "seed": 5,
             "alignment_tv_improvement_over_dependency_only": -0.02921475747168395,
-            "dependency_tv_improvement_without_alignment": 0.013570405701488847,
+            "dependency_tv_improvement_without_alignment": 0.013570405701488849,
             "repair_tv_change": 0.0,
             "missing_teacher_mass_before": 0.0,
             "missing_teacher_mass_after": 0.0,
-            "sequence_reconstruction_after": 0.9999999999999999
+            "sequence_reconstruction_after": 1.0
           },
           {
             "seed": 6,
-            "alignment_tv_improvement_over_dependency_only": 0.009077089240100561,
+            "alignment_tv_improvement_over_dependency_only": 0.00907708924010056,
             "dependency_tv_improvement_without_alignment": -0.0030650480624286325,
             "repair_tv_change": 0.0,
             "missing_teacher_mass_before": 0.0,
             "missing_teacher_mass_after": 0.0,
-            "sequence_reconstruction_after": 0.9999999999999999
+            "sequence_reconstruction_after": 1.0
           },
           {
             "seed": 7,
@@ -90,7 +90,7 @@
             "repair_tv_change": 0.0,
             "missing_teacher_mass_before": 0.0,
             "missing_teacher_mass_after": 0.0,
-            "sequence_reconstruction_after": 0.9999999999999999
+            "sequence_reconstruction_after": 1.0
           }
         ],
         "scope": "New student seeds with the same synthetic teacher/domain; no new-domain claim.",
@@ -109,8 +109,8 @@
       "mean_output_tv": {
         "reconstruction": 0.4257442541190626,
         "alignment": 0.23702435370132197,
-        "dependency": 0.5228834487897743,
-        "alignment_dependency": 0.24679286346571713
+        "dependency": 0.5228834487897742,
+        "alignment_dependency": 0.2467928634657171
       },
       "followup_decision": {
         "confirmation_seeds": [
@@ -134,37 +134,37 @@
             "seed": 8,
             "alignment_tv_improvement_over_dependency_only": -0.0019757660001642474,
             "dependency_tv_improvement_without_alignment": -0.001836760481360944,
-            "repair_tv_change": -4.936088152662776e-07,
+            "repair_tv_change": -4.936088152662776e-7,
             "missing_teacher_mass_before": 0.0,
             "missing_teacher_mass_after": 0.0,
-            "sequence_reconstruction_after": 0.9999999999999999
+            "sequence_reconstruction_after": 1.0
           },
           {
             "seed": 9,
             "alignment_tv_improvement_over_dependency_only": -0.026001912272583944,
-            "dependency_tv_improvement_without_alignment": -0.0012042764375475579,
-            "repair_tv_change": -7.2604978440526935e-06,
+            "dependency_tv_improvement_without_alignment": -0.001204276437547558,
+            "repair_tv_change": -7.260497844052693e-6,
             "missing_teacher_mass_before": 0.0,
             "missing_teacher_mass_after": 0.0,
-            "sequence_reconstruction_after": 0.9999999999999999
+            "sequence_reconstruction_after": 1.0
           },
           {
             "seed": 10,
-            "alignment_tv_improvement_over_dependency_only": 0.48255712667306716,
-            "dependency_tv_improvement_without_alignment": 3.3597730640932966e-06,
+            "alignment_tv_improvement_over_dependency_only": 0.4825571266730672,
+            "dependency_tv_improvement_without_alignment": 3.359773064093297e-6,
             "repair_tv_change": 0.0,
             "missing_teacher_mass_before": 0.0,
             "missing_teacher_mass_after": 0.0,
-            "sequence_reconstruction_after": 0.9999999999999999
+            "sequence_reconstruction_after": 1.0
           },
           {
             "seed": 11,
             "alignment_tv_improvement_over_dependency_only": 0.458970675378867,
             "dependency_tv_improvement_without_alignment": -0.0003386095818675994,
-            "repair_tv_change": -1.0768385587500706e-05,
+            "repair_tv_change": -0.000010768385587500706,
             "missing_teacher_mass_before": 0.0,
             "missing_teacher_mass_after": 0.0,
-            "sequence_reconstruction_after": 0.9999999999999999
+            "sequence_reconstruction_after": 1.0
           },
           {
             "seed": 12,
@@ -173,7 +173,7 @@
             "repair_tv_change": -0.0005101027896439736,
             "missing_teacher_mass_before": 0.0,
             "missing_teacher_mass_after": 0.0,
-            "sequence_reconstruction_after": 0.9999999999999999
+            "sequence_reconstruction_after": 1.0
           }
         ],
         "scope": "New student seeds with the same synthetic teacher/domain; no new-domain claim.",
@@ -191,9 +191,9 @@
       ],
       "mean_output_tv": {
         "reconstruction": 0.13809507305033358,
-        "alignment": 0.13182279087737483,
+        "alignment": 0.13182279087737486,
         "dependency": 0.13919400799906476,
-        "alignment_dependency": 0.13421104374602844
+        "alignment_dependency": 0.13421104374602846
       },
       "followup_decision": {
         "confirmation_seeds": [
@@ -216,7 +216,7 @@
           {
             "seed": 13,
             "alignment_tv_improvement_over_dependency_only": -0.0049887342527500655,
-            "dependency_tv_improvement_without_alignment": 0.0038529605628887797,
+            "dependency_tv_improvement_without_alignment": 0.00385296056288878,
             "repair_tv_change": 0.0,
             "missing_teacher_mass_before": 0.0,
             "missing_teacher_mass_after": 0.0,
@@ -229,25 +229,25 @@
             "repair_tv_change": 0.0,
             "missing_teacher_mass_before": 0.0,
             "missing_teacher_mass_after": 0.0,
-            "sequence_reconstruction_after": 0.9999999999999999
+            "sequence_reconstruction_after": 1.0
           },
           {
             "seed": 15,
-            "alignment_tv_improvement_over_dependency_only": 0.00022543208705647078,
+            "alignment_tv_improvement_over_dependency_only": 0.0002254320870564708,
             "dependency_tv_improvement_without_alignment": 0.0103851751621592,
             "repair_tv_change": 0.0,
             "missing_teacher_mass_before": 0.0,
             "missing_teacher_mass_after": 0.0,
-            "sequence_reconstruction_after": 0.9999999999999999
+            "sequence_reconstruction_after": 1.0
           },
           {
             "seed": 16,
             "alignment_tv_improvement_over_dependency_only": 0.008065231341160745,
-            "dependency_tv_improvement_without_alignment": -0.0037806326928956357,
+            "dependency_tv_improvement_without_alignment": -0.003780632692895636,
             "repair_tv_change": 0.0,
             "missing_teacher_mass_before": 0.0,
             "missing_teacher_mass_after": 0.0,
-            "sequence_reconstruction_after": 0.9999999999999999
+            "sequence_reconstruction_after": 1.0
           },
           {
             "seed": 17,
@@ -256,7 +256,7 @@
             "repair_tv_change": 0.0,
             "missing_teacher_mass_before": 0.0,
             "missing_teacher_mass_after": 0.0,
-            "sequence_reconstruction_after": 0.9999999999999999
+            "sequence_reconstruction_after": 1.0
           }
         ],
         "scope": "New student seeds with the same synthetic teacher/domain; no new-domain claim.",
@@ -387,9 +387,9 @@
             "free_code_accuracy": [
               0.2857142857142857,
               0.3076923076923077,
-              0.11538461538461539
+              0.1153846153846154
             ],
-            "free_reference_byte_accuracy": 0.15384615384615385,
+            "free_reference_byte_accuracy": 0.15384615384615383,
             "code_count": [
               7,
               13,
@@ -405,7 +405,7 @@
             "teacher_code_ce": [
               1.4414803981781006,
               2.0241971697126115,
-              1.8064780602088342
+              1.8064780602088344
             ],
             "teacher_code_accuracy": [
               0.5,
@@ -416,14 +416,14 @@
             "free_code_ce": [
               1.4414803981781006,
               3.289543696812221,
-              3.9804232670710635
+              3.980423267071063
             ],
             "free_code_accuracy": [
               0.5,
               0.2857142857142857,
-              0.15384615384615385
+              0.15384615384615383
             ],
-            "free_reference_byte_accuracy": 0.23076923076923078,
+            "free_reference_byte_accuracy": 0.2307692307692308,
             "code_count": [
               4,
               7,
@@ -432,7 +432,7 @@
             "ce_degradation": [
               0.0,
               1.2653465270996094,
-              2.1739452068622294
+              2.17394520686223
             ]
           }
         },
@@ -475,7 +475,7 @@
           "validation": {
             "teacher_code_ce": [
               2.0817480087280273,
-              2.3162498474121094,
+              2.31624984741211,
               2.056409395658053
             ],
             "teacher_code_accuracy": [
@@ -492,9 +492,9 @@
             "free_code_accuracy": [
               0.25,
               0.14285714285714285,
-              0.15384615384615385
+              0.15384615384615383
             ],
-            "free_reference_byte_accuracy": 0.15384615384615385,
+            "free_reference_byte_accuracy": 0.15384615384615383,
             "code_count": [
               4,
               7,
@@ -523,12 +523,12 @@
             "codec_reconstruction_accuracy": 1.0,
             "free_code_ce": [
               1.0037213053022112,
-              3.4648302518404446,
+              3.464830251840445,
               4.19243416419396
             ],
             "free_code_accuracy": [
               0.42857142857142855,
-              0.23076923076923078,
+              0.2307692307692308,
               0.34615384615384615
             ],
             "free_reference_byte_accuracy": 0.3076923076923077,
@@ -565,7 +565,7 @@
               0.0,
               0.07692307692307693
             ],
-            "free_reference_byte_accuracy": 0.15384615384615385,
+            "free_reference_byte_accuracy": 0.15384615384615383,
             "code_count": [
               4,
               7,
@@ -582,7 +582,7 @@
           "step": 400,
           "train": {
             "teacher_code_ce": [
-              0.9860743795122419,
+              0.986074379512242,
               0.005273158733661358,
               0.004841052568875826
             ],
@@ -593,7 +593,7 @@
             ],
             "codec_reconstruction_accuracy": 1.0,
             "free_code_ce": [
-              0.9860743795122419,
+              0.986074379512242,
               3.529523115891677,
               4.245557931753305
             ],
@@ -617,7 +617,7 @@
           "validation": {
             "teacher_code_ce": [
               2.683666944503784,
-              2.8068755013602122,
+              2.806875501360212,
               2.324113992544321
             ],
             "teacher_code_accuracy": [
@@ -655,7 +655,7 @@
             "teacher_code_ce": [
               1.0512656484331404,
               0.003741007584791917,
-              0.0037677654853233923
+              0.003767765485323392
             ],
             "teacher_code_accuracy": [
               0.42857142857142855,
@@ -858,7 +858,7 @@
       "median_ms": [
         0.48897899978328496,
         0.40320848347619176,
-        0.9374164801556617
+        0.9374164801556616
       ],
       "trained_tiny_fixture": true
     },
@@ -867,7 +867,7 @@
       "batch_size": 16,
       "median_ms": [
         26.87656250782311,
-        14.390167008969001,
+        14.390167008969,
         39.58845901070163
       ],
       "trained_tiny_fixture": false

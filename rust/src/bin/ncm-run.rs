@@ -108,9 +108,8 @@ fn build_papers(root: &Path, args: &[OsString]) -> Result<(), String> {
     }
     std::fs::create_dir_all(&folder).map_err(|e| e.to_string())?;
     let folder = folder.canonicalize().map_err(|e| e.to_string())?;
-    for module in ["generate_results", "generate_recent_results"] {
-        worker(root, &format!("ncm.workloads.papers.{module}"), &[])?;
-    }
+    ncm::paper::generate_results(root, false)?;
+    ncm::paper::generate_recent_results(root, false)?;
     ncm::paper::generate_bibliographies(root, false)?;
     for stem in ["ncm_systems_paper", "SCALE_research_paper"] {
         let mut c = Command::new(env::var_os("NCM_TECTONIC").unwrap_or_else(|| "tectonic".into()));
@@ -240,6 +239,70 @@ fn main() -> ExitCode {
             };
         }
         ncm::research::domain_source_baselines(&root).map(|_| ())
+    } else if name == "alignment-diagnosis" {
+        if !args[1..].is_empty() {
+            return {
+                eprintln!("alignment-diagnosis takes no arguments");
+                ExitCode::from(2)
+            };
+        }
+        ncm::research::diagnose_alignment(&root).map(|_| ())
+    } else if name == "generate-recent-results" {
+        let check = match args[1..].as_ref() {
+            [] => false,
+            [flag] if flag == "--check" => true,
+            _ => {
+                return {
+                    eprintln!("generate-recent-results accepts only --check");
+                    ExitCode::from(2)
+                };
+            }
+        };
+        ncm::paper::generate_recent_results(&root, check)
+    } else if name == "generate-results" {
+        let check = match args[1..].as_ref() {
+            [] => false,
+            [flag] if flag == "--check" => true,
+            _ => {
+                return {
+                    eprintln!("generate-results accepts only --check");
+                    ExitCode::from(2)
+                };
+            }
+        };
+        ncm::paper::generate_results(&root, check)
+    } else if name == "summarize-reconstruction-capacity" {
+        let mut run_dir = None;
+        let mut output_dir = None;
+        let mut index = 1;
+        while index < args.len() {
+            match args[index].to_str() {
+                Some("--run") if index + 1 < args.len() => {
+                    run_dir = Some(PathBuf::from(&args[index + 1]));
+                    index += 1;
+                }
+                Some("--output") if index + 1 < args.len() => {
+                    output_dir = Some(PathBuf::from(&args[index + 1]));
+                    index += 1;
+                }
+                _ => {
+                    return {
+                        eprintln!(
+                            "summarize-reconstruction-capacity requires --run DIR --output DIR"
+                        );
+                        ExitCode::from(2)
+                    };
+                }
+            }
+            index += 1;
+        }
+        match (run_dir, output_dir) {
+            (Some(run), Some(output)) => {
+                ncm::research::summarize_reconstruction_capacity(&run, &output)
+            }
+            (None, _) => Err("--run is required".into()),
+            (_, None) => Err("--output is required".into()),
+        }
     } else if name == "generate-bibliographies" {
         generate_bibliographies(&root, &args[1..])
     } else if name == "update-manifests" {
