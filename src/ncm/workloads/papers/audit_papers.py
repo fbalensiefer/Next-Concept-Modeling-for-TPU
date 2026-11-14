@@ -7,9 +7,9 @@ import re
 import subprocess
 import sys
 
-from generate_bibliographies import expand
+from .generate_bibliographies import expand
 
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parents[4] / 'paper'
 ROOT = BASE.parent
 STEMS = ('ncm_systems_paper', 'SCALE_research_paper')
 
@@ -27,7 +27,7 @@ def main():
     parser.add_argument('--build-dir', type=Path)
     args = parser.parse_args()
     for script in ('generate_results.py', 'generate_recent_results.py', 'generate_bibliographies.py'):
-        subprocess.run([sys.executable, str(BASE / script), '--check'], check=True)
+        subprocess.run([sys.executable, '-m', 'ncm.workloads.papers.' + Path(script).stem, '--check'], check=True)
     registry = json.loads((BASE / 'references.json').read_text())
     citations = {}
     for stem in STEMS:

@@ -27,7 +27,7 @@ def test_domain_laws_have_full_normalized_support_and_expected_structure(name,le
     ('persistent_markov',[[3],[1,5],[0,2,4,6],[7]]),
 ])
 def test_dependency_aware_source_schedules_recover_the_exact_law(name,levels):
-    from examples.domain_source_baselines import scheduled_law
+    from ncm.workloads.research.domain_source_baselines import scheduled_law
     tokens,p=source_law(name,8)
     q=scheduled_law(tokens,p,levels)
     np.testing.assert_allclose(q,p,atol=1e-14,rtol=1e-14)
@@ -35,7 +35,7 @@ def test_dependency_aware_source_schedules_recover_the_exact_law(name,levels):
 
 @pytest.mark.parametrize('name', ['persistent_markov','noisy_parity'])
 def test_invertible_innovations_preserve_every_input_and_factorize(name):
-    from examples.domain_source_baselines import innovations,invert_innovations
+    from ncm.workloads.research.domain_source_baselines import innovations,invert_innovations
     tokens,p=source_law(name,8)
     values=innovations(name,tokens-65)
     np.testing.assert_array_equal(invert_innovations(name,values),tokens-65)

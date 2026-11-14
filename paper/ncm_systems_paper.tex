@@ -544,7 +544,7 @@ and coordinated calls across hosts. The example initializes a complete small
 host state; scalable checkpoint restoration and multi-host initialization have
 not been validated.
 
-The Rust command-line tool starts existing Python experiment entrypoints and
+The Rust command-line tool starts packaged Python research workloads and
 forwards their arguments and exit status. Model computation, training, and
 device collectives remain in JAX/XLA. Rust does not change the results or
 performance reported in this paper.
@@ -708,7 +708,7 @@ Virtual CPU devices test placement semantics, not accelerator interconnects.
 Atomic local checkpoints and exact resume are implemented, but a distributed
 fault-tolerant lifecycle remains future work. The generator has no prompt,
 learned-length or EOS interface. Complete mixed-symbol byte serialization,
-fallback selection, vocabulary-sharded lookup and Rust orchestration are open.
+fallback selection, vocabulary-sharded lookup and richer Rust data orchestration are open.
 Actual-length inference reduces the padded cost locally; large-vocabulary
 distance and dense attention costs still need investigation.
 
@@ -767,7 +767,7 @@ Path & Responsibility\\
 \code{src/ncm/scale_experiment.py} & Paired finite-domain teacher studies\\
 \code{reports/} & Frozen protocols, metrics and benchmark evidence\\
 \code{tests/} & Unit, integration, and virtual multi-device checks\\
-\code{examples/train.py} & Three-step synthetic execution example\\
+\code{ncm-run train} & Three-step synthetic execution example\\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -778,7 +778,7 @@ python3.12 -m venv .venv
 source .venv/bin/activate
 pip install -e '.[test]'
 pytest -q
-python examples/train.py
+cargo run --bin ncm-run -- train
 \end{lstlisting}
 The declared dependency ranges permit versions other than the tested stack;
 pin the versions listed in Section~\ref{sec:experiments} for closer

@@ -1,0 +1,87 @@
+pub const COMMANDS: &[(&str, &str)] = &[
+    (
+        "audit-maintenance",
+        "ncm.workloads.research.audit_maintenance",
+    ),
+    (
+        "summarize-domain-validation",
+        "ncm.workloads.research.summarize_domain_validation",
+    ),
+    (
+        "write-dependency-report",
+        "ncm.workloads.research.write_dependency_report",
+    ),
+    (
+        "alignment-diagnosis",
+        "ncm.workloads.research.alignment_diagnosis",
+    ),
+    (
+        "summarize-maintenance",
+        "ncm.workloads.research.summarize_maintenance",
+    ),
+    (
+        "maintenance-timing",
+        "ncm.workloads.research.maintenance_timing",
+    ),
+    (
+        "reconstruction-capacity",
+        "ncm.workloads.research.reconstruction_capacity",
+    ),
+    (
+        "replay-dependency-results",
+        "ncm.workloads.research.replay_dependency_results",
+    ),
+    (
+        "export-research-inputs",
+        "ncm.workloads.research.export_research_inputs",
+    ),
+    (
+        "summarize-text-dependency-priors",
+        "ncm.workloads.research.summarize_text_dependency_priors",
+    ),
+    (
+        "summarize-reconstruction-capacity",
+        "ncm.workloads.research.summarize_reconstruction_capacity",
+    ),
+    (
+        "real-text-reconstruction",
+        "ncm.workloads.research.real_text_reconstruction",
+    ),
+    (
+        "write-domain-report",
+        "ncm.workloads.research.write_domain_report",
+    ),
+    ("train", "ncm.workloads.research.train"),
+    (
+        "text-dependency-priors",
+        "ncm.workloads.research.text_dependency_priors",
+    ),
+    (
+        "domain-source-baselines",
+        "ncm.workloads.research.domain_source_baselines",
+    ),
+    ("run-tc-probe", "ncm.workloads.validation.run_tc_probe"),
+    (
+        "run-decisive-benchmark",
+        "ncm.workloads.validation.run_decisive_benchmark",
+    ),
+    (
+        "summarize-validation-controls",
+        "ncm.workloads.validation.summarize_validation_controls",
+    ),
+    (
+        "run-drafter-comparison",
+        "ncm.workloads.validation.run_drafter_comparison",
+    ),
+    ("update-manifests", "ncm.workloads.papers.update_manifests"),
+    (
+        "generate-recent-results",
+        "ncm.workloads.papers.generate_recent_results",
+    ),
+    (
+        "generate-bibliographies",
+        "ncm.workloads.papers.generate_bibliographies",
+    ),
+    ("generate-results", "ncm.workloads.papers.generate_results"),
+    ("audit-papers", "ncm.workloads.papers.audit_papers"),
+];

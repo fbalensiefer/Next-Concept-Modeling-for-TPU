@@ -4,8 +4,9 @@ import hashlib
 import json
 from pathlib import Path
 import statistics
+import subprocess
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[4]
 STUDIES = ('milestone4-scale-verified', 'scale-coverage-followup', 'scale-balanced-coverage', 'coarse-codebook-stability')
 ARMS = ('reconstruction', 'alignment', 'dependency', 'alignment_dependency')
 
@@ -40,7 +41,7 @@ def generate():
     assert last['coarse_stability_decision']['evaluated_models'] == 20
     assert last['coarse_stability_decision']['passed'] and not last['followup_decision']['teacher_alignment_gate_passed']
     for source, expected in last['protocol']['implementation_sha256'].items():
-        content=(ROOT / 'src/ncm' / source).read_bytes()
+        content=subprocess.check_output(['git', 'show', facts['implementation_commit'] + ':src/ncm/' + source], cwd=ROOT)
         # The sole change to historical modules is the opt-in maintenance hook.
         if source=='scale_experiment.py':
             content=content.replace(b'def make_codec_step(config, optimizer, *, maintenance=maintain_coarse):',b'def make_codec_step(config, optimizer):').replace(b'books, coarse, diagnostics = maintenance(',b'books, coarse, diagnostics = maintain_coarse(')
@@ -142,7 +143,7 @@ def main():
     args = parser.parse_args()
     tex, data = generate()
     for name, text in [('observed_results.tex', tex), ('observed_results.json', data)]:
-        path = Path(__file__).parent / 'generated' / name
+        path = ROOT / 'paper/generated' / name
         if args.check:
             if path.read_text() != text:
                 raise SystemExit(f'Stale generated evidence: {path}')

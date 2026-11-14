@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 import numpy as np
 from ncm.validation_io import identity,write_json,write_csv,paired_bootstrap
-from revise_validation_estimates import revise
+from .revise_validation_estimates import revise
 
 
 def summarize(root,real):

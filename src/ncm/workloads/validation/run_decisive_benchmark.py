@@ -280,7 +280,7 @@ def run(args):
     report = dict(config=vars(args), backend=jax.default_backend(), devices=[str(d) for d in jax.devices()],
         versions={name: importlib.metadata.version(name) for name in ('jax','jaxlib','flax','optax','numpy')},
         implementation_sha256={str(path): hashlib.sha256(path.read_bytes()).hexdigest()
-            for path in [Path(__file__), *sorted(Path(__file__).resolve().parents[1].joinpath('src/ncm').glob('*.py'))]},
+            for path in [Path(__file__), *sorted(Path(__file__).resolve().parents[2].glob('*.py'))]},
         train_sha256=train.sha256, heldout_sha256=held.sha256, quality=quality, latency=records, teacher_reference_latency=teacher_reference,
         parameter_counts=sizes, parameter_match_target=target_size,
         ncm_parameter_components=dict(codec=parameter_count(cp), codebook_embeddings=codebook_parameters,

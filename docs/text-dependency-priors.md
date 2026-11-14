@@ -7,8 +7,8 @@ Every marginal receives total symmetric pseudo-count one. Transition rows receiv
 Run with the initial processed corpus and completed capacity-study checkpoints:
 
 ```sh
-.venv312/bin/python examples/text_dependency_priors.py --output runs/text-dependency-priors-v1
-.venv312/bin/python examples/summarize_text_dependency_priors.py --run runs/text-dependency-priors-v1 --output reports/text-dependency-priors
+cargo run --bin ncm-run -- text-dependency-priors --output runs/text-dependency-priors-v1
+cargo run --bin ncm-run -- summarize-text-dependency-priors --run runs/text-dependency-priors-v1 --output reports/text-dependency-priors
 ```
 
 Use a fresh run directory. Exact source snapshots, data/checkpoint hashes and protocol precede fitting. Decoding code sequences must reproduce each frozen codec’s recorded validation byte accuracy. All checkpoint hashes must remain unchanged through completion. The public report preserves compact metrics, raw timings, sample excerpts and a compressed lossless byte archive.

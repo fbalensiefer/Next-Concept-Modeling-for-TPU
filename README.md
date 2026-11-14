@@ -1,6 +1,6 @@
 # Next-Concept Modeling for TPU
 
-A research implementation of [Next-Concept Modeling](https://arxiv.org/abs/2610.14162). The evaluated model and training stack currently uses Python/JAX/Flax. A native Rust crate is being added for deterministic text handling, residual vector quantization, categorical/speculative sampling, and byte-likelihood accounting; neural training and TPU execution have not yet been migrated.
+A research implementation of [Next-Concept Modeling](https://arxiv.org/abs/2610.14162). Rust orchestrates research commands and paper builds; Python/JAX/Flax runs the model and numerical workloads.
 
 The central question is: **can a learned hierarchy make text generation faster while preserving information and modeling the dependencies that matter?**
 
@@ -10,7 +10,7 @@ See the [experimental contract and decision gates](docs/experimental-contract.md
 
 Project by Fabian Balensiefer. The underlying NCM method is due to Kumbong et al.
 
-## Quick start (current Python implementation)
+## Quick start
 
 Python 3.12 is the tested development environment.
 
@@ -19,7 +19,7 @@ python3.12 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[test]'
 python -m pytest -q
-python examples/train.py
+cargo run --bin ncm-run -- train
 ```
 
 The [first document-separated real-text pilot](reports/real-text-reconstruction/report.md) records substantial reconstruction errors after short training runs. See the [reproduction instructions](docs/real-text-reconstruction.md). A [paired duration/capacity follow-up](reports/reconstruction-capacity/report.md) tests longer training and larger codebooks against exact representation controls.
@@ -42,8 +42,9 @@ See [Research.md](Research.md) for brief introductions and [paper sources](paper
 Hybrid coarse-AR generation, exact teacher verification, and the real-text experiment
 are described in [the decisive benchmark guide](docs/decisive-benchmark.md).
 
-Use `cargo run --offline --bin ncm-run -- examples/train.py` to launch a JAX
+Use `cargo run --bin ncm-run -- train` to launch a JAX
 workload through the Rust orchestrator. Set `NCM_PYTHON` to choose the Python
-environment. JAX and Flax remain the model engine; Python model, experiment,
-and paper scripts are retained as their implementations and reproducibility
-tools. The Rust crate is in [`rust/src`](rust/src/).
+environment. JAX and Flax remain the model engine; Research workloads live in `src/ncm/workloads/`; use `--list` to see the
+Rust commands. Standalone Python entrypoints have been removed. The Rust crate is in [`rust/src`](rust/src/).
+
+See the [Rust/JAX command guide](docs/rust-jax.md) for environment selection and the removed-script command mapping.

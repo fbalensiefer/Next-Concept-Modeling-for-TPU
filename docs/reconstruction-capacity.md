@@ -7,8 +7,8 @@ Raw bytes and fixed byte pairs are exact controls. `ncm.representations.encode_p
 Run after preparing the first pilot data:
 
 ```sh
-.venv312/bin/python examples/reconstruction_capacity.py --output runs/reconstruction-capacity-v1
-.venv312/bin/python examples/summarize_reconstruction_capacity.py --run runs/reconstruction-capacity-v1 --output reports/reconstruction-capacity
+cargo run --bin ncm-run -- reconstruction-capacity --output runs/reconstruction-capacity-v1
+cargo run --bin ncm-run -- summarize-reconstruction-capacity --run runs/reconstruction-capacity-v1 --output reports/reconstruction-capacity
 ```
 
 Use a fresh output directory. The protocol is written before fitting, and exact source copies are saved under the run directory. A failed incomplete directory is retained rather than silently overwritten. Every completed fit writes all its checkpoint metrics into the summary; the publication script requires six complete fits. The model runs remain sequential and costs include compilation, full-dataset diagnostic passes and checkpoint serialization.

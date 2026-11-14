@@ -13,7 +13,7 @@ The mixture sources also have simple known-structure generators: a three-state r
 Reproduce exhaustive reconstruction, bijectivity and factorization checks:
 
 ```bash
-.venv312/bin/python examples/domain_source_baselines.py
+cargo run --bin ncm-run -- domain-source-baselines
 .venv312/bin/python -m pytest -q tests/test_domain_validation.py
 ```
 

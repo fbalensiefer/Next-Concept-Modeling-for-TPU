@@ -2,7 +2,7 @@
 import hashlib
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[4]
 
 
 def write(name, paths):
@@ -13,10 +13,10 @@ def write(name, paths):
 
 
 def main():
-    implementation = [path for folder in ('src/ncm', 'tests', 'examples')
+    implementation = [path for folder in ('src/ncm', 'tests', 'examples', 'rust')
                       for path in (ROOT / folder).rglob('*')
-                      if path.is_file() and path.suffix in ('.py', '.json', '.txt') and '__pycache__' not in path.parts]
-    write('source_manifest.sha256', implementation + [ROOT / 'pyproject.toml'])
+                      if path.is_file() and path.suffix in ('.py', '.rs', '.json', '.txt') and '__pycache__' not in path.parts]
+    write('source_manifest.sha256', implementation + [ROOT / p for p in ('pyproject.toml', 'Cargo.toml', 'Cargo.lock')])
     documents = [path for folder in ('paper', 'reports')
                  for path in (ROOT / folder).rglob('*')
                  if path.is_file() and path.suffix in ('.tex', '.json', '.jsonl', '.md', '.py', '.sha256', '.npz')

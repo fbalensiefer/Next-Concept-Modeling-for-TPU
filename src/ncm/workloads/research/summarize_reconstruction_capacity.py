@@ -78,8 +78,8 @@ def main():
         'a frozen application fidelity tolerance and trained prior comparisons. No claims about generation '
         'quality or acceleration follow from these reconstruction results.', '',
         '## Reproduction', '',
-        '```sh', '.venv312/bin/python examples/reconstruction_capacity.py --output runs/reconstruction-capacity-v1',
-        '.venv312/bin/python examples/summarize_reconstruction_capacity.py --run runs/reconstruction-capacity-v1 --output reports/reconstruction-capacity',
+        '```sh', 'cargo run --bin ncm-run -- reconstruction-capacity --output runs/reconstruction-capacity-v1',
+        'cargo run --bin ncm-run -- summarize-reconstruction-capacity --run runs/reconstruction-capacity-v1 --output reports/reconstruction-capacity',
         '```', '', 'Use a fresh run directory. Requires the initial pilot’s processed files and protocol. '
         '[Protocol](protocol.json), [all checkpoint metrics](summary.json), [exact controls](controls.json).', '']
     (output/'report.md').write_text('\n'.join(lines))

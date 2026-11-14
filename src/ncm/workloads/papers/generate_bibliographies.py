@@ -4,7 +4,7 @@ import json
 import re
 from pathlib import Path
 
-BASE = Path(__file__).resolve().parent
+BASE = Path(__file__).resolve().parents[4] / 'paper'
 
 
 def expand(path, seen=None):

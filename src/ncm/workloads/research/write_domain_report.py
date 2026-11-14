@@ -60,8 +60,8 @@ lines+=['','## Numerical incident and continuation','',
 'PYTHONDONTWRITEBYTECODE=1 .venv312/bin/python -m ncm.domain_validation',
 '# If interrupted after protocol creation:',
 'PYTHONDONTWRITEBYTECODE=1 .venv312/bin/python -m ncm.domain_validation --resume',
-'PYTHONDONTWRITEBYTECODE=1 .venv312/bin/python examples/domain_source_baselines.py',
-'PYTHONDONTWRITEBYTECODE=1 .venv312/bin/python examples/summarize_domain_validation.py',
+'PYTHONDONTWRITEBYTECODE=1 cargo run --bin ncm-run -- domain-source-baselines',
+'PYTHONDONTWRITEBYTECODE=1 cargo run --bin ncm-run -- summarize-domain-validation',
 '```','',
 'The runner starts from the committed example configuration and generates its own analytic domains and feature teachers; unlike the preceding ablation, it does not require an ignored historical teacher checkpoint. The report-writing step is presentation only.','']
 (out/'report.md').write_text('\n'.join(lines))

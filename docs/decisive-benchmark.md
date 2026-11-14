@@ -22,7 +22,7 @@ are retained with explicit masks. Use published corpus SHA256 values to pin the
 inputs; the report records actual hashes even when expected hashes are omitted.
 
 ```sh
-python scripts/run_decisive_benchmark.py \
+cargo run --bin ncm-run -- run-decisive-benchmark \
   --train /data/train.jsonl --heldout /data/test.jsonl \
   --train-sha256 TRAIN_DIGEST --heldout-sha256 TEST_DIGEST \
   --output runs/decisive-128 --length 128 \
@@ -108,10 +108,10 @@ Gutenberg books under `runs/real-text-pilot/`, pinned to the protocol's hashes.
 ```sh
 XLA_FLAGS=--xla_force_host_platform_device_count=4 \
   python -m pytest -q
-python scripts/run_tc_probe.py
-python scripts/run_drafter_comparison.py --profile smoke \
+cargo run --bin ncm-run -- run-tc-probe
+cargo run --bin ncm-run -- run-drafter-comparison --profile smoke \
   --output reports/validation-controls/smoke
-python scripts/run_drafter_comparison.py --profile real128 \
+cargo run --bin ncm-run -- run-drafter-comparison --profile real128 \
   --output reports/validation-controls/real128
 ```
 
@@ -168,7 +168,7 @@ legacy auto(0,0) padded path. Empty prompt embeddings avoid counting an unused
 lookup table at P=0. No public generator default is changed. Discarded timings
 from overlapping validation jobs are retained in `real128-contended/`; the clean
 run starts only after all 118 four-device tests complete. Use
-`python scripts/summarize_validation_controls.py` after all three seeds finish
+`cargo run --bin ncm-run -- summarize-validation-controls` after all three seeds finish
 to assemble the claim ledger, seed outcomes, paired intervals, and final tables.
 
 
@@ -176,7 +176,7 @@ Final analytic audits distinguish a cache-only prefill from a complete decode
 step: the last layer contributes K/V projections, without its unused attention,
 MLP, or head. RVQ distance estimates count the stored padded K*L grid. Historical
 estimates from the frozen a1ed801 execution remain untouched in its study
-folder. `scripts/revise_validation_estimates.py` derives corrected tables and
+folder. `src/ncm/workloads/validation/revise_validation_estimates.py` derives corrected tables and
 retains raw-estimate columns and the analytic revision. Measured timings, BPB,
 acceptance and round counts are never rewritten. Compiler estimates retain
 the original execution revision. Fused QKV and elementwise counts remain

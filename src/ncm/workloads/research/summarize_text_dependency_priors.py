@@ -115,8 +115,8 @@ def main():
         'rather than interpreting every incomplete boundary as a modeling failure. No scalable '
         'total-correlation estimate is needed to observe these controlled dependency effects.', '',
         '## Reproduction and audit','',
-        '```sh', '.venv312/bin/python examples/text_dependency_priors.py --output runs/text-dependency-priors-v1',
-        '.venv312/bin/python examples/summarize_text_dependency_priors.py --run runs/text-dependency-priors-v1 --output reports/text-dependency-priors',
+        '```sh', 'cargo run --bin ncm-run -- text-dependency-priors --output runs/text-dependency-priors-v1',
+        'cargo run --bin ncm-run -- summarize-text-dependency-priors --run runs/text-dependency-priors-v1 --output reports/text-dependency-priors',
         '```','',
         'Requires the initial processed corpus and all three capacity-study 64-entry checkpoints. '
         'Use a fresh run directory. [Protocol](protocol.json) records source/data/checkpoint hashes '

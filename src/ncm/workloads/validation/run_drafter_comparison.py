@@ -14,7 +14,7 @@ import jax.numpy as jnp
 import numpy as np
 import optax
 
-from run_decisive_benchmark import measure,compiler_flops,batch
+from .run_decisive_benchmark import measure,compiler_flops,batch
 from ncm.accounting import continuation_mask,matched_latency_rows,speculative_batch_observation
 from ncm.baselines import CausalAR,matched_ar_config,parameter_count,sample_conditioned,shifted_inputs
 from ncm.config import NCMConfig,RVQConfig,TransformerConfig

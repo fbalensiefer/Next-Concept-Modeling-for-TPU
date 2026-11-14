@@ -1,4 +1,4 @@
-from examples.alignment_diagnosis import diagnose
+from ncm.workloads.research.alignment_diagnosis import diagnose
 
 
 def test_causal_target_is_blind_to_last_bit_despite_remaining_information():

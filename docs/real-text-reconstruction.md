@@ -5,7 +5,7 @@ The bounded pilot uses three distinct Project Gutenberg books (IDs 11, 12 and 13
 Download the UTF-8 versions into `runs/real-text-pilot/raw/{11,12,13}.txt`, then run:
 
 ```sh
-.venv312/bin/python examples/real_text_reconstruction.py --output runs/real-text-pilot --steps 100
+cargo run --bin ncm-run -- real-text-reconstruction --output runs/real-text-pilot --steps 100
 ```
 
 Use a fresh output directory for each protocol. The runner strips Gutenberg boundary markers and boilerplate, normalizes CRLF to LF, preserves the body otherwise, and records raw/processed hashes. Source files and package versions are hashed/recorded before training. Source downloads retain the full Gutenberg terms; consult the source's license and jurisdiction restrictions before redistribution. Corpus content and checkpoints stay in ignored `runs/`.
