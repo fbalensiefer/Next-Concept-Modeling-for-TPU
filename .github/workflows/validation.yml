@@ -13,11 +13,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - run: cargo fmt -- --check
-      - run: cargo test --locked
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - run: python -m pip install -c .github/validation-constraints.txt '.[test]'
+      - run: cargo test --locked
       - run: python -m pytest -q
       - uses: actions/upload-artifact@v4
         if: always()
