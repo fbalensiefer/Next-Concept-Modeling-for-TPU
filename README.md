@@ -1,6 +1,6 @@
 # Next-Concept Modeling for TPU
 
-A JAX/Flax implementation of [Next-Concept Modeling](https://arxiv.org/abs/2610.14162) for TPU-oriented execution. A multiscale codec encodes text into hierarchical discrete codes, and a shared Transformer generates each level in parallel.
+A research implementation of [Next-Concept Modeling](https://arxiv.org/abs/2610.14162). The evaluated model and training stack currently uses Python/JAX/Flax. A native Rust crate is being added for deterministic text handling, residual vector quantization, categorical/speculative sampling, and byte-likelihood accounting; neural training and TPU execution have not yet been migrated.
 
 The central question is: **can a learned hierarchy make text generation faster while preserving information and modeling the dependencies that matter?**
 
@@ -10,7 +10,7 @@ See the [experimental contract and decision gates](docs/experimental-contract.md
 
 Project by Fabian Balensiefer. The underlying NCM method is due to Kumbong et al.
 
-## Quick start
+## Quick start (current Python implementation)
 
 Python 3.12 is the tested development environment.
 
@@ -41,3 +41,6 @@ See [Research.md](Research.md) for brief introductions and [paper sources](paper
 
 Hybrid coarse-AR generation, exact teacher verification, and the real-text experiment
 are described in [the decisive benchmark guide](docs/decisive-benchmark.md).
+
+The initial Rust core can be checked with `cargo test --offline`. See
+[`Cargo.toml`](Cargo.toml) and [`rust/src`](rust/src/) for the current port.

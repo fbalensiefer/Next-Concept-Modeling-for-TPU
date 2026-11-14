@@ -60,10 +60,13 @@ state. A level-wise generator must condition on the cumulative representation
 available before predicting its current level. Shape-stable control flow must
 also preserve the semantics of codebook freezing and quantizer dropout.
 
-The implementation uses JAX transformations~\citep{jax} and the Flax Linen
-module API~\citep{flax,flaxscan}. XLA provides the compilation layer~\citep{xla}.
-Rust is reserved for a proposed surrounding data and orchestration layer; no
-Rust component is present in the evaluated snapshot. The implementation is
+The evaluated model and training implementation uses JAX transformations~\citep{jax}
+and the Flax Linen module API~\citep{flax,flaxscan}; XLA provides compilation~\citep{xla}.
+A Rust crate has since been added for byte-preserving text utilities, fixed
+residual-vector-quantizer operations, categorical/speculative sampling, and
+bits-per-byte accounting. Neural-network training, the model architecture,
+accelerator execution, and the experiments reported here remain in Python/JAX;
+the Rust crate does not reproduce the evaluated results. The implementation is
 available in the public project repository, version 0.1.0, with historical baseline
 \code{1d600d7} and current research extensions identified by source hashes~\citep{localrepo}. Source hashes
 identify the files evaluated here independently of later branch updates.
@@ -544,12 +547,11 @@ and coordinated calls across hosts. The example initializes a complete small
 host state; scalable checkpoint restoration and multi-host initialization have
 not been validated.
 
-A proposed Rust layer would ingest corpora, expand fallback bytes, form length
-buckets, validate IDs/masks, and produce shard files and metadata. It could also
-coordinate runs and aggregate evaluation outputs. The neural forward passes,
-gradients, optimizer, EMA, and collectives remain in JAX/XLA. This separation
-defines an integration boundary; it is not a claim that a Rust pipeline has
-already been implemented or benchmarked.
+A future Rust layer could ingest corpora, form length buckets, validate
+IDs/masks, and coordinate runs. These functions are not yet ported. The current
+crate covers only deterministic primitives; neural forward passes, gradients,
+optimizer, EMA, collectives, and experiment runners remain in Python/JAX/XLA.
+No Rust performance or result-equivalence claim is made.
 
 \section{Complexity and Potential Bottlenecks}
 \label{sec:complexity}
