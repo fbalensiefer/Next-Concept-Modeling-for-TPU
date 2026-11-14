@@ -27,6 +27,20 @@ fn worker(root: &Path, module: &str, args: &[OsString]) -> Result<(), String> {
     }
     Ok(())
 }
+fn audit_papers(root: &Path, args: &[OsString]) -> Result<(), String> {
+    for module in [
+        "generate_results",
+        "generate_recent_results",
+        "generate_bibliographies",
+    ] {
+        worker(
+            root,
+            &format!("ncm.workloads.papers.{module}"),
+            &["--check".into()],
+        )?;
+    }
+    worker(root, "ncm.workloads.papers.audit_papers", args)
+}
 fn build_papers(root: &Path, args: &[OsString]) -> Result<(), String> {
     let mut folder = root.join("build/papers");
     let mut offline = false;
@@ -64,9 +78,8 @@ fn build_papers(root: &Path, args: &[OsString]) -> Result<(), String> {
             return Err(format!("paper compilation failed: {status}"));
         }
     }
-    worker(
+    audit_papers(
         root,
-        "ncm.workloads.papers.audit_papers",
         &["--build-dir".into(), folder.clone().into_os_string()],
     )?;
     for stem in ["ncm_systems_paper", "SCALE_research_paper"] {
@@ -99,6 +112,8 @@ fn main() -> ExitCode {
     let name = args[0].to_string_lossy();
     let result = if name == "build-papers" {
         build_papers(&root, &args[1..])
+    } else if name == "audit-papers" {
+        audit_papers(&root, &args[1..])
     } else if let Some((_, module)) = COMMANDS.iter().find(|(n, _)| *n == name) {
         worker(&root, module, &args[1..])
     } else {

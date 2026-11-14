@@ -61,8 +61,7 @@ available before predicting its current level. Shape-stable control flow must
 also preserve the semantics of codebook freezing and quantizer dropout.
 
 The model and training implementation uses JAX and Flax~\citep{jax,flax,flaxscan},
-compiled through XLA~\citep{xla}. Rust provides a small command-line layer for
-launching experiment programs; model execution remains in Python/JAX. The
+compiled through XLA~\citep{xla}. Rust orchestrates research commands; JAX/Flax performs all model computation. The
 implementation is
 available in the public project repository, version 0.1.0, with historical baseline
 \code{1d600d7} and current research extensions identified by source hashes~\citep{localrepo}. Source hashes
@@ -543,11 +542,6 @@ process-local data. It requires distributed initialization before mesh creation
 and coordinated calls across hosts. The example initializes a complete small
 host state; scalable checkpoint restoration and multi-host initialization have
 not been validated.
-
-The Rust command-line tool starts packaged Python research workloads and
-forwards their arguments and exit status. Model computation, training, and
-device collectives remain in JAX/XLA. Rust does not change the results or
-performance reported in this paper.
 
 \section{Complexity and Potential Bottlenecks}
 \label{sec:complexity}

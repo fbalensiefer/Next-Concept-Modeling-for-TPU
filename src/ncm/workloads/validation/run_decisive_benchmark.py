@@ -2,7 +2,7 @@
 """Real-text quality/compute/latency experiment; all arms are trained locally.
 
 Example:
-  python scripts/run_decisive_benchmark.py --train train.jsonl --heldout test.jsonl \
+  cargo run --bin ncm-run -- run-decisive-benchmark --train train.jsonl --heldout test.jsonl \
       --output runs/decisive --length 128 --steps 1000 --codec-steps 1000
 
 Use --length 512 for the second bucket. Defaults: five warmups, thirty timed
