@@ -1,0 +1,100 @@
+git_commit: 2c9fd78
+
+quality seed=200 P=2 arm=ar_scratch BPB=8.5820 exact
+quality seed=200 P=2 arm=ar_distilled BPB=8.5826 exact
+quality seed=200 P=2 arm=ncm_coarse_0 BPB=12.8340 upper_bound
+quality seed=200 P=2 arm=ncm_coarse_1 BPB=12.8031 upper_bound
+quality seed=200 P=2 arm=ncm_sequence_distilled BPB=12.7968 upper_bound
+timing seed=200 P=2 D=2 B=1 ncm 0.53 ms
+timing seed=200 P=2 D=2 B=16 ncm 4.47 ms
+timing seed=200 P=2 D=2 B=128 ncm 23.68 ms
+timing seed=200 P=2 D=4 B=1 ncm 0.58 ms
+timing seed=200 P=2 D=4 B=16 ncm 10.40 ms
+timing seed=200 P=2 D=4 B=128 ncm 28.60 ms
+timing seed=200 P=2 D=8 B=1 ncm 0.75 ms
+timing seed=200 P=2 D=8 B=16 ncm 6.33 ms
+timing seed=200 P=2 D=8 B=128 ncm 34.12 ms
+timing seed=200 P=2 D=2 B=1 ar_distilled 0.39 ms
+timing seed=200 P=2 D=2 B=16 ar_distilled 4.44 ms
+timing seed=200 P=2 D=2 B=128 ar_distilled 19.04 ms
+timing seed=200 P=2 D=4 B=1 ar_distilled 0.48 ms
+timing seed=200 P=2 D=4 B=16 ar_distilled 6.14 ms
+timing seed=200 P=2 D=4 B=128 ar_distilled 26.41 ms
+timing seed=200 P=2 D=8 B=1 ar_distilled 0.69 ms
+timing seed=200 P=2 D=8 B=16 ar_distilled 9.90 ms
+timing seed=200 P=2 D=8 B=128 ar_distilled 41.46 ms
+timing seed=200 P=2 D=2 B=1 ncm_sequence_distilled 0.53 ms
+timing seed=200 P=2 D=2 B=16 ncm_sequence_distilled 4.48 ms
+timing seed=200 P=2 D=2 B=128 ncm_sequence_distilled 21.09 ms
+timing seed=200 P=2 D=4 B=1 ncm_sequence_distilled 0.57 ms
+timing seed=200 P=2 D=4 B=16 ncm_sequence_distilled 5.15 ms
+timing seed=200 P=2 D=4 B=128 ncm_sequence_distilled 25.34 ms
+timing seed=200 P=2 D=8 B=1 ncm_sequence_distilled 0.74 ms
+timing seed=200 P=2 D=8 B=16 ncm_sequence_distilled 6.51 ms
+timing seed=200 P=2 D=8 B=128 ncm_sequence_distilled 34.84 ms
+Traceback (most recent call last):
+  File "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/scripts/run_drafter_comparison.py", line 365, in main
+    try:progress['outcomes'].append(run_seed(seed,args.profile,out,progress))
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/scripts/run_drafter_comparison.py", line 336, in run_seed
+    flush(out,progress)
+  File "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/scripts/run_drafter_comparison.py", line 348, in flush
+    write_json(out/'results.json',progress)
+  File "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/validation_io.py", line 19, in write_json
+    path.write_text(json.dumps(dict(**identity(), **data),indent=2,allow_nan=False)+'\n')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/ncm-python/cpython-3.12.16-macos-aarch64-none/lib/python3.12/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/private/tmp/ncm-python/cpython-3.12.16-macos-aarch64-none/lib/python3.12/json/encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "/private/tmp/ncm-python/cpython-3.12.16-macos-aarch64-none/lib/python3.12/json/encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/private/tmp/ncm-python/cpython-3.12.16-macos-aarch64-none/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/private/tmp/ncm-python/cpython-3.12.16-macos-aarch64-none/lib/python3.12/json/encoder.py", line 326, in _iterencode_list
+    yield from chunks
+  File "/private/tmp/ncm-python/cpython-3.12.16-macos-aarch64-none/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/private/tmp/ncm-python/cpython-3.12.16-macos-aarch64-none/lib/python3.12/json/encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "/private/tmp/ncm-python/cpython-3.12.16-macos-aarch64-none/lib/python3.12/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type bool is not JSON serializable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/scripts/run_drafter_comparison.py", line 383, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/scripts/run_drafter_comparison.py", line 368, in main
+    flush(out,progress);raise
+    ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/scripts/run_drafter_comparison.py", line 348, in flush
+    write_json(out/'results.json',progress)
+  File "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/validation_io.py", line 19, in write_json
+    path.write_text(json.dumps(dict(**identity(), **data),indent=2,allow_nan=False)+'\n')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/ncm-python/cpython-3.12.16-macos-aarch64-none/lib/python3.12/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/private/tmp/ncm-python/cpython-3.12.16-macos-aarch64-none/lib/python3.12/json/encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "/private/tmp/ncm-python/cpython-3.12.16-macos-aarch64-none/lib/python3.12/json/encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/private/tmp/ncm-python/cpython-3.12.16-macos-aarch64-none/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/private/tmp/ncm-python/cpython-3.12.16-macos-aarch64-none/lib/python3.12/json/encoder.py", line 326, in _iterencode_list
+    yield from chunks
+  File "/private/tmp/ncm-python/cpython-3.12.16-macos-aarch64-none/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/private/tmp/ncm-python/cpython-3.12.16-macos-aarch64-none/lib/python3.12/json/encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "/private/tmp/ncm-python/cpython-3.12.16-macos-aarch64-none/lib/python3.12/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type bool is not JSON serializable

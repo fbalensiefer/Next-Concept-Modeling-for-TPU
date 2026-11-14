@@ -1,9 +1,164 @@
 {
-  "git_commit": "8f1fddc",
-  "status": "frozen_before_execution",
+  "git_commit": "bbf82c63d738633b950e5daef5ca862e55f39016",
+  "source_sha256": {
+    "src/ncm/__init__.py": "19203b12a5ae8ee75bb48efe588012fb6a9a32ab569ddd32049bbc0464ddb070",
+    "src/ncm/accounting.py": "354cfadc4e7b1b3ca528cb725a8a8cd1a981093a3939d610f25c683dd6ddbd8a",
+    "src/ncm/autoregressive.py": "53ca48fbfa51cb54f23c8dd71985a777fc4613ccfa592933b48b345a1c4393c1",
+    "src/ncm/baselines.py": "383b7363f2e5de29bf3af0ce03f9d92f3e6fde237df760c6a1c279e7f094b2a9",
+    "src/ncm/benchmark.py": "84ed1ed5c6818584b5cceaa4830b838931a25239fe140f13443f0ad70399aae7",
+    "src/ncm/coarse.py": "517a5b741741893a1d3dad3c1c488c2253228f6b0b097532e2a7c9be60b5e1dc",
+    "src/ncm/config.py": "79f958518a1fd8bdcb0c9b37988908f42ccda4f488580e55d552012552b59945",
+    "src/ncm/coverage.py": "bd75ec017eeeba62d0419fda3aab92bcf3d76010de90043877c151de6b8ff422",
+    "src/ncm/data.py": "b2726ab14c9b86d351a9013d32bc7a5cfc90bad8e88f1114b6a735615f1da0df",
+    "src/ncm/dependence.py": "c7c9df1f405e2e56854f1679167f7b7a67d59f9b00bcc4ec75619f2af451e597",
+    "src/ncm/dependency_validation.py": "63fd0ca5ab1227fa42c449560a766ed160d67deb84a6572b18e5cc3b6f92d1de",
+    "src/ncm/domain_validation.py": "19abadaf9edb9163ccaa4e5c133a755dd4291c74ff199d6fd2e37ae6e70cf05e",
+    "src/ncm/experiment.py": "0ebc40f671118650501b9e398633a373e9d132538c35581c7135e2bd1ee6e19c",
+    "src/ncm/fast_generation.py": "cd5d925c0c4d971a4ece9b00f67d3e14aa842e02bc0d17670ed788b5d6e6c378",
+    "src/ncm/flops.py": "72217c944bbf2500520d58d17013c9ac9c152b25ad5b4c13bd4225df603143f0",
+    "src/ncm/generation.py": "61f1600ef9bea4cf56bc98d8657d1ef83868d9ac49da79da8ef742c6fe1ef115",
+    "src/ncm/generator.py": "564b0da78e229c8fe5e4c92c019f84250998af5f3f07138bec94c5eee02b45ac",
+    "src/ncm/grids.py": "45c4da3d4224335ff0b50f8bf0fcfbd190daa7c949dd5dc690189f4121749d30",
+    "src/ncm/losses.py": "a52b17f683b3d5a4e6eec704b5f055ecd57edcff1474ec4732035886c31f6771",
+    "src/ncm/maintenance_experiment.py": "4750668671099b55e2789c63efb6c28f9ce3b7ae37b1e0bb6af8fcb8ed1017b9",
+    "src/ncm/metrics.py": "be204442a808f33322cf4aeae50905127b53f715b19c1d79e7f1e4edefd855ed",
+    "src/ncm/prior_experiment.py": "224e7ea3171dde1a03fba68f09d073a865eedec8a00fca375859a12871b749bd",
+    "src/ncm/probe.py": "0b017ac85ba1b83912e339e9c352720932bfbf94f39ddb47e82db09b2baf59b9",
+    "src/ncm/representations.py": "ef3c6241deae00a4a2189d8fca172645a9b57d4eb560b19caff384989bc00c16",
+    "src/ncm/rvq.py": "a66c08bc993eda484f3a7e13fdc82be5b967064c3945df481d4ba85df8328883",
+    "src/ncm/sample.py": "ab960dd114d5cf53930307f2a0c32c522487d6d92698e88f072f8746e0134188",
+    "src/ncm/scale_experiment.py": "4113314420a122e2118db03488bc1f42845405c8466dda6ef5bcc8aee779411b",
+    "src/ncm/sharding.py": "085df4a615b7e7985c4dc3be91cb1529260eced9d713a87ea81d68ff40419674",
+    "src/ncm/sparse_grids.py": "a20fd5247df0ef52895e3cb6cc6e6e3f0e753a4790fef22c689acfb10bc5af8c",
+    "src/ncm/speculative.py": "af26ea280973f06e6c394818237d45c06186654bc55479e15ec4bd632b532a42",
+    "src/ncm/table_prior.py": "2309573faeee7f203d74ae97d3509d79f605a15b2979c07e5c762760d4eff84b",
+    "src/ncm/text_data.py": "e4eb728833319b93b9b52893e8726a3735d92a6cb9824937aaa9f23a4d19d7b8",
+    "src/ncm/tokenizer.py": "ced3cbc58a6a6b2ff8a33f6ed96152302e8732f6a7edba246b909df2a8c67110",
+    "src/ncm/training.py": "99c3808127902b264ca48bb5bf7eaf7dca355f1f2b8c2df2921cf5fb666c2b5b",
+    "src/ncm/validation_io.py": "d78f78f1222c10f95c9ea00c1d160fa971dcf0684f10e90ba329d09062f5ded0"
+  },
+  "status": "complete_with_negative_results",
   "seeds": [
-    {"seed":200,"studies":["power","negative_controls","probe","smoke","real128"],"outcome":"pending"},
-    {"seed":201,"studies":["direct_sampling_floor","probe","real128"],"outcome":"pending"},
-    {"seed":202,"studies":["greedy_prompts","probe","real128","paired_bootstrap"],"outcome":"pending"}
-  ]
+    {
+      "seed": 200,
+      "studies": [
+        "power",
+        "negative_controls",
+        "probe",
+        "smoke",
+        "real128"
+      ],
+      "outcome": "complete; TC gate failed; student quality matching unproven",
+      "outcomes": {
+        "probe": {
+          "cases": 72,
+          "numerical_pass_fraction": 0.75,
+          "strict_disjoint_gate": false
+        },
+        "real128": {
+          "status": "complete",
+          "drafter_rows": 117,
+          "quality_rows": 15
+        },
+        "tests": {
+          "status": "passed",
+          "evidence": "tests.json"
+        },
+        "nulls_and_failures": [
+          "TC validation gate failed",
+          "No real-text TC claim",
+          "No matched exact NCM BPB claim"
+        ],
+        "power": {
+          "status": "passed",
+          "samples": 200000,
+          "negative_controls_rejected": 4
+        },
+        "smoke": {
+          "status": "passed_after_serialization_fix",
+          "failed_attempts": 1
+        },
+        "timing_attempt": {
+          "status": "initial_contended_attempt_retained_and_replaced_by_quiescent_execution"
+        }
+      }
+    },
+    {
+      "seed": 201,
+      "studies": [
+        "direct_sampling_floor",
+        "probe",
+        "real128"
+      ],
+      "outcome": "complete; TC gate failed; student quality matching unproven",
+      "outcomes": {
+        "probe": {
+          "cases": 72,
+          "numerical_pass_fraction": 0.7638888888888888,
+          "strict_disjoint_gate": false
+        },
+        "real128": {
+          "status": "complete",
+          "drafter_rows": 117,
+          "quality_rows": 15
+        },
+        "tests": {
+          "status": "passed",
+          "evidence": "tests.json"
+        },
+        "nulls_and_failures": [
+          "TC validation gate failed",
+          "No real-text TC claim",
+          "No matched exact NCM BPB claim"
+        ],
+        "direct_floor": {
+          "repetitions": 20,
+          "samples_per_repetition": 200000,
+          "status": "complete"
+        }
+      }
+    },
+    {
+      "seed": 202,
+      "studies": [
+        "greedy_prompts",
+        "probe",
+        "real128",
+        "paired_bootstrap"
+      ],
+      "outcome": "complete; TC gate failed; student quality matching unproven",
+      "outcomes": {
+        "probe": {
+          "cases": 72,
+          "numerical_pass_fraction": 0.8055555555555556,
+          "strict_disjoint_gate": false
+        },
+        "real128": {
+          "status": "complete",
+          "drafter_rows": 117,
+          "quality_rows": 15
+        },
+        "tests": {
+          "status": "passed",
+          "evidence": "tests.json"
+        },
+        "nulls_and_failures": [
+          "TC validation gate failed",
+          "No real-text TC claim",
+          "No matched exact NCM BPB claim"
+        ],
+        "greedy": {
+          "prompts": 50,
+          "status": "passed"
+        },
+        "bootstrap": {
+          "repetitions": 10000,
+          "status": "complete",
+          "label": "exploratory"
+        }
+      }
+    }
+  ],
+  "execution_git_commit": "bbf82c63d738633b950e5daef5ca862e55f39016",
+  "protocol_git_commit": "8f1fddc"
 }

@@ -1,0 +1,32 @@
+git_commit: 09eac68
+
+quality seed=200 P=0 arm=ar_scratch BPB=8.6681 exact
+quality seed=200 P=0 arm=ar_distilled BPB=8.6794 exact
+quality seed=200 P=0 arm=ncm_coarse_0 BPB=13.3828 upper_bound
+quality seed=200 P=0 arm=ncm_coarse_1 BPB=12.9629 upper_bound
+quality seed=200 P=0 arm=ncm_sequence_distilled BPB=12.7727 upper_bound
+timing seed=200 P=0 D=2 B=1 ncm 33.62 ms
+timing seed=200 P=0 D=2 B=16 ncm 442.93 ms
+timing seed=200 P=0 D=2 B=128 ncm 2787.67 ms
+timing seed=200 P=0 D=4 B=1 ncm 32.79 ms
+timing seed=200 P=0 D=4 B=16 ncm 323.33 ms
+timing seed=200 P=0 D=4 B=128 ncm 2881.36 ms
+timing seed=200 P=0 D=8 B=1 ncm 34.82 ms
+timing seed=200 P=0 D=8 B=16 ncm 346.36 ms
+timing seed=200 P=0 D=8 B=128 ncm 3066.81 ms
+timing seed=200 P=0 D=16 B=1 ncm 40.74 ms
+Traceback (most recent call last):
+  File "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/scripts/run_drafter_comparison.py", line 393, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/scripts/run_drafter_comparison.py", line 375, in main
+    try:progress['outcomes'].append(run_seed(seed,args.profile,out,progress))
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/scripts/run_drafter_comparison.py", line 308, in run_seed
+    timing=measure(sampled,(dp,tp,prompt,key),5,30,collect=observe)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/scripts/run_decisive_benchmark.py", line 58, in measure
+    jax.block_until_ready(result)
+  File "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/.venv312/lib/python3.12/site-packages/jax/_src/api.py", line 2512, in block_until_ready
+    xc.batched_block_until_ready(arrays)
+KeyboardInterrupt

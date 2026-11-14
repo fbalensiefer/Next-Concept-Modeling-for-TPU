@@ -1,0 +1,371 @@
+git_commit: a1ed8019578ea1fd77f45b871cdd55a1b5157af2
+
+quality seed=200 P=0 arm=ar_scratch BPB=8.6308 exact
+quality seed=200 P=0 arm=ar_distilled BPB=8.6421 exact
+quality seed=200 P=0 arm=ncm_coarse_0 BPB=12.6975 upper_bound
+quality seed=200 P=0 arm=ncm_coarse_1 BPB=12.7034 upper_bound
+quality seed=200 P=0 arm=ncm_sequence_distilled BPB=12.5259 upper_bound
+timing seed=200 P=0 D=2 B=1 ncm 32.98 ms
+timing seed=200 P=0 D=2 B=16 ncm 311.31 ms
+timing seed=200 P=0 D=2 B=128 ncm 2717.14 ms
+timing seed=200 P=0 D=4 B=1 ncm 30.59 ms
+timing seed=200 P=0 D=4 B=16 ncm 305.73 ms
+timing seed=200 P=0 D=4 B=128 ncm 2737.60 ms
+timing seed=200 P=0 D=8 B=1 ncm 32.79 ms
+timing seed=200 P=0 D=8 B=16 ncm 323.52 ms
+timing seed=200 P=0 D=8 B=128 ncm 2820.70 ms
+timing seed=200 P=0 D=16 B=1 ncm 37.98 ms
+timing seed=200 P=0 D=16 B=16 ncm 354.98 ms
+timing seed=200 P=0 D=16 B=128 ncm 3193.87 ms
+timing seed=200 P=0 D=2 B=1 ar_distilled 24.67 ms
+timing seed=200 P=0 D=2 B=16 ar_distilled 328.47 ms
+timing seed=200 P=0 D=2 B=128 ar_distilled 2295.89 ms
+timing seed=200 P=0 D=4 B=1 ar_distilled 23.40 ms
+timing seed=200 P=0 D=4 B=16 ar_distilled 342.19 ms
+timing seed=200 P=0 D=4 B=128 ar_distilled 2422.35 ms
+timing seed=200 P=0 D=8 B=1 ar_distilled 26.66 ms
+timing seed=200 P=0 D=8 B=16 ar_distilled 374.69 ms
+timing seed=200 P=0 D=8 B=128 ar_distilled 2606.10 ms
+timing seed=200 P=0 D=16 B=1 ar_distilled 33.39 ms
+timing seed=200 P=0 D=16 B=16 ar_distilled 460.57 ms
+timing seed=200 P=0 D=16 B=128 ar_distilled 3109.58 ms
+timing seed=200 P=0 D=2 B=1 ncm_sequence_distilled 32.68 ms
+timing seed=200 P=0 D=2 B=16 ncm_sequence_distilled 311.62 ms
+timing seed=200 P=0 D=2 B=128 ncm_sequence_distilled 2722.81 ms
+timing seed=200 P=0 D=4 B=1 ncm_sequence_distilled 29.14 ms
+timing seed=200 P=0 D=4 B=16 ncm_sequence_distilled 304.23 ms
+timing seed=200 P=0 D=4 B=128 ncm_sequence_distilled 2732.37 ms
+timing seed=200 P=0 D=8 B=1 ncm_sequence_distilled 30.82 ms
+timing seed=200 P=0 D=8 B=16 ncm_sequence_distilled 308.95 ms
+timing seed=200 P=0 D=8 B=128 ncm_sequence_distilled 2819.23 ms
+timing seed=200 P=0 D=16 B=1 ncm_sequence_distilled 35.70 ms
+timing seed=200 P=0 D=16 B=16 ncm_sequence_distilled 344.94 ms
+timing seed=200 P=0 D=16 B=128 ncm_sequence_distilled 3227.63 ms
+quality seed=200 P=16 arm=ar_scratch BPB=8.6722 exact
+quality seed=200 P=16 arm=ar_distilled BPB=8.6839 exact
+quality seed=200 P=16 arm=ncm_coarse_0 BPB=12.7154 upper_bound
+quality seed=200 P=16 arm=ncm_coarse_1 BPB=12.7328 upper_bound
+quality seed=200 P=16 arm=ncm_sequence_distilled BPB=12.5678 upper_bound
+timing seed=200 P=16 D=2 B=1 ncm 38.83 ms
+timing seed=200 P=16 D=2 B=16 ncm 365.34 ms
+timing seed=200 P=16 D=2 B=128 ncm 3520.13 ms
+timing seed=200 P=16 D=4 B=1 ncm 34.14 ms
+timing seed=200 P=16 D=4 B=16 ncm 359.29 ms
+timing seed=200 P=16 D=4 B=128 ncm 3549.13 ms
+timing seed=200 P=16 D=8 B=1 ncm 34.99 ms
+timing seed=200 P=16 D=8 B=16 ncm 370.38 ms
+timing seed=200 P=16 D=8 B=128 ncm 3597.60 ms
+timing seed=200 P=16 D=16 B=1 ncm 39.74 ms
+timing seed=200 P=16 D=16 B=16 ncm 414.58 ms
+timing seed=200 P=16 D=16 B=128 ncm 3856.94 ms
+timing seed=200 P=16 D=2 B=1 ar_distilled 23.77 ms
+timing seed=200 P=16 D=2 B=16 ar_distilled 363.24 ms
+timing seed=200 P=16 D=2 B=128 ar_distilled 2821.31 ms
+timing seed=200 P=16 D=4 B=1 ar_distilled 23.26 ms
+timing seed=200 P=16 D=4 B=16 ar_distilled 366.61 ms
+timing seed=200 P=16 D=4 B=128 ar_distilled 2972.57 ms
+timing seed=200 P=16 D=8 B=1 ar_distilled 28.67 ms
+timing seed=200 P=16 D=8 B=16 ar_distilled 420.43 ms
+timing seed=200 P=16 D=8 B=128 ar_distilled 3098.20 ms
+timing seed=200 P=16 D=16 B=1 ar_distilled 36.30 ms
+timing seed=200 P=16 D=16 B=16 ar_distilled 491.18 ms
+timing seed=200 P=16 D=16 B=128 ar_distilled 3542.63 ms
+timing seed=200 P=16 D=2 B=1 ncm_sequence_distilled 35.82 ms
+timing seed=200 P=16 D=2 B=16 ncm_sequence_distilled 368.47 ms
+timing seed=200 P=16 D=2 B=128 ncm_sequence_distilled 3496.85 ms
+timing seed=200 P=16 D=4 B=1 ncm_sequence_distilled 32.79 ms
+timing seed=200 P=16 D=4 B=16 ncm_sequence_distilled 363.77 ms
+timing seed=200 P=16 D=4 B=128 ncm_sequence_distilled 3595.76 ms
+timing seed=200 P=16 D=8 B=1 ncm_sequence_distilled 34.02 ms
+timing seed=200 P=16 D=8 B=16 ncm_sequence_distilled 373.36 ms
+timing seed=200 P=16 D=8 B=128 ncm_sequence_distilled 3584.59 ms
+timing seed=200 P=16 D=16 B=1 ncm_sequence_distilled 39.65 ms
+timing seed=200 P=16 D=16 B=16 ncm_sequence_distilled 422.62 ms
+timing seed=200 P=16 D=16 B=128 ncm_sequence_distilled 3931.13 ms
+quality seed=200 P=64 arm=ar_scratch BPB=8.6634 exact
+quality seed=200 P=64 arm=ar_distilled BPB=8.6761 exact
+quality seed=200 P=64 arm=ncm_coarse_0 BPB=12.7885 upper_bound
+quality seed=200 P=64 arm=ncm_coarse_1 BPB=12.8227 upper_bound
+quality seed=200 P=64 arm=ncm_sequence_distilled BPB=12.6422 upper_bound
+timing seed=200 P=64 D=2 B=1 ncm 56.51 ms
+timing seed=200 P=64 D=2 B=16 ncm 592.02 ms
+timing seed=200 P=64 D=2 B=128 ncm 5581.97 ms
+timing seed=200 P=64 D=4 B=1 ncm 45.66 ms
+timing seed=200 P=64 D=4 B=16 ncm 593.51 ms
+timing seed=200 P=64 D=4 B=128 ncm 5598.44 ms
+timing seed=200 P=64 D=8 B=1 ncm 48.10 ms
+timing seed=200 P=64 D=8 B=16 ncm 605.13 ms
+timing seed=200 P=64 D=8 B=128 ncm 5851.29 ms
+timing seed=200 P=64 D=16 B=1 ncm 55.59 ms
+timing seed=200 P=64 D=16 B=16 ncm 674.21 ms
+timing seed=200 P=64 D=16 B=128 ncm 6387.47 ms
+timing seed=200 P=64 D=2 B=1 ar_distilled 35.98 ms
+timing seed=200 P=64 D=2 B=16 ar_distilled 597.23 ms
+timing seed=200 P=64 D=2 B=128 ar_distilled 4700.40 ms
+timing seed=200 P=64 D=4 B=1 ar_distilled 34.09 ms
+timing seed=200 P=64 D=4 B=16 ar_distilled 574.26 ms
+timing seed=200 P=64 D=4 B=128 ar_distilled 4572.53 ms
+timing seed=200 P=64 D=8 B=1 ar_distilled 35.51 ms
+timing seed=200 P=64 D=8 B=16 ar_distilled 621.52 ms
+timing seed=200 P=64 D=8 B=128 ar_distilled 4994.27 ms
+timing seed=200 P=64 D=16 B=1 ar_distilled 42.71 ms
+timing seed=200 P=64 D=16 B=16 ar_distilled 738.72 ms
+timing seed=200 P=64 D=16 B=128 ar_distilled 5675.47 ms
+timing seed=200 P=64 D=2 B=1 ncm_sequence_distilled 53.13 ms
+timing seed=200 P=64 D=2 B=16 ncm_sequence_distilled 674.78 ms
+timing seed=200 P=64 D=2 B=128 ncm_sequence_distilled 5913.26 ms
+timing seed=200 P=64 D=4 B=1 ncm_sequence_distilled 50.65 ms
+timing seed=200 P=64 D=4 B=16 ncm_sequence_distilled 632.56 ms
+timing seed=200 P=64 D=4 B=128 ncm_sequence_distilled 6026.25 ms
+timing seed=200 P=64 D=8 B=1 ncm_sequence_distilled 52.95 ms
+timing seed=200 P=64 D=8 B=16 ncm_sequence_distilled 650.02 ms
+timing seed=200 P=64 D=8 B=128 ncm_sequence_distilled 6112.51 ms
+timing seed=200 P=64 D=16 B=1 ncm_sequence_distilled 59.94 ms
+timing seed=200 P=64 D=16 B=16 ncm_sequence_distilled 709.66 ms
+timing seed=200 P=64 D=16 B=128 ncm_sequence_distilled 6787.85 ms
+quality seed=201 P=0 arm=ar_scratch BPB=8.5750 exact
+quality seed=201 P=0 arm=ar_distilled BPB=8.5807 exact
+quality seed=201 P=0 arm=ncm_coarse_0 BPB=11.5589 upper_bound
+quality seed=201 P=0 arm=ncm_coarse_1 BPB=11.5647 upper_bound
+quality seed=201 P=0 arm=ncm_sequence_distilled BPB=11.4820 upper_bound
+timing seed=201 P=0 D=2 B=1 ncm 29.14 ms
+timing seed=201 P=0 D=2 B=16 ncm 314.51 ms
+timing seed=201 P=0 D=2 B=128 ncm 2781.94 ms
+timing seed=201 P=0 D=4 B=1 ncm 28.14 ms
+timing seed=201 P=0 D=4 B=16 ncm 290.02 ms
+timing seed=201 P=0 D=4 B=128 ncm 2901.88 ms
+timing seed=201 P=0 D=8 B=1 ncm 31.61 ms
+timing seed=201 P=0 D=8 B=16 ncm 339.17 ms
+timing seed=201 P=0 D=8 B=128 ncm 2833.90 ms
+timing seed=201 P=0 D=16 B=1 ncm 35.71 ms
+timing seed=201 P=0 D=16 B=16 ncm 364.55 ms
+timing seed=201 P=0 D=16 B=128 ncm 3177.62 ms
+timing seed=201 P=0 D=2 B=1 ar_distilled 22.82 ms
+timing seed=201 P=0 D=2 B=16 ar_distilled 340.64 ms
+timing seed=201 P=0 D=2 B=128 ar_distilled 2520.56 ms
+timing seed=201 P=0 D=4 B=1 ar_distilled 22.40 ms
+timing seed=201 P=0 D=4 B=16 ar_distilled 354.20 ms
+timing seed=201 P=0 D=4 B=128 ar_distilled 2586.63 ms
+timing seed=201 P=0 D=8 B=1 ar_distilled 25.52 ms
+timing seed=201 P=0 D=8 B=16 ar_distilled 407.13 ms
+timing seed=201 P=0 D=8 B=128 ar_distilled 2850.60 ms
+timing seed=201 P=0 D=16 B=1 ar_distilled 33.64 ms
+timing seed=201 P=0 D=16 B=16 ar_distilled 506.84 ms
+timing seed=201 P=0 D=16 B=128 ar_distilled 3351.67 ms
+timing seed=201 P=0 D=2 B=1 ncm_sequence_distilled 30.17 ms
+timing seed=201 P=0 D=2 B=16 ncm_sequence_distilled 315.54 ms
+timing seed=201 P=0 D=2 B=128 ncm_sequence_distilled 2877.82 ms
+timing seed=201 P=0 D=4 B=1 ncm_sequence_distilled 29.98 ms
+timing seed=201 P=0 D=4 B=16 ncm_sequence_distilled 323.29 ms
+timing seed=201 P=0 D=4 B=128 ncm_sequence_distilled 2813.65 ms
+timing seed=201 P=0 D=8 B=1 ncm_sequence_distilled 30.50 ms
+timing seed=201 P=0 D=8 B=16 ncm_sequence_distilled 324.36 ms
+timing seed=201 P=0 D=8 B=128 ncm_sequence_distilled 2881.89 ms
+timing seed=201 P=0 D=16 B=1 ncm_sequence_distilled 36.66 ms
+timing seed=201 P=0 D=16 B=16 ncm_sequence_distilled 362.17 ms
+timing seed=201 P=0 D=16 B=128 ncm_sequence_distilled 3276.62 ms
+quality seed=201 P=16 arm=ar_scratch BPB=8.5699 exact
+quality seed=201 P=16 arm=ar_distilled BPB=8.5732 exact
+quality seed=201 P=16 arm=ncm_coarse_0 BPB=11.5546 upper_bound
+quality seed=201 P=16 arm=ncm_coarse_1 BPB=11.5693 upper_bound
+quality seed=201 P=16 arm=ncm_sequence_distilled BPB=11.5130 upper_bound
+timing seed=201 P=16 D=2 B=1 ncm 34.48 ms
+timing seed=201 P=16 D=2 B=16 ncm 372.56 ms
+timing seed=201 P=16 D=2 B=128 ncm 3577.49 ms
+timing seed=201 P=16 D=4 B=1 ncm 35.57 ms
+timing seed=201 P=16 D=4 B=16 ncm 373.47 ms
+timing seed=201 P=16 D=4 B=128 ncm 3429.24 ms
+timing seed=201 P=16 D=8 B=1 ncm 37.99 ms
+timing seed=201 P=16 D=8 B=16 ncm 355.80 ms
+timing seed=201 P=16 D=8 B=128 ncm 3374.34 ms
+timing seed=201 P=16 D=16 B=1 ncm 43.51 ms
+timing seed=201 P=16 D=16 B=16 ncm 392.72 ms
+timing seed=201 P=16 D=16 B=128 ncm 3727.47 ms
+timing seed=201 P=16 D=2 B=1 ar_distilled 26.94 ms
+timing seed=201 P=16 D=2 B=16 ar_distilled 403.98 ms
+timing seed=201 P=16 D=2 B=128 ar_distilled 3041.01 ms
+timing seed=201 P=16 D=4 B=1 ar_distilled 25.18 ms
+timing seed=201 P=16 D=4 B=16 ar_distilled 389.22 ms
+timing seed=201 P=16 D=4 B=128 ar_distilled 3168.98 ms
+timing seed=201 P=16 D=8 B=1 ar_distilled 28.46 ms
+timing seed=201 P=16 D=8 B=16 ar_distilled 442.01 ms
+timing seed=201 P=16 D=8 B=128 ar_distilled 3460.13 ms
+timing seed=201 P=16 D=16 B=1 ar_distilled 36.84 ms
+timing seed=201 P=16 D=16 B=16 ar_distilled 556.72 ms
+timing seed=201 P=16 D=16 B=128 ar_distilled 3853.18 ms
+timing seed=201 P=16 D=2 B=1 ncm_sequence_distilled 35.19 ms
+timing seed=201 P=16 D=2 B=16 ncm_sequence_distilled 372.47 ms
+timing seed=201 P=16 D=2 B=128 ncm_sequence_distilled 3536.11 ms
+timing seed=201 P=16 D=4 B=1 ncm_sequence_distilled 34.08 ms
+timing seed=201 P=16 D=4 B=16 ncm_sequence_distilled 374.49 ms
+timing seed=201 P=16 D=4 B=128 ncm_sequence_distilled 3585.57 ms
+timing seed=201 P=16 D=8 B=1 ncm_sequence_distilled 34.95 ms
+timing seed=201 P=16 D=8 B=16 ncm_sequence_distilled 383.87 ms
+timing seed=201 P=16 D=8 B=128 ncm_sequence_distilled 3603.97 ms
+timing seed=201 P=16 D=16 B=1 ncm_sequence_distilled 41.68 ms
+timing seed=201 P=16 D=16 B=16 ncm_sequence_distilled 423.08 ms
+timing seed=201 P=16 D=16 B=128 ncm_sequence_distilled 3950.24 ms
+quality seed=201 P=64 arm=ar_scratch BPB=8.5585 exact
+quality seed=201 P=64 arm=ar_distilled BPB=8.5630 exact
+quality seed=201 P=64 arm=ncm_coarse_0 BPB=11.5940 upper_bound
+quality seed=201 P=64 arm=ncm_coarse_1 BPB=11.5614 upper_bound
+quality seed=201 P=64 arm=ncm_sequence_distilled BPB=11.5054 upper_bound
+timing seed=201 P=64 D=2 B=1 ncm 49.61 ms
+timing seed=201 P=64 D=2 B=16 ncm 629.83 ms
+timing seed=201 P=64 D=2 B=128 ncm 5958.28 ms
+timing seed=201 P=64 D=4 B=1 ncm 52.76 ms
+timing seed=201 P=64 D=4 B=16 ncm 649.85 ms
+timing seed=201 P=64 D=4 B=128 ncm 5713.52 ms
+timing seed=201 P=64 D=8 B=1 ncm 51.53 ms
+timing seed=201 P=64 D=8 B=16 ncm 649.97 ms
+timing seed=201 P=64 D=8 B=128 ncm 6021.42 ms
+timing seed=201 P=64 D=16 B=1 ncm 57.07 ms
+timing seed=201 P=64 D=16 B=16 ncm 703.86 ms
+timing seed=201 P=64 D=16 B=128 ncm 6404.79 ms
+timing seed=201 P=64 D=2 B=1 ar_distilled 36.38 ms
+timing seed=201 P=64 D=2 B=16 ar_distilled 581.70 ms
+timing seed=201 P=64 D=2 B=128 ar_distilled 4538.84 ms
+timing seed=201 P=64 D=4 B=1 ar_distilled 33.46 ms
+timing seed=201 P=64 D=4 B=16 ar_distilled 575.97 ms
+timing seed=201 P=64 D=4 B=128 ar_distilled 4530.91 ms
+timing seed=201 P=64 D=8 B=1 ar_distilled 34.85 ms
+timing seed=201 P=64 D=8 B=16 ar_distilled 656.52 ms
+timing seed=201 P=64 D=8 B=128 ar_distilled 4956.08 ms
+timing seed=201 P=64 D=16 B=1 ar_distilled 41.67 ms
+timing seed=201 P=64 D=16 B=16 ar_distilled 748.92 ms
+timing seed=201 P=64 D=16 B=128 ar_distilled 5593.90 ms
+timing seed=201 P=64 D=2 B=1 ncm_sequence_distilled 54.29 ms
+timing seed=201 P=64 D=2 B=16 ncm_sequence_distilled 630.25 ms
+timing seed=201 P=64 D=2 B=128 ncm_sequence_distilled 5377.84 ms
+timing seed=201 P=64 D=4 B=1 ncm_sequence_distilled 43.95 ms
+timing seed=201 P=64 D=4 B=16 ncm_sequence_distilled 605.76 ms
+timing seed=201 P=64 D=4 B=128 ncm_sequence_distilled 5600.48 ms
+timing seed=201 P=64 D=8 B=1 ncm_sequence_distilled 47.56 ms
+timing seed=201 P=64 D=8 B=16 ncm_sequence_distilled 649.25 ms
+timing seed=201 P=64 D=8 B=128 ncm_sequence_distilled 5541.38 ms
+timing seed=201 P=64 D=16 B=1 ncm_sequence_distilled 53.70 ms
+timing seed=201 P=64 D=16 B=16 ncm_sequence_distilled 618.93 ms
+timing seed=201 P=64 D=16 B=128 ncm_sequence_distilled 5868.51 ms
+quality seed=202 P=0 arm=ar_scratch BPB=8.8501 exact
+quality seed=202 P=0 arm=ar_distilled BPB=8.8511 exact
+quality seed=202 P=0 arm=ncm_coarse_0 BPB=11.5656 upper_bound
+quality seed=202 P=0 arm=ncm_coarse_1 BPB=11.5017 upper_bound
+quality seed=202 P=0 arm=ncm_sequence_distilled BPB=11.4858 upper_bound
+timing seed=202 P=0 D=2 B=1 ncm 33.03 ms
+timing seed=202 P=0 D=2 B=16 ncm 305.17 ms
+timing seed=202 P=0 D=2 B=128 ncm 2638.82 ms
+timing seed=202 P=0 D=4 B=1 ncm 28.87 ms
+timing seed=202 P=0 D=4 B=16 ncm 289.57 ms
+timing seed=202 P=0 D=4 B=128 ncm 2773.93 ms
+timing seed=202 P=0 D=8 B=1 ncm 30.83 ms
+timing seed=202 P=0 D=8 B=16 ncm 317.97 ms
+timing seed=202 P=0 D=8 B=128 ncm 2859.97 ms
+timing seed=202 P=0 D=16 B=1 ncm 36.58 ms
+timing seed=202 P=0 D=16 B=16 ncm 349.55 ms
+timing seed=202 P=0 D=16 B=128 ncm 3268.75 ms
+timing seed=202 P=0 D=2 B=1 ar_distilled 23.20 ms
+timing seed=202 P=0 D=2 B=16 ar_distilled 320.56 ms
+timing seed=202 P=0 D=2 B=128 ar_distilled 2261.23 ms
+timing seed=202 P=0 D=4 B=1 ar_distilled 21.68 ms
+timing seed=202 P=0 D=4 B=16 ar_distilled 325.54 ms
+timing seed=202 P=0 D=4 B=128 ar_distilled 2403.86 ms
+timing seed=202 P=0 D=8 B=1 ar_distilled 24.73 ms
+timing seed=202 P=0 D=8 B=16 ar_distilled 378.43 ms
+timing seed=202 P=0 D=8 B=128 ar_distilled 2697.52 ms
+timing seed=202 P=0 D=16 B=1 ar_distilled 33.52 ms
+timing seed=202 P=0 D=16 B=16 ar_distilled 475.19 ms
+timing seed=202 P=0 D=16 B=128 ar_distilled 3206.90 ms
+timing seed=202 P=0 D=2 B=1 ncm_sequence_distilled 30.28 ms
+timing seed=202 P=0 D=2 B=16 ncm_sequence_distilled 311.33 ms
+timing seed=202 P=0 D=2 B=128 ncm_sequence_distilled 2796.60 ms
+timing seed=202 P=0 D=4 B=1 ncm_sequence_distilled 31.86 ms
+timing seed=202 P=0 D=4 B=16 ncm_sequence_distilled 307.15 ms
+timing seed=202 P=0 D=4 B=128 ncm_sequence_distilled 2876.50 ms
+timing seed=202 P=0 D=8 B=1 ncm_sequence_distilled 33.39 ms
+timing seed=202 P=0 D=8 B=16 ncm_sequence_distilled 334.46 ms
+timing seed=202 P=0 D=8 B=128 ncm_sequence_distilled 2940.65 ms
+timing seed=202 P=0 D=16 B=1 ncm_sequence_distilled 37.73 ms
+timing seed=202 P=0 D=16 B=16 ncm_sequence_distilled 357.52 ms
+timing seed=202 P=0 D=16 B=128 ncm_sequence_distilled 3336.48 ms
+quality seed=202 P=16 arm=ar_scratch BPB=8.8636 exact
+quality seed=202 P=16 arm=ar_distilled BPB=8.8686 exact
+quality seed=202 P=16 arm=ncm_coarse_0 BPB=11.5588 upper_bound
+quality seed=202 P=16 arm=ncm_coarse_1 BPB=11.5430 upper_bound
+quality seed=202 P=16 arm=ncm_sequence_distilled BPB=11.5038 upper_bound
+timing seed=202 P=16 D=2 B=1 ncm 33.33 ms
+timing seed=202 P=16 D=2 B=16 ncm 371.23 ms
+timing seed=202 P=16 D=2 B=128 ncm 3623.38 ms
+timing seed=202 P=16 D=4 B=1 ncm 34.07 ms
+timing seed=202 P=16 D=4 B=16 ncm 378.49 ms
+timing seed=202 P=16 D=4 B=128 ncm 3621.84 ms
+timing seed=202 P=16 D=8 B=1 ncm 36.21 ms
+timing seed=202 P=16 D=8 B=16 ncm 376.86 ms
+timing seed=202 P=16 D=8 B=128 ncm 3684.69 ms
+timing seed=202 P=16 D=16 B=1 ncm 41.88 ms
+timing seed=202 P=16 D=16 B=16 ncm 423.23 ms
+timing seed=202 P=16 D=16 B=128 ncm 4064.65 ms
+timing seed=202 P=16 D=2 B=1 ar_distilled 28.22 ms
+timing seed=202 P=16 D=2 B=16 ar_distilled 384.15 ms
+timing seed=202 P=16 D=2 B=128 ar_distilled 2954.44 ms
+timing seed=202 P=16 D=4 B=1 ar_distilled 25.26 ms
+timing seed=202 P=16 D=4 B=16 ar_distilled 382.65 ms
+timing seed=202 P=16 D=4 B=128 ar_distilled 3166.89 ms
+timing seed=202 P=16 D=8 B=1 ar_distilled 28.07 ms
+timing seed=202 P=16 D=8 B=16 ar_distilled 443.87 ms
+timing seed=202 P=16 D=8 B=128 ar_distilled 3273.28 ms
+timing seed=202 P=16 D=16 B=1 ar_distilled 36.09 ms
+timing seed=202 P=16 D=16 B=16 ar_distilled 542.91 ms
+timing seed=202 P=16 D=16 B=128 ar_distilled 3764.24 ms
+timing seed=202 P=16 D=2 B=1 ncm_sequence_distilled 34.90 ms
+timing seed=202 P=16 D=2 B=16 ncm_sequence_distilled 356.16 ms
+timing seed=202 P=16 D=2 B=128 ncm_sequence_distilled 3218.88 ms
+timing seed=202 P=16 D=4 B=1 ncm_sequence_distilled 34.64 ms
+timing seed=202 P=16 D=4 B=16 ncm_sequence_distilled 378.60 ms
+timing seed=202 P=16 D=4 B=128 ncm_sequence_distilled 3520.22 ms
+timing seed=202 P=16 D=8 B=1 ncm_sequence_distilled 36.55 ms
+timing seed=202 P=16 D=8 B=16 ncm_sequence_distilled 409.99 ms
+timing seed=202 P=16 D=8 B=128 ncm_sequence_distilled 3660.24 ms
+timing seed=202 P=16 D=16 B=1 ncm_sequence_distilled 44.57 ms
+timing seed=202 P=16 D=16 B=16 ncm_sequence_distilled 468.24 ms
+timing seed=202 P=16 D=16 B=128 ncm_sequence_distilled 4022.68 ms
+quality seed=202 P=64 arm=ar_scratch BPB=8.8945 exact
+quality seed=202 P=64 arm=ar_distilled BPB=8.8991 exact
+quality seed=202 P=64 arm=ncm_coarse_0 BPB=11.6116 upper_bound
+quality seed=202 P=64 arm=ncm_coarse_1 BPB=11.5590 upper_bound
+quality seed=202 P=64 arm=ncm_sequence_distilled BPB=11.5283 upper_bound
+timing seed=202 P=64 D=2 B=1 ncm 53.36 ms
+timing seed=202 P=64 D=2 B=16 ncm 650.20 ms
+timing seed=202 P=64 D=2 B=128 ncm 5907.38 ms
+timing seed=202 P=64 D=4 B=1 ncm 53.58 ms
+timing seed=202 P=64 D=4 B=16 ncm 656.29 ms
+timing seed=202 P=64 D=4 B=128 ncm 6133.99 ms
+timing seed=202 P=64 D=8 B=1 ncm 57.41 ms
+timing seed=202 P=64 D=8 B=16 ncm 684.79 ms
+timing seed=202 P=64 D=8 B=128 ncm 6477.81 ms
+timing seed=202 P=64 D=16 B=1 ncm 65.52 ms
+timing seed=202 P=64 D=16 B=16 ncm 737.00 ms
+timing seed=202 P=64 D=16 B=128 ncm 7019.84 ms
+timing seed=202 P=64 D=2 B=1 ar_distilled 42.93 ms
+timing seed=202 P=64 D=2 B=16 ar_distilled 681.84 ms
+timing seed=202 P=64 D=2 B=128 ar_distilled 5325.57 ms
+timing seed=202 P=64 D=4 B=1 ar_distilled 40.65 ms
+timing seed=202 P=64 D=4 B=16 ar_distilled 667.06 ms
+timing seed=202 P=64 D=4 B=128 ar_distilled 5317.80 ms
+timing seed=202 P=64 D=8 B=1 ar_distilled 42.79 ms
+timing seed=202 P=64 D=8 B=16 ar_distilled 730.90 ms
+timing seed=202 P=64 D=8 B=128 ar_distilled 5657.07 ms
+timing seed=202 P=64 D=16 B=1 ar_distilled 51.44 ms
+timing seed=202 P=64 D=16 B=16 ar_distilled 852.52 ms
+timing seed=202 P=64 D=16 B=128 ar_distilled 6363.80 ms
+timing seed=202 P=64 D=2 B=1 ncm_sequence_distilled 60.19 ms
+timing seed=202 P=64 D=2 B=16 ncm_sequence_distilled 703.42 ms
+timing seed=202 P=64 D=2 B=128 ncm_sequence_distilled 6602.36 ms
+timing seed=202 P=64 D=4 B=1 ncm_sequence_distilled 57.24 ms
+timing seed=202 P=64 D=4 B=16 ncm_sequence_distilled 687.52 ms
+timing seed=202 P=64 D=4 B=128 ncm_sequence_distilled 6385.59 ms
+timing seed=202 P=64 D=8 B=1 ncm_sequence_distilled 59.56 ms
+timing seed=202 P=64 D=8 B=16 ncm_sequence_distilled 697.72 ms
+timing seed=202 P=64 D=8 B=128 ncm_sequence_distilled 6712.88 ms
+timing seed=202 P=64 D=16 B=1 ncm_sequence_distilled 67.23 ms
+timing seed=202 P=64 D=16 B=16 ncm_sequence_distilled 766.23 ms
+timing seed=202 P=64 D=16 B=128 ncm_sequence_distilled 7274.56 ms

@@ -1,5 +1,5 @@
 {
-  "git_commit": "95ce7e5f77ef963c4269e68e674f43cbe7bae09a",
+  "git_commit": "bbf82c63d738633b950e5daef5ca862e55f39016",
   "source_sha256": {
     "src/ncm/__init__.py": "19203b12a5ae8ee75bb48efe588012fb6a9a32ab569ddd32049bbc0464ddb070",
     "src/ncm/accounting.py": "354cfadc4e7b1b3ca528cb725a8a8cd1a981093a3939d610f25c683dd6ddbd8a",
@@ -15,9 +15,9 @@
     "src/ncm/domain_validation.py": "19abadaf9edb9163ccaa4e5c133a755dd4291c74ff199d6fd2e37ae6e70cf05e",
     "src/ncm/experiment.py": "0ebc40f671118650501b9e398633a373e9d132538c35581c7135e2bd1ee6e19c",
     "src/ncm/fast_generation.py": "cd5d925c0c4d971a4ece9b00f67d3e14aa842e02bc0d17670ed788b5d6e6c378",
-    "src/ncm/flops.py": "fb4d62ed7568bbc1d2742877eae892bc08d8562043843d29eef08d547481ee82",
+    "src/ncm/flops.py": "72217c944bbf2500520d58d17013c9ac9c152b25ad5b4c13bd4225df603143f0",
     "src/ncm/generation.py": "61f1600ef9bea4cf56bc98d8657d1ef83868d9ac49da79da8ef742c6fe1ef115",
-    "src/ncm/generator.py": "2176fca48d465cee0e274491dcc50c7555151d77be6ec512ddedbc2516e4011d",
+    "src/ncm/generator.py": "564b0da78e229c8fe5e4c92c019f84250998af5f3f07138bec94c5eee02b45ac",
     "src/ncm/grids.py": "45c4da3d4224335ff0b50f8bf0fcfbd190daa7c949dd5dc690189f4121749d30",
     "src/ncm/losses.py": "a52b17f683b3d5a4e6eec704b5f055ecd57edcff1474ec4732035886c31f6771",
     "src/ncm/maintenance_experiment.py": "4750668671099b55e2789c63efb6c28f9ce3b7ae37b1e0bb6af8fcb8ed1017b9",
@@ -37,15 +37,15 @@
     "src/ncm/training.py": "99c3808127902b264ca48bb5bf7eaf7dca355f1f2b8c2df2921cf5fb666c2b5b",
     "src/ncm/validation_io.py": "d78f78f1222c10f95c9ea00c1d160fa971dcf0684f10e90ba329d09062f5ded0"
   },
-  "command": "XLA_FLAGS=--xla_force_host_platform_device_count=4 python -m pytest -q --tb=short",
-  "passed": 118,
+  "command": "XLA_FLAGS=--xla_force_host_platform_device_count=4 .venv312/bin/python -m pytest -q --tb=short",
+  "passed": 121,
   "failed": 0,
   "skipped": 0,
-  "seconds": 228.28,
+  "seconds": 232.66,
   "virtual_cpu_devices": 4,
   "previous_suite_tests": 81,
-  "new_tests": 37,
+  "new_tests": 40,
   "status": "passed",
-  "implementation_commit": "b1ddd1a",
-  "test_commit": "95ce7e5"
+  "implementation_commit": "bbf82c63d738633b950e5daef5ca862e55f39016",
+  "test_commit": "bbf82c63d738633b950e5daef5ca862e55f39016"
 }

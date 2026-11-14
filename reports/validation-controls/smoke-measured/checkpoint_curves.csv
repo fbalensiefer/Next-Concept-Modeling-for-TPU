@@ -1,0 +1,6 @@
+seed,prompt_len,arm,checkpoint,bpb,bpb_kind,median_ms,compiler_flops,analytic_flops,total_training_flops,compiler_label,analytic_label,git_commit
+200,2,ar_scratch,1,8.58198519031434,exact,0.09304151171818376,22543.0,89900.0,1247660.0,compiler estimate,analytic estimate,b1ddd1a4046b23f221eea5cdbdc75ad5ab464c76
+200,2,ar_distilled,1,8.582595964779522,exact,0.0967920059338212,22543.0,89900.0,5385900.0,compiler estimate,analytic estimate,b1ddd1a4046b23f221eea5cdbdc75ad5ab464c76
+200,2,ncm_coarse_0,1,12.8340411075554,upper_bound,0.11616645497269928,173644.0,73982.0,6254704.0,compiler estimate,analytic estimate,b1ddd1a4046b23f221eea5cdbdc75ad5ab464c76
+200,2,ncm_coarse_1,1,12.803079547076457,upper_bound,0.10791700333356857,169906.0,73982.0,6255104.0,compiler estimate,analytic estimate,b1ddd1a4046b23f221eea5cdbdc75ad5ab464c76
+200,2,ncm_sequence_distilled,1,12.796804670358974,upper_bound,0.11352053843438625,169906.0,73982.0,13194064.0,compiler estimate,analytic estimate,b1ddd1a4046b23f221eea5cdbdc75ad5ab464c76

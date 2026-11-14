@@ -1,0 +1,4578 @@
+{
+  "git_commit": "bbf82c63d738633b950e5daef5ca862e55f39016",
+  "source_sha256": {
+    "src/ncm/__init__.py": "19203b12a5ae8ee75bb48efe588012fb6a9a32ab569ddd32049bbc0464ddb070",
+    "src/ncm/accounting.py": "354cfadc4e7b1b3ca528cb725a8a8cd1a981093a3939d610f25c683dd6ddbd8a",
+    "src/ncm/autoregressive.py": "53ca48fbfa51cb54f23c8dd71985a777fc4613ccfa592933b48b345a1c4393c1",
+    "src/ncm/baselines.py": "383b7363f2e5de29bf3af0ce03f9d92f3e6fde237df760c6a1c279e7f094b2a9",
+    "src/ncm/benchmark.py": "84ed1ed5c6818584b5cceaa4830b838931a25239fe140f13443f0ad70399aae7",
+    "src/ncm/coarse.py": "517a5b741741893a1d3dad3c1c488c2253228f6b0b097532e2a7c9be60b5e1dc",
+    "src/ncm/config.py": "79f958518a1fd8bdcb0c9b37988908f42ccda4f488580e55d552012552b59945",
+    "src/ncm/coverage.py": "bd75ec017eeeba62d0419fda3aab92bcf3d76010de90043877c151de6b8ff422",
+    "src/ncm/data.py": "b2726ab14c9b86d351a9013d32bc7a5cfc90bad8e88f1114b6a735615f1da0df",
+    "src/ncm/dependence.py": "c7c9df1f405e2e56854f1679167f7b7a67d59f9b00bcc4ec75619f2af451e597",
+    "src/ncm/dependency_validation.py": "63fd0ca5ab1227fa42c449560a766ed160d67deb84a6572b18e5cc3b6f92d1de",
+    "src/ncm/domain_validation.py": "19abadaf9edb9163ccaa4e5c133a755dd4291c74ff199d6fd2e37ae6e70cf05e",
+    "src/ncm/experiment.py": "0ebc40f671118650501b9e398633a373e9d132538c35581c7135e2bd1ee6e19c",
+    "src/ncm/fast_generation.py": "cd5d925c0c4d971a4ece9b00f67d3e14aa842e02bc0d17670ed788b5d6e6c378",
+    "src/ncm/flops.py": "72217c944bbf2500520d58d17013c9ac9c152b25ad5b4c13bd4225df603143f0",
+    "src/ncm/generation.py": "61f1600ef9bea4cf56bc98d8657d1ef83868d9ac49da79da8ef742c6fe1ef115",
+    "src/ncm/generator.py": "564b0da78e229c8fe5e4c92c019f84250998af5f3f07138bec94c5eee02b45ac",
+    "src/ncm/grids.py": "45c4da3d4224335ff0b50f8bf0fcfbd190daa7c949dd5dc690189f4121749d30",
+    "src/ncm/losses.py": "a52b17f683b3d5a4e6eec704b5f055ecd57edcff1474ec4732035886c31f6771",
+    "src/ncm/maintenance_experiment.py": "4750668671099b55e2789c63efb6c28f9ce3b7ae37b1e0bb6af8fcb8ed1017b9",
+    "src/ncm/metrics.py": "be204442a808f33322cf4aeae50905127b53f715b19c1d79e7f1e4edefd855ed",
+    "src/ncm/prior_experiment.py": "224e7ea3171dde1a03fba68f09d073a865eedec8a00fca375859a12871b749bd",
+    "src/ncm/probe.py": "0b017ac85ba1b83912e339e9c352720932bfbf94f39ddb47e82db09b2baf59b9",
+    "src/ncm/representations.py": "ef3c6241deae00a4a2189d8fca172645a9b57d4eb560b19caff384989bc00c16",
+    "src/ncm/rvq.py": "a66c08bc993eda484f3a7e13fdc82be5b967064c3945df481d4ba85df8328883",
+    "src/ncm/sample.py": "ab960dd114d5cf53930307f2a0c32c522487d6d92698e88f072f8746e0134188",
+    "src/ncm/scale_experiment.py": "4113314420a122e2118db03488bc1f42845405c8466dda6ef5bcc8aee779411b",
+    "src/ncm/sharding.py": "085df4a615b7e7985c4dc3be91cb1529260eced9d713a87ea81d68ff40419674",
+    "src/ncm/sparse_grids.py": "a20fd5247df0ef52895e3cb6cc6e6e3f0e753a4790fef22c689acfb10bc5af8c",
+    "src/ncm/speculative.py": "af26ea280973f06e6c394818237d45c06186654bc55479e15ec4bd632b532a42",
+    "src/ncm/table_prior.py": "2309573faeee7f203d74ae97d3509d79f605a15b2979c07e5c762760d4eff84b",
+    "src/ncm/text_data.py": "e4eb728833319b93b9b52893e8726a3735d92a6cb9824937aaa9f23a4d19d7b8",
+    "src/ncm/tokenizer.py": "ced3cbc58a6a6b2ff8a33f6ed96152302e8732f6a7edba246b909df2a8c67110",
+    "src/ncm/training.py": "99c3808127902b264ca48bb5bf7eaf7dca355f1f2b8c2df2921cf5fb666c2b5b",
+    "src/ncm/validation_io.py": "d78f78f1222c10f95c9ea00c1d160fa971dcf0684f10e90ba329d09062f5ded0"
+  },
+  "contrasts": [
+    {
+      "prompt_len": 0,
+      "draft_len": 2,
+      "batch": 1,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.005818640853346583,
+      "ci95": [
+        -0.04009619347464938,
+        0.02073842112660479
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 2,
+      "batch": 1,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 8.151326008373871,
+      "ci95": [
+        6.312853511190042,
+        9.830249531660229
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 2,
+      "batch": 1,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.012245694649428337,
+      "ci95": [
+        -0.07852201866221087,
+        0.03960249817508821
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 2,
+      "batch": 1,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 2.0661300818847206e-05,
+      "ci95": [
+        -0.00508647527706213,
+        0.0033727975332543125
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 2,
+      "batch": 1,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.6706180283799767,
+      "ci95": [
+        -2.7486455510370433,
+        1.0364999761804938
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 2,
+      "batch": 1,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.002164777949657711,
+      "ci95": [
+        -0.006593167601143923,
+        0.0065816636678452944
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 2,
+      "batch": 16,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.0066455375298045865,
+      "ci95": [
+        -0.030432500487635294,
+        0.02994355328549081
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 2,
+      "batch": 16,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -19.553965491165098,
+      "ci95": [
+        -26.124687516130507,
+        -15.382228972157463
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 2,
+      "batch": 16,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.013615063026355697,
+      "ci95": [
+        -0.06057419583033852,
+        0.05898804355022835
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 2,
+      "batch": 16,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.0008644651897100434,
+      "ci95": [
+        -0.0033840430717008707,
+        0.006355892850670397
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 2,
+      "batch": 16,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 2.4984098272398114,
+      "ci95": [
+        0.311458483338356,
+        6.1528965015895665
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 2,
+      "batch": 16,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.002077444249052318,
+      "ci95": [
+        -0.00637601697203527,
+        0.013219887088305793
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 2,
+      "batch": 128,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.005371832222773099,
+      "ci95": [
+        -0.02537023047625875,
+        0.028581768763446536
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 2,
+      "batch": 128,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 353.4032363483372,
+      "ci95": [
+        261.37537497561425,
+        421.2429380277172
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 2,
+      "batch": 128,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.010638764630739908,
+      "ci95": [
+        -0.05009276308231558,
+        0.05644839570476301
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 2,
+      "batch": 128,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.00047803490075739213,
+      "ci95": [
+        -0.0018334289951726923,
+        0.0026546609947658006
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 2,
+      "batch": 128,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 86.44574966941339,
+      "ci95": [
+        5.676875007338822,
+        157.78183296788484
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 2,
+      "batch": 128,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.0010221390107646073,
+      "ci95": [
+        -0.003581485485644631,
+        0.0053296593523368685
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 4,
+      "batch": 1,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.006348771365558753,
+      "ci95": [
+        -0.03379791864831419,
+        0.01968683081603026
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 4,
+      "batch": 1,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 6.704541660534839,
+      "ci95": [
+        5.744020483689383,
+        7.187978975707665
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 4,
+      "batch": 1,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.02608645416980071,
+      "ci95": [
+        -0.13283031100724974,
+        0.07515365920728923
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 4,
+      "batch": 1,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.002358217226178738,
+      "ci95": [
+        -0.0029212840524751316,
+        -0.0014824384939038926
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 4,
+      "batch": 1,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 1.1256945047837992,
+      "ci95": [
+        -1.4417710190173239,
+        2.985354542033747
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 4,
+      "batch": 1,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.008720736633042181,
+      "ci95": [
+        -0.01055939833428221,
+        -0.0059187406235226
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 4,
+      "batch": 16,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.005362414811492318,
+      "ci95": [
+        -0.024435112936082748,
+        0.02416961770966844
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 4,
+      "batch": 16,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -45.5368958452406,
+      "ci95": [
+        -64.17895801132545,
+        -35.97368751070462
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 4,
+      "batch": 16,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.0214103770399335,
+      "ci95": [
+        -0.0971838834731793,
+        0.0945838530191434
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 4,
+      "batch": 16,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.0004832097083143916,
+      "ci95": [
+        -0.0026393665034786518,
+        0.001545450555438338
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 4,
+      "batch": 16,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 16.449812683276832,
+      "ci95": [
+        -1.5027494810055941,
+        33.27260399237275
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 4,
+      "batch": 16,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.0019661595480005753,
+      "ci95": [
+        -0.010639012919791968,
+        0.005751238353107313
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 4,
+      "batch": 128,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.005055439803284434,
+      "ci95": [
+        -0.021816968206261583,
+        0.023332956416240114
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 4,
+      "batch": 128,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 333.521451674945,
+      "ci95": [
+        315.2439170225989,
+        370.0721040077042
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 4,
+      "batch": 128,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.019698598496655933,
+      "ci95": [
+        -0.08542328642378783,
+        0.09155914191067271
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 4,
+      "batch": 128,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.0008211944220638812,
+      "ci95": [
+        6.668510419416407e-05,
+        0.0019063159088772152
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 4,
+      "batch": 128,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 3.0365066680436335,
+      "ci95": [
+        -88.2276254997123,
+        102.56762499921024
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 4,
+      "batch": 128,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.003152882790320074,
+      "ci95": [
+        -2.0231731108877327e-05,
+        0.007475946034477099
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 8,
+      "batch": 1,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.0021705977847763466,
+      "ci95": [
+        -0.01592532507718797,
+        0.01518082539302186
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 8,
+      "batch": 1,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 6.104756845161319,
+      "ci95": [
+        6.091229006415233,
+        6.126728520030156
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 8,
+      "batch": 1,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.01658515728538131,
+      "ci95": [
+        -0.12213254090607539,
+        0.11737706904993139
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 8,
+      "batch": 1,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.000735747044146968,
+      "ci95": [
+        -0.0019009526478655225,
+        0.0032955200959603193
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 8,
+      "batch": 1,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.17284701849954823,
+      "ci95": [
+        -1.9688534957822412,
+        2.560061984695494
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 8,
+      "batch": 1,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.006689217396315117,
+      "ci95": [
+        -0.017182087338361907,
+        0.0288175508180466
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 8,
+      "batch": 16,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.003163361703969974,
+      "ci95": [
+        -0.015280544937204987,
+        0.014955988511202015
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 8,
+      "batch": 16,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -59.85903485755747,
+      "ci95": [
+        -67.95260452781804,
+        -51.16985403583385
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 8,
+      "batch": 16,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.024703148588767432,
+      "ci95": [
+        -0.1186936012263986,
+        0.11535384529130255
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 8,
+      "batch": 16,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.0001671592907605731,
+      "ci95": [
+        -0.0008072316217769271,
+        0.0009883028399766958
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 8,
+      "batch": 16,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -4.299527839369451,
+      "ci95": [
+        -14.814833004493266,
+        16.487354005221277
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 8,
+      "batch": 16,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.0010536236023784469,
+      "ci95": [
+        -0.0064119206886010804,
+        0.009053710865797981
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 8,
+      "batch": 128,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.002834310270805815,
+      "ci95": [
+        -0.013600123409201942,
+        0.014087598930034473
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 8,
+      "batch": 128,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 120.11538884447266,
+      "ci95": [
+        -16.698708495823666,
+        214.59216697257943
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 8,
+      "batch": 128,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.02203546672566629,
+      "ci95": [
+        -0.10562630271490914,
+        0.10875862578658957
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 8,
+      "batch": 128,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.00041721882389156306,
+      "ci95": [
+        8.546554322307054e-05,
+        0.0009197751802789561
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 8,
+      "batch": 128,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 42.39830582325036,
+      "ci95": [
+        -1.4706664951518178,
+        80.68014646414667
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 8,
+      "batch": 128,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.003359778545815336,
+      "ci95": [
+        0.00022540675481086403,
+        0.007571460095028071
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 16,
+      "batch": 1,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.0008060556220518383,
+      "ci95": [
+        -0.008487700379062282,
+        0.008187209118722776
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 16,
+      "batch": 1,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 3.237159651083251,
+      "ci95": [
+        2.0685829513240606,
+        4.5884165156167
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 16,
+      "batch": 1,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.011337195694790006,
+      "ci95": [
+        -0.12450218579149919,
+        0.12351271172924205
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 16,
+      "batch": 1,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.00013771850289682105,
+      "ci95": [
+        -0.0007151315405471703,
+        0.0008086527149729905
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 16,
+      "batch": 1,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.05761098388272027,
+      "ci95": [
+        -2.2864995116833597,
+        1.155521022155881
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 16,
+      "batch": 1,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.0012436478760725993,
+      "ci95": [
+        -0.014027042519472843,
+        0.014012212032014082
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 16,
+      "batch": 16,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.001793061662697518,
+      "ci95": [
+        -0.008225230722488666,
+        0.007783267470904409
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 16,
+      "batch": 16,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -124.507736346762,
+      "ci95": [
+        -142.2850840317551,
+        -105.59391701826826
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 16,
+      "batch": 16,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.02710792600264611,
+      "ci95": [
+        -0.1226300411119241,
+        0.11552085267386136
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 16,
+      "batch": 16,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -5.046073420903371e-05,
+      "ci95": [
+        -0.00035072102544971007,
+        0.0005392314052863126
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 16,
+      "batch": 16,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -1.4848049904685467,
+      "ci95": [
+        -10.040749475592747,
+        7.972229475853965
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 16,
+      "batch": 16,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.0011512061163037786,
+      "ci95": [
+        -0.006438264370026037,
+        0.008665551019864992
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 16,
+      "batch": 128,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.0014871924537843788,
+      "ci95": [
+        -0.007222190776392169,
+        0.007434371449106844
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 16,
+      "batch": 128,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -9.307680515727649,
+      "ci95": [
+        -174.05427104677074,
+        84.28535400889814
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 16,
+      "batch": 128,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.022419922239818035,
+      "ci95": [
+        -0.10865621157071348,
+        0.11111957583812093
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 16,
+      "batch": 128,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.00020699889317539696,
+      "ci95": [
+        1.202969219896155e-05,
+        0.0004908246995826496
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 16,
+      "batch": 128,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 66.83309018262662,
+      "ci95": [
+        33.76504153129645,
+        99.00350001407787
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 0,
+      "draft_len": 16,
+      "batch": 128,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.0031667068522326,
+      "ci95": [
+        -0.00032465115867785777,
+        0.007743715734587653
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 2,
+      "batch": 1,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.023285803300279056,
+      "ci95": [
+        -0.03469388389616168,
+        -0.015666642814195886
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 2,
+      "batch": 1,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 9.233742991151908,
+      "ci95": [
+        5.101374496007338,
+        15.054062969284132
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 2,
+      "batch": 1,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.0467037971816453,
+      "ci95": [
+        -0.06881720430107507,
+        -0.03376500684011319
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 2,
+      "batch": 1,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.001841471330350693,
+      "ci95": [
+        -0.0037243605117021628,
+        0.0015192723220646132
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 2,
+      "batch": 1,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.2421180057960252,
+      "ci95": [
+        -3.008375526405871,
+        1.5716465131845325
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 2,
+      "batch": 1,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.003241684247858497,
+      "ci95": [
+        -0.008764100206682945,
+        0.0054077347506105156
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 2,
+      "batch": 16,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.02592665666725032,
+      "ci95": [
+        -0.04776198860738834,
+        -0.013175560274879872
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 2,
+      "batch": 16,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -14.084541510480145,
+      "ci95": [
+        -31.427437555976212,
+        2.1015414968132973
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 2,
+      "batch": 16,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.050982908013658866,
+      "ci95": [
+        -0.09422779418529137,
+        -0.02603021503256575
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 2,
+      "batch": 16,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.001180570285432873,
+      "ci95": [
+        -0.0064130435180825285,
+        0.009106039365893992
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 2,
+      "batch": 16,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -4.007881982640053,
+      "ci95": [
+        -15.06808350677602,
+        3.1317710236180574
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 2,
+      "batch": 16,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.002094626419083386,
+      "ci95": [
+        -0.01327661762776211,
+        0.018252345844484097
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 2,
+      "batch": 128,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.02799886361840938,
+      "ci95": [
+        -0.04644772039261946,
+        -0.01522908815959062
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 2,
+      "batch": 128,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 634.74538201505,
+      "ci95": [
+        536.4762920362409,
+        698.8137080043089
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 2,
+      "batch": 128,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.05516565352056957,
+      "ci95": [
+        -0.09149937856006773,
+        -0.029867637861398233
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 2,
+      "batch": 128,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.0008725507601219373,
+      "ci95": [
+        -0.005778915223008885,
+        0.007465737131760797
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 2,
+      "batch": 128,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -156.3895763247274,
+      "ci95": [
+        -404.5048954722006,
+        -23.280020977836102
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 2,
+      "batch": 128,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.0016734945148504377,
+      "ci95": [
+        -0.011459617862113358,
+        0.014595875681443049
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 4,
+      "batch": 1,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.020191338335292363,
+      "ci95": [
+        -0.03192699568598689,
+        -0.010746575384200624
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 4,
+      "batch": 1,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 10.024159506428987,
+      "ci95": [
+        8.802186988759786,
+        10.882271017180756
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 4,
+      "batch": 1,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.07961158308698539,
+      "ci95": [
+        -0.12783662479351388,
+        -0.04372813999697889
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 4,
+      "batch": 1,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.00541616589286963,
+      "ci95": [
+        -0.0031542818706130626,
+        0.01150983358170704
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 4,
+      "batch": 1,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.7554721572281172,
+      "ci95": [
+        -1.4943749993108213,
+        0.5772295116912574
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 4,
+      "batch": 1,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.023083923985139403,
+      "ci95": [
+        -0.010399484178362783,
+        0.0439969986090043
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 4,
+      "batch": 16,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.02181694633736363,
+      "ci95": [
+        -0.03533348428520411,
+        -0.010846729538905475
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 4,
+      "batch": 16,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -9.074271181210255,
+      "ci95": [
+        -15.741271519800648,
+        -4.15900003281422
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 4,
+      "batch": 16,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.08515700442071032,
+      "ci95": [
+        -0.139172477510358,
+        -0.04119203556972906
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 4,
+      "batch": 16,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.0017209477675178368,
+      "ci95": [
+        -0.005153926395832814,
+        0.0090133551055335
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 4,
+      "batch": 16,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 1.868923844691987,
+      "ci95": [
+        0.11145800817757845,
+        4.483583499677479
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 4,
+      "batch": 16,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.006701842307766641,
+      "ci95": [
+        -0.019547019290052203,
+        0.034343487002504114
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 4,
+      "batch": 128,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.02271007338189478,
+      "ci95": [
+        -0.03663325233666076,
+        -0.011860193402740804
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 4,
+      "batch": 128,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 430.58620802670094,
+      "ci95": [
+        260.25150003260933,
+        576.5633125265595
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 4,
+      "batch": 128,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.08889845240369709,
+      "ci95": [
+        -0.1434998246158663,
+        -0.0464770832088397
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 4,
+      "batch": 128,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.0015267189444080713,
+      "ci95": [
+        -0.002417883106615726,
+        0.00554875592355486
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 4,
+      "batch": 128,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 33.779806001499914,
+      "ci95": [
+        -101.6183114843443,
+        156.3337709812913
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 4,
+      "batch": 128,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.006017387775292556,
+      "ci95": [
+        -0.00953478984684053,
+        0.021582962531553562
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 8,
+      "batch": 1,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.014754544819400292,
+      "ci95": [
+        -0.02088243067580127,
+        -0.008988531389016383
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 8,
+      "batch": 1,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 7.994624980104466,
+      "ci95": [
+        6.314833473879844,
+        9.530708484817296
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 8,
+      "batch": 1,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.11155723122800872,
+      "ci95": [
+        -0.16179826215067017,
+        -0.06385997370349417
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 8,
+      "batch": 1,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.00382112822414248,
+      "ci95": [
+        0.0012676932988777978,
+        0.006926800128383578
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 8,
+      "batch": 1,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -1.221326335022847,
+      "ci95": [
+        -3.044187498744577,
+        0.34302097628824413
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 8,
+      "batch": 1,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.026277107359298224,
+      "ci95": [
+        0.00857634657016515,
+        0.048515727129976316
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 8,
+      "batch": 16,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.013393264325762646,
+      "ci95": [
+        -0.02089658456914549,
+        -0.006874742528877945
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 8,
+      "batch": 16,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -67.7568609729254,
+      "ci95": [
+        -86.2065204710234,
+        -50.05587448249571
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 8,
+      "batch": 16,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.10358750983262473,
+      "ci95": [
+        -0.16218894642569048,
+        -0.052594491493091144
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 8,
+      "batch": 16,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.001092677385042452,
+      "ci95": [
+        -0.0020659499381713575,
+        0.005305590712052652
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 8,
+      "batch": 16,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 21.394624976286043,
+      "ci95": [
+        2.9861454968340695,
+        33.12627144623548
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 8,
+      "batch": 16,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.007909139424345716,
+      "ci95": [
+        -0.015362721425971282,
+        0.040171611300818366
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 8,
+      "batch": 128,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.013465936778839832,
+      "ci95": [
+        -0.021215515376989832,
+        -0.007148836074752474
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 8,
+      "batch": 128,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 275.00659683331224,
+      "ci95": [
+        -85.79208349692635,
+        499.3949164636433
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 8,
+      "batch": 128,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.10405405992154382,
+      "ci95": [
+        -0.16319601311493992,
+        -0.05566009030040475
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 8,
+      "batch": 128,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.0010664110728134252,
+      "ci95": [
+        -0.0014710048625832667,
+        0.003891712644595674
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 8,
+      "batch": 128,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 64.05561833526008,
+      "ci95": [
+        -24.455687060253695,
+        229.6280425216537
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 8,
+      "batch": 128,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.008201514819393832,
+      "ci95": [
+        -0.011483361483979326,
+        0.030020960238693606
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 16,
+      "batch": 1,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.0071420669741425425,
+      "ci95": [
+        -0.010678387009850354,
+        -0.0035175771791788463
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 16,
+      "batch": 1,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 5.29963182634674,
+      "ci95": [
+        3.4387914929538965,
+        6.665250024525449
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 16,
+      "batch": 1,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.10528464602776122,
+      "ci95": [
+        -0.15619960775768127,
+        -0.05327852004111033
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 16,
+      "batch": 1,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.002120745523458476,
+      "ci95": [
+        0.0006134770834045275,
+        0.004529315924964056
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 16,
+      "batch": 1,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.25763866142369807,
+      "ci95": [
+        -1.8270215077791363,
+        2.68658300046809
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 16,
+      "batch": 1,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.030147759880063758,
+      "ci95": [
+        0.008195706644925194,
+        0.06757763975155262
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 16,
+      "batch": 16,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.00706902757946766,
+      "ci95": [
+        -0.011048849993933109,
+        -0.003530896344767359
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 16,
+      "batch": 16,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -120.09127099493828,
+      "ci95": [
+        -163.99295849259943,
+        -76.60368745564483
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 16,
+      "batch": 16,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.1056300831046828,
+      "ci95": [
+        -0.16583848553047886,
+        -0.05248233689633519
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 16,
+      "batch": 16,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.0006786770725402588,
+      "ci95": [
+        -0.0008458024289220156,
+        0.00286200389011311
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 16,
+      "batch": 16,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 27.80499301540355,
+      "ci95": [
+        8.041624998440966,
+        45.016646035946906
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 16,
+      "batch": 16,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.009382070235923893,
+      "ci95": [
+        -0.012074451091827587,
+        0.04136193433458035
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 16,
+      "batch": 128,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.007029278427984402,
+      "ci95": [
+        -0.010988382560330225,
+        -0.003726720584685525
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 16,
+      "batch": 128,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 163.0014304925377,
+      "ci95": [
+        -125.71362499147654,
+        314.3161875195801
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 16,
+      "batch": 128,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.10489994583039934,
+      "ci95": [
+        -0.16363119154765937,
+        -0.05599026763564163
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 16,
+      "batch": 128,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.0005694625566264924,
+      "ci95": [
+        -0.0007554395443582496,
+        0.0020284990695798033
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 16,
+      "batch": 128,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 84.99688198207878,
+      "ci95": [
+        -41.966686985688284,
+        222.76816595694982
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 16,
+      "draft_len": 16,
+      "batch": 128,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.008402432912939147,
+      "ci95": [
+        -0.011432295092183464,
+        0.03012868701500193
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 2,
+      "batch": 1,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.02544296210096066,
+      "ci95": [
+        -0.04128415348525405,
+        -0.00822693283050846
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 2,
+      "batch": 1,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 14.732722173600147,
+      "ci95": [
+        10.429791494971141,
+        20.531562506221235
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 2,
+      "batch": 1,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.049475095926671875,
+      "ci95": [
+        -0.08196102254256488,
+        -0.014090899434316961
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 2,
+      "batch": 1,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.00023729049732884588,
+      "ci95": [
+        -0.0155363545864865,
+        0.008471484040842248
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 2,
+      "batch": 1,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 2.709937330412989,
+      "ci95": [
+        -3.3836255315691233,
+        6.834583007730544
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 2,
+      "batch": 1,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.0001972660690929088,
+      "ci95": [
+        -0.03248464686857777,
+        0.01823737077904597
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 2,
+      "batch": 16,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.025353019748618255,
+      "ci95": [
+        -0.038233762381578384,
+        -0.015675219451734335
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 2,
+      "batch": 16,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 3.7571183347608894,
+      "ci95": [
+        -31.643187016015872,
+        48.12172849779017
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 2,
+      "batch": 16,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.049977935976874464,
+      "ci95": [
+        -0.07530014317113665,
+        -0.031482364391980155
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 2,
+      "batch": 16,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.0015791333334877478,
+      "ci95": [
+        -0.008382232472681661,
+        0.00809428737316803
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 2,
+      "batch": 16,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 45.464110997272655,
+      "ci95": [
+        0.4273544764146209,
+        82.75062398752198
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 2,
+      "batch": 16,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.003328859904875081,
+      "ci95": [
+        -0.016784976063243695,
+        0.01669693082529644
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 2,
+      "batch": 128,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.02796447271020769,
+      "ci95": [
+        -0.03756882233170461,
+        -0.023138853672677318
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 2,
+      "batch": 128,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 960.9413333334184,
+      "ci95": [
+        581.8081455072388,
+        1419.4440419960301
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 2,
+      "batch": 128,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.05530029852164842,
+      "ci95": [
+        -0.07422288137133681,
+        -0.04580503138212588
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 2,
+      "batch": 128,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.0006987296768528606,
+      "ci95": [
+        -0.010597972164851643,
+        0.00773554554319289
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 2,
+      "batch": 128,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 148.60812482462885,
+      "ci95": [
+        -580.4413754958659,
+        694.9821669550147
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 2,
+      "batch": 128,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.0014651982199225995,
+      "ci95": [
+        -0.020975918592338827,
+        0.015412851604286848
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 4,
+      "batch": 1,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.019145775743001903,
+      "ci95": [
+        -0.03708960714844048,
+        -0.006686745396422805
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 4,
+      "batch": 1,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 14.599500340409577,
+      "ci95": [
+        11.57314598094672,
+        19.300708518130705
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 4,
+      "batch": 1,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.07580613242413244,
+      "ci95": [
+        -0.1424854156529629,
+        -0.028159815201213023
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 4,
+      "batch": 1,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.0010662216504863653,
+      "ci95": [
+        -0.007745864809582531,
+        0.009015101239083195
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 4,
+      "batch": 1,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.053236338620384537,
+      "ci95": [
+        -8.811875042738393,
+        4.9926870269700885
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 4,
+      "batch": 1,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.005995792124498189,
+      "ci95": [
+        -0.02754979050680162,
+        0.035954307131709884
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 4,
+      "batch": 16,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.02037401874240058,
+      "ci95": [
+        -0.027496310723196388,
+        -0.01176340151473107
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 4,
+      "batch": 16,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 27.447791808905702,
+      "ci95": [
+        -10.778249998111278,
+        73.87662545079365
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 4,
+      "batch": 16,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.0802303616814332,
+      "ci95": [
+        -0.10811739014384969,
+        -0.046299756212617726
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 4,
+      "batch": 16,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.00020794998145621615,
+      "ci95": [
+        -0.007175826990358458,
+        0.00488687088838019
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 4,
+      "batch": 16,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 8.735652518225834,
+      "ci95": [
+        -44.086333946324885,
+        39.05820852378383
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 4,
+      "batch": 16,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.0015430561748296008,
+      "ci95": [
+        -0.027728659381456078,
+        0.02003162929659541
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 4,
+      "batch": 128,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.02301244746452959,
+      "ci95": [
+        -0.029944506075685384,
+        -0.018960647059843266
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 4,
+      "batch": 128,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 1008.2385206478648,
+      "ci95": [
+        816.1898329562973,
+        1182.6145414961502
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 4,
+      "batch": 128,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.09017827588899292,
+      "ci95": [
+        -0.11724511169479901,
+        -0.07448018301566695
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 4,
+      "batch": 128,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.0005286726781884391,
+      "ci95": [
+        -0.007109318109989299,
+        0.0057728777447687285
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 4,
+      "batch": 128,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 188.78454183383533,
+      "ci95": [
+        -113.04808352724649,
+        427.8035835304763
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 4,
+      "batch": 128,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.002227692074601236,
+      "ci95": [
+        -0.027841858684721332,
+        0.02299617318992131
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 8,
+      "batch": 1,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.013368107816503208,
+      "ci95": [
+        -0.020703191780221133,
+        -0.0071893480251650765
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 8,
+      "batch": 1,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 14.628673806631317,
+      "ci95": [
+        12.585895950905979,
+        16.681749984854832
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 8,
+      "batch": 1,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.10479463390565602,
+      "ci95": [
+        -0.16329776326520373,
+        -0.053625923900580075
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 8,
+      "batch": 1,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.0007099098557164646,
+      "ci95": [
+        -0.004252473938507861,
+        0.005327479020226747
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 8,
+      "batch": 1,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 1.0115418408531696,
+      "ci95": [
+        -3.9681870257481933,
+        4.850313038332388
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 8,
+      "batch": 1,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.006712617805652983,
+      "ci95": [
+        -0.03067899842093369,
+        0.045312931369543286
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 8,
+      "batch": 16,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.01304108225336785,
+      "ci95": [
+        -0.016527134026238052,
+        -0.008271048402423598
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 8,
+      "batch": 16,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -23.015666675443452,
+      "ci95": [
+        -46.108603972243145,
+        -6.5483540238346905
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 8,
+      "batch": 16,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.10048887131391789,
+      "ci95": [
+        -0.12715768169824493,
+        -0.06376471030279673
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 8,
+      "batch": 16,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.001172347653263105,
+      "ci95": [
+        -0.0024475154956095785,
+        0.004162207614773122
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 8,
+      "batch": 16,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 19.030465172060456,
+      "ci95": [
+        -0.7276044634636492,
+        44.89183350233361
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 8,
+      "batch": 16,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.008354241058606235,
+      "ci95": [
+        -0.018862137743599794,
+        0.03167630024657364
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 8,
+      "batch": 128,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.014087947661407007,
+      "ci95": [
+        -0.01751436011902209,
+        -0.012055656735871653
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 8,
+      "batch": 128,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 914.3643056643972,
+      "ci95": [
+        820.7330625155009,
+        1065.342020971002
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 8,
+      "batch": 128,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.10877944717458037,
+      "ci95": [
+        -0.13533735732806962,
+        -0.09337569803091195
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 8,
+      "batch": 128,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.0006272383462708059,
+      "ci95": [
+        -0.003563524319016298,
+        0.003593285977217725
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 8,
+      "batch": 128,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 5.417576321633533,
+      "ci95": [
+        -480.04239550209604,
+        261.2161664874293
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 8,
+      "batch": 128,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.005061137292765657,
+      "ci95": [
+        -0.027020584101668188,
+        0.028084774197491003
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 16,
+      "batch": 1,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.006536228298179234,
+      "ci95": [
+        -0.0097781048442502,
+        -0.004285564734666042
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 16,
+      "batch": 1,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 14.125138676414887,
+      "ci95": [
+        12.887208518804982,
+        15.401999524328858
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 16,
+      "batch": 1,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.10181201136943023,
+      "ci95": [
+        -0.15262321144674074,
+        -0.0615209577945528
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 16,
+      "batch": 1,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.0002761970198477427,
+      "ci95": [
+        -0.002268614698482156,
+        0.002637766094615912
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 16,
+      "batch": 1,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.8945208489118764,
+      "ci95": [
+        -3.3767709974199533,
+        4.34850002056919
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 16,
+      "batch": 1,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.007860390004174636,
+      "ci95": [
+        -0.027386995361327715,
+        0.04729530002955973
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 16,
+      "batch": 16,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.006675527468576678,
+      "ci95": [
+        -0.00851140511988932,
+        -0.003998478492194382
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 16,
+      "batch": 16,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -75.03195818086776,
+      "ci95": [
+        -115.51939501077868,
+        -45.0592084962409
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 16,
+      "batch": 16,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.10032252851649022,
+      "ci95": [
+        -0.12702812843920386,
+        -0.06058579233916839
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 16,
+      "batch": 16,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.0005926595510468494,
+      "ci95": [
+        -0.0014037148943924077,
+        0.002278185322895948
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 16,
+      "batch": 16,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -6.751007002700741,
+      "ci95": [
+        -84.92802051478066,
+        35.449604503810406
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 16,
+      "batch": 16,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.0087614477349236,
+      "ci95": [
+        -0.021054070176122153,
+        0.0347808088064796
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 16,
+      "batch": 128,
+      "metric": "acceptance",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.0074182902545141495,
+      "ci95": [
+        -0.009175942398938507,
+        -0.006357004034418287
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 16,
+      "batch": 128,
+      "metric": "median_ms",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 726.3121318052678,
+      "ci95": [
+        656.0464999638498,
+        810.8885624969844
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 16,
+      "batch": 128,
+      "metric": "tokens_per_pass",
+      "contrast": "NCM minus distilled AR drafter",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": -0.11083736111593352,
+      "ci95": [
+        -0.13709945055030737,
+        -0.09527885890954235
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 16,
+      "batch": 128,
+      "metric": "acceptance",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.0003683609430698148,
+      "ci95": [
+        -0.0018921056465323535,
+        0.0019588913488921
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 16,
+      "batch": 128,
+      "metric": "median_ms",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 39.60439586080611,
+      "ci95": [
+        -536.275354999816,
+        400.37677154759876
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    },
+    {
+      "prompt_len": 64,
+      "draft_len": 16,
+      "batch": 128,
+      "metric": "tokens_per_pass",
+      "contrast": "sequence-distilled NCM minus real-text NCM",
+      "seed_list": [
+        200,
+        201,
+        202
+      ],
+      "bootstrap_seed": 202,
+      "bootstrap_repetitions": 10000,
+      "mean_difference": 0.00575345437996407,
+      "ci95": [
+        -0.028183810502274476,
+        0.030100789576446907
+      ],
+      "seeds": 3,
+      "label": "exploratory"
+    }
+  ]
+}

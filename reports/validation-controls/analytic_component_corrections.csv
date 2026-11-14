@@ -1,0 +1,13 @@
+seed,component,prompt_len,raw_analytic_flops,analytic_flops,analytic_delta,analytic_label,git_commit
+200,codec_training,shared,486564864.0,487228416.0,663552,analytic estimate,bbf82c63d738633b950e5daef5ca862e55f39016
+200,teacher_sample_generation,0,222642176.0,222642176.0,0.0,analytic estimate,bbf82c63d738633b950e5daef5ca862e55f39016
+200,teacher_sample_generation,16,245622784.0,235000832.0,-10621952.0,analytic estimate,bbf82c63d738633b950e5daef5ca862e55f39016
+200,teacher_sample_generation,64,314564608.0,272076800.0,-42487808.0,analytic estimate,bbf82c63d738633b950e5daef5ca862e55f39016
+201,codec_training,shared,486564864.0,487228416.0,663552,analytic estimate,bbf82c63d738633b950e5daef5ca862e55f39016
+201,teacher_sample_generation,0,222642176.0,222642176.0,0.0,analytic estimate,bbf82c63d738633b950e5daef5ca862e55f39016
+201,teacher_sample_generation,16,245622784.0,235000832.0,-10621952.0,analytic estimate,bbf82c63d738633b950e5daef5ca862e55f39016
+201,teacher_sample_generation,64,314564608.0,272076800.0,-42487808.0,analytic estimate,bbf82c63d738633b950e5daef5ca862e55f39016
+202,codec_training,shared,486564864.0,487228416.0,663552,analytic estimate,bbf82c63d738633b950e5daef5ca862e55f39016
+202,teacher_sample_generation,0,222642176.0,222642176.0,0.0,analytic estimate,bbf82c63d738633b950e5daef5ca862e55f39016
+202,teacher_sample_generation,16,245622784.0,235000832.0,-10621952.0,analytic estimate,bbf82c63d738633b950e5daef5ca862e55f39016
+202,teacher_sample_generation,64,314564608.0,272076800.0,-42487808.0,analytic estimate,bbf82c63d738633b950e5daef5ca862e55f39016

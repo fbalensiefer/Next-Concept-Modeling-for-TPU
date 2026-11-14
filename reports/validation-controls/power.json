@@ -1,6 +1,6 @@
 {
   "exact": {
-    "git_commit": "e0d4a8645cc2ae7f33bbe80f660aeb55aae1f927",
+    "git_commit": "bbf82c63d738633b950e5daef5ca862e55f39016",
     "seed": 200,
     "samples": 200000,
     "support": 81,
@@ -32,7 +32,7 @@
     "passed": true
   },
   "mismatched_q": {
-    "git_commit": "e0d4a8645cc2ae7f33bbe80f660aeb55aae1f927",
+    "git_commit": "bbf82c63d738633b950e5daef5ca862e55f39016",
     "seed": 200,
     "samples": 200000,
     "tv": 0.039232500075822414,
@@ -40,7 +40,7 @@
     "rejected": true
   },
   "bad_residual": {
-    "git_commit": "e0d4a8645cc2ae7f33bbe80f660aeb55aae1f927",
+    "git_commit": "bbf82c63d738633b950e5daef5ca862e55f39016",
     "seed": 200,
     "samples": 200000,
     "tv": 0.08542999800814083,
@@ -48,7 +48,7 @@
     "rejected": true
   },
   "future_leak": {
-    "git_commit": "e0d4a8645cc2ae7f33bbe80f660aeb55aae1f927",
+    "git_commit": "bbf82c63d738633b950e5daef5ca862e55f39016",
     "seed": 200,
     "samples": 200000,
     "tv": 0.14126624773135635,
@@ -56,7 +56,7 @@
     "rejected": true
   },
   "wrong_bonus": {
-    "git_commit": "e0d4a8645cc2ae7f33bbe80f660aeb55aae1f927",
+    "git_commit": "bbf82c63d738633b950e5daef5ca862e55f39016",
     "seed": 200,
     "samples": 200000,
     "tv": 0.03241500157049726,
@@ -64,7 +64,7 @@
     "rejected": true
   },
   "greedy": {
-    "git_commit": "e0d4a8645cc2ae7f33bbe80f660aeb55aae1f927",
+    "git_commit": "bbf82c63d738633b950e5daef5ca862e55f39016",
     "seed": 202,
     "prompts": 50,
     "draft_lengths": [
