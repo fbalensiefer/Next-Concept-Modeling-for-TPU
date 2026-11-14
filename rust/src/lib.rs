@@ -5,6 +5,7 @@ pub mod corpus;
 pub mod dependence;
 pub mod evaluation;
 pub mod flops;
+pub mod model_benchmarks;
 pub mod paper;
 pub mod probe;
 pub mod reports;

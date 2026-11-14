@@ -180,11 +180,113 @@ fn update_manifests(root: &Path, args: &[OsString]) -> Result<(), String> {
     println!("Implementation and document manifests refreshed; verify with shasum -a 256 -c.");
     Ok(())
 }
+fn parse_usize_arg(value: &std::ffi::OsStr, name: &str) -> Result<usize, String> {
+    value
+        .to_str()
+        .and_then(|x| x.parse::<usize>().ok())
+        .ok_or_else(|| format!("{name} must be a nonnegative integer"))
+}
+fn decisive_benchmark(root: &Path, args: &[OsString]) -> Result<(), String> {
+    let (mut config, mut heldout, mut training, mut output) = (None, None, None, None);
+    let (mut steps, mut batch, mut prompt, mut seed) = (0usize, 16usize, 0usize, 0u32);
+    let mut i = 0;
+    while i < args.len() {
+        let key = args[i].to_str().unwrap_or("");
+        if i + 1 >= args.len() {
+            return Err(format!("missing value for {key}"));
+        }
+        let value = &args[i + 1];
+        match key {
+            "--model-config" => config = Some(PathBuf::from(value)),
+            "--heldout" => heldout = Some(PathBuf::from(value)),
+            "--train" => training = Some(PathBuf::from(value)),
+            "--output" => output = Some(PathBuf::from(value)),
+            "--steps" => steps = parse_usize_arg(value, key)?,
+            "--batch-size" => batch = parse_usize_arg(value, key)?,
+            "--prompt-len" => prompt = parse_usize_arg(value, key)?,
+            "--seed" => {
+                seed = parse_usize_arg(value, key)?
+                    .try_into()
+                    .map_err(|_| "--seed must fit uint32")?
+            }
+            _ => return Err(format!("unknown run-decisive-benchmark option: {key}")),
+        }
+        i += 2;
+    }
+    ncm::model_benchmarks::DecisiveBenchmarkRunner::run(
+        root,
+        &config.ok_or("--model-config is required")?,
+        &heldout.ok_or("--heldout is required")?,
+        training.as_deref(),
+        &output.ok_or("--output is required")?,
+        steps,
+        batch,
+        prompt,
+        seed,
+    )
+}
+fn drafter_comparison(root: &Path, args: &[OsString]) -> Result<(), String> {
+    let (mut target, mut prompts, mut output) = (None, None, None);
+    let (mut max_new, mut draft_len, mut top_k, mut seed) = (None, None, 0usize, 0u32);
+    let mut temperature = 1f32;
+    let mut drafters = Vec::new();
+    let mut i = 0;
+    while i < args.len() {
+        let key = args[i].to_str().unwrap_or("");
+        if i + 1 >= args.len() {
+            return Err(format!("missing value for {key}"));
+        }
+        let value = &args[i + 1];
+        match key {
+            "--target-config" => target = Some(PathBuf::from(value)),
+            "--prompts" => prompts = Some(PathBuf::from(value)),
+            "--output" => output = Some(PathBuf::from(value)),
+            "--drafter" => {
+                let spec = value.to_str().ok_or("drafter spec must be UTF-8")?;
+                let (name, path) = spec
+                    .split_once('=')
+                    .ok_or("--drafter expects NAME=CONFIG")?;
+                if name.is_empty() || path.is_empty() {
+                    return Err("--drafter expects NAME=CONFIG".into());
+                }
+                drafters.push((name.to_owned(), PathBuf::from(path)));
+            }
+            "--max-new-tokens" => max_new = Some(parse_usize_arg(value, key)?),
+            "--draft-len" => draft_len = Some(parse_usize_arg(value, key)?),
+            "--top-k" => top_k = parse_usize_arg(value, key)?,
+            "--seed" => {
+                seed = parse_usize_arg(value, key)?
+                    .try_into()
+                    .map_err(|_| "--seed must fit uint32")?
+            }
+            "--temperature" => {
+                temperature = value
+                    .to_str()
+                    .and_then(|x| x.parse().ok())
+                    .ok_or("--temperature must be numeric")?
+            }
+            _ => return Err(format!("unknown run-drafter-comparison option: {key}")),
+        }
+        i += 2;
+    }
+    ncm::model_benchmarks::DrafterComparisonRunner::run(
+        root,
+        &target.ok_or("--target-config is required")?,
+        &drafters,
+        &prompts.ok_or("--prompts is required")?,
+        &output.ok_or("--output is required")?,
+        max_new.ok_or("--max-new-tokens is required")?,
+        draft_len.ok_or("--draft-len is required")?,
+        temperature,
+        top_k,
+        seed,
+    )
+}
 fn main() -> ExitCode {
     let args: Vec<_> = env::args_os().skip(1).collect();
     if args.is_empty() || args[0] == "--help" || args[0] == "--list" {
         println!(
-            "ncm-run <command> [arguments]\n\nCommands:\n  engine-info\n  build-papers\n  train\n  real-text-reconstruction\n  run-tc-probe\n  summarize-maintenance\n  summarize-domain-validation\n  summarize-dependency-results\n  domain-source-baselines\n  generate-bibliographies\n  update-manifests\n  audit-papers"
+            "ncm-run <command> [arguments]\n\nCommands:\n  engine-info\n  build-papers\n  train\n  real-text-reconstruction\n  run-tc-probe\n  run-decisive-benchmark\n  run-drafter-comparison\n  summarize-maintenance\n  summarize-domain-validation\n  summarize-dependency-results\n  domain-source-baselines\n  generate-bibliographies\n  update-manifests\n  audit-papers"
         );
         for (name, _) in COMMANDS {
             println!("  {name}");
@@ -209,6 +311,10 @@ fn main() -> ExitCode {
         build_papers(&root, &args[1..])
     } else if name == "train" {
         train(&root, &args[1..])
+    } else if name == "run-decisive-benchmark" {
+        decisive_benchmark(&root, &args[1..])
+    } else if name == "run-drafter-comparison" {
+        drafter_comparison(&root, &args[1..])
     } else if name == "real-text-reconstruction" {
         let mut output = None;
         let mut steps = 100usize;

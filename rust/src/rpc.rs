@@ -6,6 +6,8 @@ use std::{
     io::{BufRead, BufReader, BufWriter, Write},
     path::Path,
     process::{Child, ChildStdin, Command, Stdio},
+    sync::mpsc::{self, Receiver},
+    time::Duration,
 };
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
@@ -162,6 +164,9 @@ fn default_vocab() -> usize {
 fn default_lr() -> f32 {
     3e-4
 }
+fn default_temperature() -> f32 {
+    1.0
+}
 fn default_batch() -> usize {
     1
 }
@@ -230,10 +235,100 @@ pub struct CheckpointResponse {
     pub step: u64,
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct CausalArConfig {
+    pub transformer: TransformerConfig,
+    pub max_length: usize,
+    #[serde(default = "default_lr")]
+    pub learning_rate: f32,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct CausalArInitRequest {
+    pub config: CausalArConfig,
+    pub seed: u32,
+    pub tokens: Vec<Vec<i32>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mask: Option<Vec<Vec<bool>>>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct CausalArInitResponse {
+    pub engine_id: String,
+    pub step: u64,
+    pub max_length: usize,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct CausalArTrainStepRequest {
+    pub engine_id: String,
+    pub tokens: Vec<Vec<i32>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mask: Option<Vec<Vec<bool>>>,
+    pub continuation_start: usize,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub teacher_engine_id: Option<String>,
+    #[serde(default)]
+    pub distillation_weight: f32,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct CausalArTrainStepResponse {
+    pub step: u64,
+    pub loss: f64,
+    pub grad_norm: f64,
+    pub step_time_ms: f64,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct GenerateRequest {
+    pub engine_id: String,
+    pub prompts: Vec<Vec<i32>>,
+    pub max_new_tokens: usize,
+    pub temperature: f32,
+    pub top_k: usize,
+    pub seed: u32,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct GenerateResponse {
+    pub tokens: Vec<Vec<i32>>,
+    pub probabilities: Vec<Vec<Vec<f32>>>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct CausalArEvaluateRequest {
+    pub engine_id: String,
+    pub tokens: Vec<Vec<i32>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mask: Option<Vec<Vec<bool>>>,
+    pub prompt_len: usize,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct CausalArEvaluateResponse {
+    pub nll: f64,
+    pub token_count: usize,
+    pub mean_nll: f64,
+    pub perplexity: f64,
+    pub log_likelihoods: Vec<Vec<f64>>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SpeculativeVerifyRequest {
+    pub engine_id: String,
+    pub prefixes: Vec<Vec<i32>>,
+    pub draft_tokens: Vec<Vec<i32>>,
+    pub proposal_probs: Vec<Vec<Vec<f32>>>,
+    #[serde(default = "default_temperature")]
+    pub temperature: f32,
+    #[serde(default)]
+    pub top_k: usize,
+    pub seed: u32,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SpeculativeVerifyResponse {
+    pub tokens: Vec<Vec<i32>>,
+    pub accepted_lengths: Vec<usize>,
+    pub acceptance_rate: f64,
+    pub accepted_mask: Vec<Vec<bool>>,
+}
+
 pub struct EngineClient {
     child: Child,
     input: BufWriter<ChildStdin>,
-    output: BufReader<std::process::ChildStdout>,
+    output: Receiver<String>,
     next_id: u64,
 }
 impl EngineClient {
@@ -255,9 +350,25 @@ impl EngineClient {
             .stderr(Stdio::inherit())
             .spawn()
             .map_err(|e| format!("could not start JAX engine: {e}"))?;
+        let stdout = child.stdout.take().ok_or("engine stdout unavailable")?;
+        let (output_tx, output) = mpsc::channel();
+        std::thread::Builder::new()
+            .name("ncm-jax-worker-stdout".into())
+            .spawn(move || {
+                let mut reader = BufReader::new(stdout);
+                loop {
+                    let mut line = String::new();
+                    match reader.read_line(&mut line) {
+                        Ok(0) | Err(_) => break,
+                        Ok(_) if output_tx.send(line).is_err() => break,
+                        Ok(_) => {}
+                    }
+                }
+            })
+            .map_err(|e| format!("could not start JAX response reader: {e}"))?;
         Ok(Self {
             input: BufWriter::new(child.stdin.take().ok_or("engine stdin unavailable")?),
-            output: BufReader::new(child.stdout.take().ok_or("engine stdout unavailable")?),
+            output,
             child,
             next_id: 1,
         })
@@ -283,17 +394,27 @@ impl EngineClient {
             .write_all(b"\n")
             .and_then(|_| self.input.flush())
             .map_err(|e| format!("engine request write failed: {e}"))?;
-        let mut line = String::new();
-        let n = self
-            .output
-            .read_line(&mut line)
-            .map_err(|e| format!("engine response read failed: {e}"))?;
-        if n == 0 {
-            return Err(format!(
-                "engine exited before replying (status {:?})",
-                self.child.try_wait().ok().flatten()
-            ));
-        }
+        let timeout_ms = env::var("NCM_RPC_TIMEOUT_MS")
+            .ok()
+            .and_then(|x| x.parse::<u64>().ok())
+            .filter(|x| *x > 0)
+            .unwrap_or(300_000);
+        let line = match self.output.recv_timeout(Duration::from_millis(timeout_ms)) {
+            Ok(line) => line,
+            Err(mpsc::RecvTimeoutError::Timeout) => {
+                let _ = self.child.kill();
+                let _ = self.child.wait();
+                return Err(format!(
+                    "JAX engine timed out after {timeout_ms} ms during {method}"
+                ));
+            }
+            Err(mpsc::RecvTimeoutError::Disconnected) => {
+                return Err(format!(
+                    "JAX engine exited or panicked before replying to {method} (status {:?})",
+                    self.child.try_wait().ok().flatten()
+                ));
+            }
+        };
         let response: Response =
             serde_json::from_str(&line).map_err(|e| format!("invalid JSON-RPC response: {e}"))?;
         if response.jsonrpc != "2.0" || response.id != json!(id) {
@@ -328,6 +449,33 @@ impl EngineClient {
         request: &CheckpointRequest,
     ) -> Result<CheckpointResponse, String> {
         self.call("load_checkpoint", request)
+    }
+    pub fn causal_ar_init(
+        &mut self,
+        request: &CausalArInitRequest,
+    ) -> Result<CausalArInitResponse, String> {
+        self.call("causal_ar_init", request)
+    }
+    pub fn causal_ar_train_step(
+        &mut self,
+        request: &CausalArTrainStepRequest,
+    ) -> Result<CausalArTrainStepResponse, String> {
+        self.call("causal_ar_train_step", request)
+    }
+    pub fn generate(&mut self, request: &GenerateRequest) -> Result<GenerateResponse, String> {
+        self.call("generate", request)
+    }
+    pub fn causal_ar_evaluate(
+        &mut self,
+        request: &CausalArEvaluateRequest,
+    ) -> Result<CausalArEvaluateResponse, String> {
+        self.call("causal_ar_evaluate", request)
+    }
+    pub fn speculative_verify(
+        &mut self,
+        request: &SpeculativeVerifyRequest,
+    ) -> Result<SpeculativeVerifyResponse, String> {
+        self.call("speculative_verify", request)
     }
 }
 impl Drop for EngineClient {

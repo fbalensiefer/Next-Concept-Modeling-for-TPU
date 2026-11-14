@@ -36,15 +36,7 @@ pub const COMMANDS: &[(&str, &str)] = &[
         "ncm.workloads.research.text_dependency_priors",
     ),
     (
-        "run-decisive-benchmark",
-        "ncm.workloads.validation.run_decisive_benchmark",
-    ),
-    (
         "summarize-validation-controls",
         "ncm.workloads.validation.summarize_validation_controls",
-    ),
-    (
-        "run-drafter-comparison",
-        "ncm.workloads.validation.run_drafter_comparison",
     ),
 ];

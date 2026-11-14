@@ -1,6 +1,6 @@
 #[cfg(unix)]
 #[test]
-fn named_worker_gets_module_arguments_source_path_and_exit_status() {
+fn native_drafter_command_does_not_invoke_python_launcher() {
     use std::{fs, os::unix::fs::PermissionsExt, process::Command};
     let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
     let dir = std::env::temp_dir().join(format!("ncm launcher {}", std::process::id()));
@@ -12,26 +12,29 @@ fn named_worker_gets_module_arguments_source_path_and_exit_status() {
     )
     .unwrap();
     fs::set_permissions(&fake, fs::Permissions::from_mode(0o700)).unwrap();
-    let output = Command::new(env!("CARGO_BIN_EXE_ncm-run"))
-        .current_dir(root.join("paper"))
-        .env("NCM_PYTHON", &fake)
-        .args(["run-drafter-comparison", "--output", "a b; echo injected"])
-        .output()
-        .unwrap();
-    assert_eq!(output.status.code(), Some(33));
-    let text = String::from_utf8(output.stdout).unwrap();
-    let rows: Vec<_> = text.lines().collect();
-    assert_eq!(rows[0], root.to_str().unwrap());
-    assert!(rows[1].starts_with(root.join("src").to_str().unwrap()));
-    assert_eq!(
-        &rows[2..],
-        &[
-            "-m",
-            "ncm.workloads.validation.run_drafter_comparison",
+    for (command, output_arg, expected_error) in [
+        (
+            "run-decisive-benchmark",
             "--output",
-            "a b; echo injected"
-        ]
-    );
+            "--model-config is required",
+        ),
+        (
+            "run-drafter-comparison",
+            "--output",
+            "--target-config is required",
+        ),
+    ] {
+        let output = Command::new(env!("CARGO_BIN_EXE_ncm-run"))
+            .current_dir(root.join("paper"))
+            .env("NCM_PYTHON", &fake)
+            .args([command, output_arg, "native-output"])
+            .output()
+            .unwrap();
+        assert_eq!(output.status.code(), Some(1));
+        assert!(output.stdout.is_empty());
+        assert!(String::from_utf8_lossy(&output.stderr).contains(expected_error));
+    }
+    assert!(!dir.join("calls").exists());
     fs::remove_dir_all(dir).unwrap();
 }
 #[test]
