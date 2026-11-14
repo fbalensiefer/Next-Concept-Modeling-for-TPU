@@ -134,3 +134,24 @@ fn rust_client_propagates_worker_rpc_errors() {
         .expect_err("worker method error must propagate");
     assert!(error.contains("-32601"), "unexpected error: {error}");
 }
+
+#[test]
+fn rust_drives_jax_probe_training_over_stdio() {
+    let mut engine = EngineClient::start(&repository_root()).expect("start JAX worker");
+    let response: Value = engine
+        .call(
+            "probe.train",
+            &json!({
+                "train": [[0,0],[0,1],[1,0],[1,1]],
+                "evaluation": [[0,0],[1,1]],
+                "lengths": [1,1],
+                "level": 1,
+                "seed": 7,
+                "steps": 1,
+                "batch_size": 2,
+                "causal": true
+            }),
+        )
+        .expect("train conditional probe");
+    assert!(response["nll"].as_f64().is_some_and(f64::is_finite));
+}

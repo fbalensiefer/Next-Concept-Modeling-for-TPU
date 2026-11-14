@@ -6,6 +6,7 @@ pub mod dependence;
 pub mod evaluation;
 pub mod flops;
 pub mod paper;
+pub mod probe;
 pub mod reports;
 pub mod research;
 pub mod rpc;

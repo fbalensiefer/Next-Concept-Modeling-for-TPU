@@ -35,7 +35,6 @@ pub const COMMANDS: &[(&str, &str)] = &[
         "text-dependency-priors",
         "ncm.workloads.research.text_dependency_priors",
     ),
-    ("run-tc-probe", "ncm.workloads.validation.run_tc_probe"),
     (
         "run-decisive-benchmark",
         "ncm.workloads.validation.run_decisive_benchmark",

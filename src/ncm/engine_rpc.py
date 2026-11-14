@@ -96,10 +96,29 @@ def dispatch(method, params):
                 "init_model",
                 "forward",
                 "train_step",
+                "probe.train",
                 "save_checkpoint",
                 "load_checkpoint",
             ],
         }
+    if method == "probe.train":
+        import numpy as np
+
+        from ncm.probe import train_probe
+
+        train = np.asarray(params["train"], dtype=np.int32)
+        evaluation = np.asarray(params["evaluation"], dtype=np.int32)
+        nll, _ = train_probe(
+            train,
+            evaluation,
+            tuple(int(x) for x in params["lengths"]),
+            int(params["level"]),
+            int(params["seed"]),
+            steps=int(params.get("steps", 200)),
+            batch_size=int(params.get("batch_size", 64)),
+            causal=bool(params["causal"]),
+        )
+        return {"nll": nll}
     if method == "init_model":
         import jax
         import optax

@@ -184,7 +184,7 @@ fn main() -> ExitCode {
     let args: Vec<_> = env::args_os().skip(1).collect();
     if args.is_empty() || args[0] == "--help" || args[0] == "--list" {
         println!(
-            "ncm-run <command> [arguments]\n\nCommands:\n  engine-info\n  build-papers\n  train\n  real-text-reconstruction\n  summarize-maintenance\n  summarize-domain-validation\n  summarize-dependency-results\n  domain-source-baselines\n  generate-bibliographies\n  update-manifests\n  audit-papers"
+            "ncm-run <command> [arguments]\n\nCommands:\n  engine-info\n  build-papers\n  train\n  real-text-reconstruction\n  run-tc-probe\n  summarize-maintenance\n  summarize-domain-validation\n  summarize-dependency-results\n  domain-source-baselines\n  generate-bibliographies\n  update-manifests\n  audit-papers"
         );
         for (name, _) in COMMANDS {
             println!("  {name}");
@@ -244,6 +244,36 @@ fn main() -> ExitCode {
             Some(path) => ncm::workloads::run_real_text_reconstruction(&root, &path, steps),
             None => Err("--output is required".into()),
         }
+    } else if name == "run-tc-probe" {
+        let mut output = PathBuf::from("reports/validation-controls/tc-probe-rust");
+        let mut steps = 200usize;
+        let mut index = 1;
+        while index < args.len() {
+            match args[index].to_str() {
+                Some("--output") if index + 1 < args.len() => {
+                    output = PathBuf::from(&args[index + 1]);
+                    index += 1;
+                }
+                Some("--steps") if index + 1 < args.len() => {
+                    steps = match args[index + 1].to_str().and_then(|x| x.parse().ok()) {
+                        Some(x) => x,
+                        None => {
+                            eprintln!("--steps must be positive");
+                            return ExitCode::from(2);
+                        }
+                    };
+                    index += 1;
+                }
+                _ => {
+                    eprintln!("run-tc-probe accepts [--output DIR] [--steps N]");
+                    return ExitCode::from(2);
+                }
+            }
+            index += 1;
+        }
+        ncm::probe::run_tc_probe(&root, &output, steps).map(|passed| {
+            println!("real-text gate: {passed}");
+        })
     } else if name == "summarize-maintenance" {
         ncm::reports::summarize_maintenance(&root).map(|_| ())
     } else if name == "summarize-domain-validation" {
