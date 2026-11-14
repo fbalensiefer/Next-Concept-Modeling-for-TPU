@@ -1,6 +1,6 @@
 # Rust orchestration and the JAX engine
 
-Rust owns command dispatch, worker processes, and the paper build sequence. Python/JAX/Flax owns model computation and numerical research workloads. There is one model implementation.
+Rust owns command dispatch, worker processes, paper build sequencing, byte-corpus validation/windowing, and host-side reconstruction summaries. Python/JAX/Flax owns model computation and training. There is one model implementation.
 
 Run commands from the repository or a subdirectory:
 
@@ -17,3 +17,5 @@ cargo run --bin ncm-run -- build-papers --build-dir /tmp/ncm-papers
 The former `examples/*.py`, `scripts/*.py`, and `paper/*.py` entrypoints have been removed. Their required calculations are packaged under `src/ncm/workloads/{research,validation,papers}`. Commands use the former filename with underscores replaced by hyphens, for example `run_drafter_comparison.py` becomes `run-drafter-comparison`. `build-papers` replaces the former Python build wrapper with Rust orchestration. Historical reports retain the original commands and source hashes as records of executed experiments.
 
 Configuration and text fixtures remain in `examples/`; manuscript sources and evidence inputs remain in `paper/`. The initial duplicate Rust model primitives were removed because model execution belongs to JAX.
+
+Rust library modules `corpus` and `evaluation` provide the first native host-side data and metric implementations. The Python research workers still use Python data helpers; migrating those remaining workflows is ongoing.

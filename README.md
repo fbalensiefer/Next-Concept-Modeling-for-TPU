@@ -1,6 +1,6 @@
 # Next-Concept Modeling for TPU
 
-A research implementation of [Next-Concept Modeling](https://arxiv.org/abs/2610.14162). Rust orchestrates research commands and paper builds; Python/JAX/Flax runs the model and numerical workloads.
+A research implementation of [Next-Concept Modeling](https://arxiv.org/abs/2610.14162). Rust handles command orchestration, corpus validation, and host-side evaluation. Python/JAX/Flax runs the model engine and current numerical research workloads.
 
 The central question is: **can a learned hierarchy make text generation faster while preserving information and modeling the dependencies that matter?**
 
