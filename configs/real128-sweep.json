@@ -1,0 +1,114 @@
+{
+  "profile": "real128",
+  "train_file": "runs/real-text-pilot/train.jsonl",
+  "validation_file": "runs/real-text-pilot/validation.jsonl",
+  "sequence_length": 128,
+  "max_prompt_len": 64,
+  "seeds": [200, 201, 202],
+  "prompt_lengths": [0, 16, 64],
+  "steps": 8,
+  "checkpoint_steps": [2, 4, 8],
+  "batch_size": 4,
+  "train_windows": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 786],
+  "validation_windows": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 899],
+  "codec_pretrain": {
+    "steps": 8,
+    "config": {
+      "rvq": {"lengths": [8, 32, 128], "codebook_size": 4, "dim": 4},
+      "transformer": {"width": 8, "heads": 2, "layers": 1, "mlp_ratio": 4, "dropout": 0.0},
+      "model": {"ar_coarse_levels": 0, "prompt_len": 0},
+      "losses": {"beta": 0.25, "entropy": 0.01, "concept": 0.0, "prior": 1.0, "entropy_weights": []},
+      "token_vocab_size": 256,
+      "learning_rate": 0.0003,
+      "init_batch_size": 4
+    }
+  },
+  "teacher": {
+    "transformer": {"width": 16, "heads": 2, "layers": 2, "mlp_ratio": 4, "dropout": 0.0},
+    "max_length": 209,
+    "learning_rate": 0.0003
+  },
+  "benchmark": {
+    "target_arm": "teacher",
+    "drafters": [
+      {"label": "ncm", "arm": "ncm_coarse_1"},
+      {"label": "ar_distilled", "arm": "ar_distilled"},
+      {"label": "ncm_sequence_distilled", "arm": "ncm_sequence_distilled"}
+    ],
+    "draft_lengths": [2, 4, 8, 16],
+    "batch_sizes": [1, 16, 128],
+    "warmups": 5,
+    "repetitions": 30,
+    "temperature": 1.0,
+    "top_k": 0
+  },
+  "arms": [
+    {
+      "name": "ar_scratch",
+      "kind": "causal_ar",
+      "distillation_weight": 0.0,
+      "training_mode": "joint",
+      "config": {
+        "transformer": {"width": 8, "heads": 2, "layers": 1, "mlp_ratio": 4, "dropout": 0.0},
+        "max_length": 209,
+        "learning_rate": 0.0003
+      }
+    },
+    {
+      "name": "ar_distilled",
+      "kind": "causal_ar",
+      "distillation_weight": 0.5,
+      "training_mode": "joint",
+      "config": {
+        "transformer": {"width": 8, "heads": 2, "layers": 1, "mlp_ratio": 4, "dropout": 0.0},
+        "max_length": 209,
+        "learning_rate": 0.0003
+      }
+    },
+    {
+      "name": "ncm_coarse_0",
+      "kind": "ncm",
+      "distillation_weight": 0.0,
+      "training_mode": "prior_only",
+      "config": {
+        "rvq": {"lengths": [8, 32, 128], "codebook_size": 4, "dim": 4},
+        "transformer": {"width": 8, "heads": 2, "layers": 1, "mlp_ratio": 4, "dropout": 0.0},
+        "model": {"ar_coarse_levels": 0, "prompt_len": 0},
+        "losses": {"beta": 0.25, "entropy": 0.01, "concept": 0.0, "prior": 1.0, "entropy_weights": []},
+        "token_vocab_size": 256,
+        "learning_rate": 0.0003,
+        "init_batch_size": 4
+      }
+    },
+    {
+      "name": "ncm_coarse_1",
+      "kind": "ncm",
+      "distillation_weight": 0.0,
+      "training_mode": "prior_only",
+      "config": {
+        "rvq": {"lengths": [8, 32, 128], "codebook_size": 4, "dim": 4},
+        "transformer": {"width": 8, "heads": 2, "layers": 1, "mlp_ratio": 4, "dropout": 0.0},
+        "model": {"ar_coarse_levels": 1, "prompt_len": 0},
+        "losses": {"beta": 0.25, "entropy": 0.01, "concept": 0.0, "prior": 1.0, "entropy_weights": []},
+        "token_vocab_size": 256,
+        "learning_rate": 0.0003,
+        "init_batch_size": 4
+      }
+    },
+    {
+      "name": "ncm_sequence_distilled",
+      "kind": "ncm",
+      "distillation_weight": 0.0,
+      "training_mode": "sequence_distillation",
+      "config": {
+        "rvq": {"lengths": [8, 32, 128], "codebook_size": 4, "dim": 4},
+        "transformer": {"width": 8, "heads": 2, "layers": 1, "mlp_ratio": 4, "dropout": 0.0},
+        "model": {"ar_coarse_levels": 1, "prompt_len": 0},
+        "losses": {"beta": 0.25, "entropy": 0.01, "concept": 0.0, "prior": 1.0, "entropy_weights": []},
+        "token_vocab_size": 256,
+        "learning_rate": 0.0003,
+        "init_batch_size": 4
+      }
+    }
+  ]
+}

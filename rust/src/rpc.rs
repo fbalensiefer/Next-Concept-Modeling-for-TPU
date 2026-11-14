@@ -64,6 +64,7 @@ impl Request {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(default)]
 pub struct RvqConfig {
     pub lengths: Vec<usize>,
     pub codebook_size: usize,
@@ -215,6 +216,10 @@ pub struct TrainStepRequest {
     pub seed: u32,
     #[serde(default)]
     pub phase: u32,
+    #[serde(default)]
+    pub prior_only: bool,
+    #[serde(default)]
+    pub sequence_distillation: bool,
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct TrainStepResponse {
@@ -233,6 +238,8 @@ pub struct CheckpointRequest {
 pub struct CheckpointResponse {
     pub path: String,
     pub step: u64,
+    #[serde(default)]
+    pub codec_sha256: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -285,6 +292,16 @@ pub struct GenerateRequest {
     pub seed: u32,
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct GenerateRaggedRequest {
+    pub engine_id: String,
+    pub prompts: Vec<Vec<i32>>,
+    pub prompt_lengths: Vec<usize>,
+    pub max_new_tokens: usize,
+    pub temperature: f32,
+    pub top_k: usize,
+    pub seed: u32,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct GenerateResponse {
     pub tokens: Vec<Vec<i32>>,
     pub probabilities: Vec<Vec<Vec<f32>>>,
@@ -314,6 +331,17 @@ pub struct SpeculativeVerifyRequest {
     #[serde(default = "default_temperature")]
     pub temperature: f32,
     #[serde(default)]
+    pub top_k: usize,
+    pub seed: u32,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SpeculativeVerifyRaggedRequest {
+    pub engine_id: String,
+    pub prefixes: Vec<Vec<i32>>,
+    pub prefix_lengths: Vec<usize>,
+    pub draft_tokens: Vec<Vec<i32>>,
+    pub proposal_probs: Vec<Vec<Vec<f32>>>,
+    pub temperature: f32,
     pub top_k: usize,
     pub seed: u32,
 }
@@ -450,6 +478,18 @@ impl EngineClient {
     ) -> Result<CheckpointResponse, String> {
         self.call("load_checkpoint", request)
     }
+    pub fn save_codec(
+        &mut self,
+        request: &CheckpointRequest,
+    ) -> Result<CheckpointResponse, String> {
+        self.call("save_codec", request)
+    }
+    pub fn load_codec(
+        &mut self,
+        request: &CheckpointRequest,
+    ) -> Result<CheckpointResponse, String> {
+        self.call("load_codec", request)
+    }
     pub fn causal_ar_init(
         &mut self,
         request: &CausalArInitRequest,
@@ -465,6 +505,12 @@ impl EngineClient {
     pub fn generate(&mut self, request: &GenerateRequest) -> Result<GenerateResponse, String> {
         self.call("generate", request)
     }
+    pub fn generate_ragged(
+        &mut self,
+        request: &GenerateRaggedRequest,
+    ) -> Result<GenerateResponse, String> {
+        self.call("generate", request)
+    }
     pub fn causal_ar_evaluate(
         &mut self,
         request: &CausalArEvaluateRequest,
@@ -474,6 +520,12 @@ impl EngineClient {
     pub fn speculative_verify(
         &mut self,
         request: &SpeculativeVerifyRequest,
+    ) -> Result<SpeculativeVerifyResponse, String> {
+        self.call("speculative_verify", request)
+    }
+    pub fn speculative_verify_ragged(
+        &mut self,
+        request: &SpeculativeVerifyRaggedRequest,
     ) -> Result<SpeculativeVerifyResponse, String> {
         self.call("speculative_verify", request)
     }

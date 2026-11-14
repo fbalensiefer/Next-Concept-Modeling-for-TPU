@@ -416,6 +416,8 @@ pub fn train_codec(
             batch: batch_at(&train, &indices),
             seed: (seed.wrapping_add(index + 1) % (u32::MAX as u64 + 1)) as u32,
             phase: 0,
+            prior_only: false,
+            sequence_distillation: false,
         })?;
         if (index + 1) % checkpoint_every as u64 == 0 || index + 1 == steps as u64 {
             let evaluation = evaluate(&mut engine, &initialized.engine_id, &valid, batch_size)?;

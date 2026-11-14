@@ -1,8 +1,9 @@
 use ncm::rpc::{
     CausalArConfig, CausalArEvaluateRequest, CausalArInitRequest, CausalArTrainStepRequest,
-    CheckpointRequest, EngineClient, EngineConfig, ForwardRequest, GenerateRequest,
-    InitModelRequest, LossConfig, ModelConfig, RvqConfig, SpeculativeVerifyRequest, TensorBatch,
-    TrainStepRequest, TransformerConfig,
+    CheckpointRequest, EngineClient, EngineConfig, ForwardRequest, GenerateRaggedRequest,
+    GenerateRequest, InitModelRequest, LossConfig, ModelConfig, RvqConfig,
+    SpeculativeVerifyRaggedRequest, SpeculativeVerifyRequest, TensorBatch, TrainStepRequest,
+    TransformerConfig,
 };
 use serde_json::{Value, json};
 use std::{
@@ -91,6 +92,8 @@ fn rust_drives_model_training_and_checkpoint_round_trip_over_stdio() {
             batch: batch(),
             seed: 23,
             phase: 0,
+            prior_only: false,
+            sequence_distillation: false,
         })
         .expect("training step");
     assert_eq!(trained.step, 1);
@@ -138,6 +141,102 @@ fn rust_drives_model_training_and_checkpoint_round_trip_over_stdio() {
     assert_eq!(checkpoint_forward.codes, restored_forward.codes);
     assert_eq!(checkpoint_forward.loss, restored_forward.loss);
     let _ = std::fs::remove_file(checkpoint);
+}
+
+#[test]
+fn codec_rpc_and_prior_training_keep_the_codec_frozen() {
+    let root = repository_root();
+    let dir = env::temp_dir().join(format!("ncm codec rpc {}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    let mut engine = EngineClient::start(&root).expect("start JAX worker");
+    let codec = engine
+        .init_model(&model_request())
+        .expect("initialize codec");
+    engine
+        .train_step(&TrainStepRequest {
+            engine_id: codec.engine_id.clone(),
+            batch: batch(),
+            seed: 101,
+            phase: 0,
+            prior_only: false,
+            sequence_distillation: false,
+        })
+        .expect("pretrain shared codec");
+    let codec_path = dir.join("codec.msgpack");
+    let saved_codec = engine
+        .save_codec(&CheckpointRequest {
+            engine_id: codec.engine_id,
+            path: codec_path.to_string_lossy().into_owned(),
+        })
+        .expect("save codec");
+    let codec_fingerprint = saved_codec.codec_sha256.expect("codec fingerprint");
+
+    let prior = engine
+        .init_model(&model_request())
+        .expect("initialize prior");
+    engine
+        .load_codec(&CheckpointRequest {
+            engine_id: prior.engine_id.clone(),
+            path: codec_path.to_string_lossy().into_owned(),
+        })
+        .expect("restore frozen codec");
+    let before = dir.join("before.msgpack");
+    let frozen_codec = engine
+        .save_codec(&CheckpointRequest {
+            engine_id: prior.engine_id.clone(),
+            path: before.to_string_lossy().into_owned(),
+        })
+        .unwrap();
+    assert_eq!(
+        frozen_codec.codec_sha256.as_deref(),
+        Some(codec_fingerprint.as_str())
+    );
+    engine
+        .train_step(&TrainStepRequest {
+            engine_id: prior.engine_id.clone(),
+            batch: batch(),
+            seed: 102,
+            phase: 0,
+            prior_only: true,
+            sequence_distillation: false,
+        })
+        .expect("train prior while freezing codec");
+    let after_prior = dir.join("after-prior.msgpack");
+    let after_prior_state = engine
+        .save_codec(&CheckpointRequest {
+            engine_id: prior.engine_id.clone(),
+            path: after_prior.to_string_lossy().into_owned(),
+        })
+        .unwrap();
+    assert_eq!(
+        after_prior_state.codec_sha256.as_deref(),
+        Some(codec_fingerprint.as_str())
+    );
+
+    let distilled = engine
+        .train_step(&TrainStepRequest {
+            engine_id: prior.engine_id.clone(),
+            batch: batch(),
+            seed: 103,
+            phase: 0,
+            prior_only: false,
+            sequence_distillation: true,
+        })
+        .expect("train sequence-distilled prior and decoder");
+    assert!(distilled.loss.is_finite() && distilled.grad_norm.is_finite());
+    let after_sequence = dir.join("after-sequence.msgpack");
+    let after_sequence_state = engine
+        .save_codec(&CheckpointRequest {
+            engine_id: prior.engine_id,
+            path: after_sequence.to_string_lossy().into_owned(),
+        })
+        .unwrap();
+    assert_ne!(
+        after_sequence_state.codec_sha256.as_deref(),
+        Some(codec_fingerprint.as_str())
+    );
+    std::fs::remove_dir_all(dir).unwrap();
 }
 
 #[test]
@@ -275,4 +374,63 @@ fn rust_drives_causal_ar_evaluation_generation_and_speculative_verification() {
     assert_eq!(verified.tokens.len(), 2);
     assert_eq!(verified.tokens[0].len(), 3);
     assert!(verified.acceptance_rate.is_finite() && (0. ..=1.).contains(&verified.acceptance_rate));
+}
+
+#[test]
+fn rust_drives_ragged_ar_generation_and_verification_including_empty_prefixes() {
+    let mut engine = EngineClient::start(&repository_root()).expect("start JAX worker");
+    let model = engine
+        .causal_ar_init(&CausalArInitRequest {
+            config: CausalArConfig {
+                transformer: TransformerConfig {
+                    width: 8,
+                    heads: 2,
+                    layers: 1,
+                    mlp_ratio: 2,
+                    dropout: 0.,
+                },
+                max_length: 8,
+                learning_rate: 1e-3,
+            },
+            seed: 31,
+            tokens: vec![vec![1]],
+            mask: None,
+        })
+        .expect("initialize ragged AR");
+    let prompts = vec![vec![0, 0], vec![4, 5]];
+    let generated = engine
+        .generate_ragged(&GenerateRaggedRequest {
+            engine_id: model.engine_id.clone(),
+            prompts: prompts.clone(),
+            prompt_lengths: vec![0, 2],
+            max_new_tokens: 2,
+            temperature: 1.,
+            top_k: 0,
+            seed: 32,
+        })
+        .expect("generate with empty and nonempty prefixes");
+    assert_eq!(generated.tokens.len(), 2);
+    assert!(generated.tokens.iter().all(|row| row.len() == 2));
+    assert_eq!(generated.probabilities.len(), 2);
+
+    let verified = engine
+        .speculative_verify_ragged(&SpeculativeVerifyRaggedRequest {
+            engine_id: model.engine_id,
+            prefixes: prompts,
+            prefix_lengths: vec![0, 2],
+            draft_tokens: generated.tokens,
+            proposal_probs: generated.probabilities,
+            temperature: 1.,
+            top_k: 0,
+            seed: 33,
+        })
+        .expect("verify proposals with ragged prefixes");
+    assert_eq!(verified.accepted_lengths.len(), 2);
+    assert!(
+        verified
+            .accepted_lengths
+            .iter()
+            .all(|accepted| *accepted <= 2)
+    );
+    assert!(verified.tokens.iter().all(|row| row.len() == 3));
 }

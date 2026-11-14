@@ -1,11 +1,31 @@
 """JSON-RPC 2.0 stdio server for the JAX/Flax model engine."""
 
 import json
+import hashlib
 import sys
 import time
 import uuid
 
 _models = {}
+
+
+def _codec_sha256(value):
+    """Hash codec arrays in a stable order, independent of mapping order."""
+    import numpy as np
+    from flax import serialization
+    from flax.traverse_util import flatten_dict
+
+    # Normalize device arrays and pytree wrappers through the same msgpack
+    # representation used by the checkpoint protocol before hashing.
+    value = serialization.msgpack_restore(serialization.to_bytes(value))
+    digest = hashlib.sha256()
+    for path, leaf in sorted(flatten_dict(value).items()):
+        array = np.asarray(leaf)
+        digest.update("/".join(map(str, path)).encode("utf-8"))
+        digest.update(array.dtype.str.encode("ascii"))
+        digest.update(json.dumps(array.shape).encode("ascii"))
+        digest.update(array.tobytes(order="C"))
+    return digest.hexdigest()
 
 
 class MethodNotFound(Exception):
@@ -94,22 +114,25 @@ def _ar_batch(tokens, mask=None):
     return tokens, valid
 
 
-def _verify_ar_proposals(model, model_params, prefixes, drafts, proposal_probs, key,
-                         temperature, top_k):
+def _verify_ar_proposals(model, model_params, prefixes, prefix_lengths, drafts,
+                         proposal_probs, key, temperature, top_k):
     import jax
     import jax.numpy as jnp
     from ncm.autoregressive import shifted_inputs
 
-    batch, prompt_len = prefixes.shape
+    batch, max_prefix = prefixes.shape
     draft_len = drafts.shape[1]
-    sequence = jnp.concatenate([prefixes, drafts], axis=1)
-    # One trailing placeholder lets the same causal pass produce the bonus
-    # distribution conditioned on the full accepted draft. Its value is masked
-    # from every distribution because causal attention only sees earlier tokens.
-    sequence = jnp.concatenate([sequence, jnp.zeros((batch, 1), jnp.int32)], axis=1)
-    logits = model.apply({"params": model_params}, shifted_inputs(sequence),
-                         jnp.ones_like(sequence, jnp.bool_))
-    target_logits = logits[:, prompt_len:prompt_len+draft_len+1]
+    sequence = jnp.zeros((batch, max_prefix + draft_len + 1), jnp.int32)
+    sequence = sequence.at[:, :max_prefix].set(prefixes)
+    rows = jnp.arange(batch)[:, None]
+    draft_positions = prefix_lengths[:, None] + jnp.arange(draft_len)[None, :]
+    sequence = sequence.at[rows, draft_positions].set(drafts)
+    valid_lengths = prefix_lengths + draft_len + 1
+    valid = jnp.arange(sequence.shape[1])[None, :] < valid_lengths[:, None]
+    logits = model.apply({"params": model_params}, shifted_inputs(sequence), valid)
+    target_logits = jax.vmap(
+        lambda row, start: jax.lax.dynamic_slice_in_dim(row, start, draft_len + 1, axis=0)
+    )(logits, prefix_lengths)
     if temperature == 0:
         target_probs = jax.nn.one_hot(target_logits.argmax(-1), 256)
     else:
@@ -178,6 +201,60 @@ def _generate_ncm(model, model_params, codebooks, prompts, length, key, temperat
     return tokens, probs
 
 
+def _generate_ar_ragged(model, model_params, prompts, prompt_lengths, length, key,
+                        temperature, top_k):
+    """Cached AR generation for a batch whose prefixes have different lengths."""
+    import jax
+    import jax.numpy as jnp
+
+    batch = prompts.shape[0]
+    shape = (batch, model.max_length, model.config.heads,
+             model.config.width // model.config.heads)
+    cache = tuple((jnp.zeros(shape), jnp.zeros(shape))
+                  for _ in range(model.config.layers))
+    inputs = jnp.concatenate([jnp.full((batch, 1), 256, jnp.int32), prompts], axis=1)
+
+    def prefill(cache, position):
+        active = prompt_lengths > position
+        _, cache = model.apply(
+            {"params": model_params}, inputs[:, position],
+            jnp.full((batch,), position, jnp.int32), cache, active,
+            method=model.decode_step_ragged,
+        )
+        return cache, None
+
+    cache, _ = jax.lax.scan(prefill, cache, jnp.arange(prompts.shape[1]))
+    rows = jnp.arange(batch)
+    last_index = jnp.maximum(prompt_lengths - 1, 0)
+    previous = jnp.where(
+        prompt_lengths > 0, prompts[rows, last_index], jnp.full((batch,), 256, jnp.int32)
+    )
+
+    def step(carry, index):
+        previous, cache = carry
+        positions = prompt_lengths + index
+        logits, cache = model.apply(
+            {"params": model_params}, previous, positions, cache,
+            jnp.ones((batch,), jnp.bool_), method=model.decode_step_ragged,
+        )
+        if temperature == 0:
+            tokens = logits.argmax(-1).astype(jnp.int32)
+            probabilities = jax.nn.one_hot(tokens, 256)
+        else:
+            logits = logits / temperature
+            if top_k:
+                cutoff = jax.lax.top_k(logits, top_k)[0][..., -1:]
+                logits = jnp.where(logits >= cutoff, logits, -jnp.inf)
+            probabilities = jax.nn.softmax(logits, -1)
+            tokens = jax.random.categorical(jax.random.fold_in(key, index), logits).astype(jnp.int32)
+        return (tokens, cache), (tokens, probabilities)
+
+    _, (tokens, probabilities) = jax.lax.scan(
+        step, (previous, cache), jnp.arange(length)
+    )
+    return tokens.T, jnp.transpose(probabilities, (1, 0, 2))
+
+
 def dispatch(method, params):
     if method == "engine.ping":
         return {"status": "ready"}
@@ -213,6 +290,8 @@ def dispatch(method, params):
                 "speculative_verify",
                 "save_checkpoint",
                 "load_checkpoint",
+                "save_codec",
+                "load_codec",
             ],
         }
     if method == "causal_ar_init":
@@ -318,6 +397,13 @@ def dispatch(method, params):
         prompts = jnp.asarray(params["prompts"], jnp.int32)
         if prompts.ndim != 2 or prompts.shape[0] < 1:
             raise ValueError("prompts must have shape [nonempty batch, prompt_length]")
+        prompt_lengths = params.get("prompt_lengths")
+        if prompt_lengths is not None:
+            prompt_lengths = jnp.asarray(prompt_lengths, jnp.int32)
+            if prompt_lengths.shape != (prompts.shape[0],):
+                raise ValueError("prompt_lengths must have one entry per prompt")
+            if bool(jnp.any(prompt_lengths < 0)) or bool(jnp.any(prompt_lengths > prompts.shape[1])):
+                raise ValueError("prompt_lengths must fit the padded prompt width")
         max_new_tokens = int(params["max_new_tokens"])
         temperature = float(params.get("temperature", 1.0))
         top_k = int(params.get("top_k", 0))
@@ -331,6 +417,8 @@ def dispatch(method, params):
                 raise ValueError("continuation exceeds NCM codec bucket")
             if prompts.shape[1] != entry["model"].config.prompt_len:
                 raise ValueError("prompt length must match NCM model config")
+            if prompt_lengths is not None and bool(jnp.any(prompt_lengths != prompts.shape[1])):
+                raise ValueError("NCM prompts must use the configured fixed prompt length")
             if prompts.size and (int(prompts.min()) < 0 or int(prompts.max()) > 255):
                 raise ValueError("prompt tokens must be byte IDs in 0..255")
             cache_key = (max_new_tokens, temperature, top_k)
@@ -346,12 +434,31 @@ def dispatch(method, params):
                 entry["state"].params, entry["state"].codebooks, prompts,
                 jax.random.PRNGKey(seed & 0xffffffff)
             )
+            # The decoder emits the full codec bucket; RPC callers request a
+            # concrete continuation length and must receive exactly that many
+            # tokens and proposal distributions.
+            tokens = tokens[:, :max_new_tokens]
+            probabilities = probabilities[:, :max_new_tokens]
             return {"tokens": _json_value(tokens), "probabilities": _json_value(probabilities)}
         entry = _ar_entry(params)
-        if prompts.shape[1] < 1:
-            raise ValueError("causal AR prompts must be nonempty")
-        if prompts.shape[1] + max_new_tokens > entry["model"].max_length:
+        max_prompt_len = prompts.shape[1] if prompt_lengths is None else int(prompt_lengths.max())
+        if max_prompt_len + max_new_tokens > entry["model"].max_length:
             raise ValueError("prompt plus continuation exceeds max_length")
+        if prompt_lengths is not None:
+            cache_key = ("ragged", prompts.shape[1], max_new_tokens, temperature, top_k)
+            if cache_key not in entry["generate"]:
+                model = entry["model"]
+                entry["generate"][cache_key] = jax.jit(
+                    lambda model_params, padded, lengths, key: _generate_ar_ragged(
+                        model, model_params, padded, lengths, max_new_tokens, key,
+                        temperature, top_k
+                    )
+                )
+            tokens, probabilities = entry["generate"][cache_key](
+                entry["params"], prompts, prompt_lengths,
+                jax.random.PRNGKey(seed & 0xffffffff)
+            )
+            return {"tokens": _json_value(tokens), "probabilities": _json_value(probabilities)}
         cache_key = (max_new_tokens, temperature, top_k)
         if cache_key not in entry["generate"]:
             model = entry["model"]
@@ -443,13 +550,21 @@ def dispatch(method, params):
         draft_len = drafts.shape[1]
         if drafts.shape[0] != batch or proposal_probs.shape != (batch, draft_len, 256):
             raise ValueError("proposal probabilities must be [batch,draft_len,256]")
-        if prompt_len + draft_len + 1 > entry["model"].max_length or prompt_len == 0 or draft_len == 0:
+        prefix_lengths = params.get("prefix_lengths")
+        if prefix_lengths is None:
+            prefix_lengths = jnp.full((batch,), prompt_len, jnp.int32)
+        else:
+            prefix_lengths = jnp.asarray(prefix_lengths, jnp.int32)
+        if prefix_lengths.shape != (batch,) or bool(jnp.any(prefix_lengths < 0)) or bool(jnp.any(prefix_lengths > prompt_len)):
+            raise ValueError("prefix_lengths must fit the padded prefix width")
+        if int(prefix_lengths.max()) + draft_len + 1 > entry["model"].max_length or draft_len == 0:
             raise ValueError("prefix and draft exceed AR model capacity")
         if not math.isfinite(temperature) or temperature < 0 or not 0 <= top_k <= 256:
             raise ValueError("temperature must be finite and nonnegative; top_k must be in 0..=256")
         qsum = np.asarray(proposal_probs.sum(-1))
         prefix_values, draft_values = np.asarray(prefixes), np.asarray(drafts)
-        if (np.any(prefix_values < 0) or np.any(prefix_values > 255)
+        valid_prefix_mask = np.arange(prompt_len)[None, :] < np.asarray(prefix_lengths)[:, None]
+        if (np.any(prefix_values[valid_prefix_mask] < 0) or np.any(prefix_values[valid_prefix_mask] > 255)
                 or np.any(draft_values < 0) or np.any(draft_values > 255)):
             raise ValueError("prefix and draft tokens must be byte IDs in 0..255")
         if np.any(~np.isfinite(qsum)) or np.any(np.abs(qsum-1.) > 1e-4) or np.any(np.asarray(proposal_probs) < 0):
@@ -458,12 +573,12 @@ def dispatch(method, params):
         if cache_key not in entry["spec_verify"]:
             model = entry["model"]
             entry["spec_verify"][cache_key] = jax.jit(
-                lambda model_params, pfx, drf, q, key: _verify_ar_proposals(
-                    model, model_params, pfx, drf, q, key, temperature, top_k
+                lambda model_params, pfx, pfx_lengths, drf, q, key: _verify_ar_proposals(
+                    model, model_params, pfx, pfx_lengths, drf, q, key, temperature, top_k
                 )
             )
         returned, prefix_accept, accepted_mask = entry["spec_verify"][cache_key](
-            entry["params"], prefixes, drafts, proposal_probs,
+            entry["params"], prefixes, prefix_lengths, drafts, proposal_probs,
             jax.random.PRNGKey(int(params.get("seed", 0)) & 0xffffffff),
         )
         jax.block_until_ready(returned)
@@ -543,7 +658,7 @@ def dispatch(method, params):
             "optimizer": optimizer,
             "state": state,
             "sharding": sharding,
-            "train_step": None,
+            "train_step": {},
             "forward": None,
             "generate": {},
         }
@@ -555,12 +670,19 @@ def dispatch(method, params):
             "sharding": str(sharding),
         }
 
-    if method in ("forward", "train_step", "save_checkpoint", "load_checkpoint"):
+    if method in ("forward", "train_step", "save_checkpoint", "load_checkpoint",
+                  "save_codec", "load_codec"):
         import jax
         import jax.numpy as jnp
         from flax import serialization
 
-        entry = _entry(params)
+        stored = _models.get(params.get("engine_id"))
+        ar_checkpoint = (
+            method in ("save_checkpoint", "load_checkpoint")
+            and stored is not None
+            and stored.get("kind") == "causal_ar"
+        )
+        entry = None if ar_checkpoint else _entry(params)
         if method == "forward":
             batch = jax.device_put(_batch(params["batch"]), entry["sharding"])
             if entry["forward"] is None:
@@ -584,14 +706,22 @@ def dispatch(method, params):
             }
 
         if method == "train_step":
-            from ncm.training import make_train_step
+            from ncm.training import make_prior_train_step, make_train_step
 
-            if entry["train_step"] is None:
-                entry["train_step"] = jax.jit(
-                    make_train_step(entry["model"], entry["optimizer"])
-                )
+            prior_only = bool(params.get("prior_only", False))
+            sequence_distillation = bool(params.get("sequence_distillation", False))
+            if prior_only and sequence_distillation:
+                raise ValueError("prior_only and sequence_distillation are mutually exclusive")
+            mode = "prior" if prior_only else "sequence" if sequence_distillation else "joint"
+
+            if mode not in entry["train_step"]:
+                step_fn = (make_train_step(entry["model"], entry["optimizer"])
+                           if mode == "joint" else
+                           make_prior_train_step(entry["model"], entry["optimizer"],
+                                                 sequence_distillation=mode == "sequence"))
+                entry["train_step"][mode] = jax.jit(step_fn)
             started = time.perf_counter()
-            state, metrics = entry["train_step"](
+            state, metrics = entry["train_step"][mode](
                 entry["state"],
                 jax.device_put(_batch(params["batch"]), entry["sharding"]),
                 jnp.asarray(int(params.get("phase", 0))),
@@ -611,19 +741,59 @@ def dispatch(method, params):
         path = params.get("path")
         if not isinstance(path, str) or not path:
             raise ValueError("path must be nonempty")
-        if method == "save_checkpoint":
-            from pathlib import Path
+        from pathlib import Path
 
+        if method in ("save_codec", "load_codec"):
+            if entry.get("kind") != "ncm":
+                raise ValueError("codec checkpoints require an NCM engine")
+            codec_path = Path(path)
+            if method == "save_codec":
+                codec_path.parent.mkdir(parents=True, exist_ok=True)
+                value = {"tokenizer_params": entry["state"].params["MultiscaleTokenizer_0"],
+                         "codebooks": entry["state"].codebooks}
+                codec_path.write_bytes(serialization.to_bytes(value))
+                return {"path": str(codec_path), "step": int(entry["state"].step),
+                        "codec_sha256": _codec_sha256(value)}
+            template = {"tokenizer_params": entry["state"].params["MultiscaleTokenizer_0"],
+                        "codebooks": entry["state"].codebooks}
+            value = serialization.from_bytes(template, codec_path.read_bytes())
+            parameters = dict(entry["state"].params)
+            parameters["MultiscaleTokenizer_0"] = value["tokenizer_params"]
+            entry["state"] = entry["state"].replace(
+                params=parameters, codebooks=value["codebooks"], step=0)
+            entry["state"] = entry["state"].replace(
+                opt_state=entry["optimizer"].init(entry["state"].params))
+            return {"path": str(codec_path), "step": int(entry["state"].step),
+                    "codec_sha256": _codec_sha256(value)}
+
+        if method == "save_checkpoint":
             output_path = Path(path)
             output_path.parent.mkdir(parents=True, exist_ok=True)
+            if ar_checkpoint:
+                ar = _ar_entry(params)
+                state = {
+                    "params": ar["params"],
+                    "opt_state": ar["opt_state"],
+                    "step": ar["step"],
+                }
+                output_path.write_bytes(serialization.to_bytes(state))
+                return {"path": str(output_path), "step": int(ar["step"])}
             output_path.write_bytes(serialization.to_bytes(entry["state"]))
             return {"path": str(output_path), "step": int(entry["state"].step)}
 
-        from pathlib import Path
-
-        entry["state"] = serialization.from_bytes(
-            entry["state"], Path(path).read_bytes()
-        )
+        if ar_checkpoint:
+            ar = _ar_entry(params)
+            template = {
+                "params": ar["params"],
+                "opt_state": ar["opt_state"],
+                "step": ar["step"],
+            }
+            state = serialization.from_bytes(template, Path(path).read_bytes())
+            ar["params"], ar["opt_state"], ar["step"] = (
+                state["params"], state["opt_state"], int(state["step"])
+            )
+            return {"path": path, "step": ar["step"]}
+        entry["state"] = serialization.from_bytes(entry["state"], Path(path).read_bytes())
         return {"path": path, "step": int(entry["state"].step)}
 
     raise MethodNotFound(method)

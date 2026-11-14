@@ -260,11 +260,136 @@ fn drafter_comparison(root: &Path, args: &[OsString]) -> Result<(), String> {
         seed,
     )
 }
+fn sweep_command(root: &Path, command: &str, args: &[OsString]) -> Result<(), String> {
+    let mut config = None;
+    let mut output = None;
+    let mut i = 0;
+    while i < args.len() {
+        let key = args[i].to_str().unwrap_or("");
+        if i + 1 >= args.len() {
+            return Err(format!("missing value for {key}"));
+        }
+        let value = PathBuf::from(&args[i + 1]);
+        match key {
+            "--config" if command == "train-sweep" => config = Some(value),
+            "--output" | "--output-dir" if command == "train-sweep" => output = Some(value),
+            "--sweep" | "--dir" if command != "train-sweep" => output = Some(value),
+            _ => return Err(format!("unknown {command} option: {key}")),
+        }
+        i += 2;
+    }
+    match command {
+        "train-sweep" => ncm::sweep::train_sweep(
+            root,
+            &config.ok_or("--config is required")?,
+            &output.ok_or("--output is required")?,
+        ),
+        "quality-eval" => ncm::sweep::quality_eval(root, &output.ok_or("--sweep is required")?),
+        "checkpoint-audit" => {
+            ncm::sweep::checkpoint_audit(root, &output.ok_or("--sweep is required")?)
+        }
+        "validate-benchmark-suite" => {
+            ncm::sweep::validate_suite(root, &output.ok_or("--sweep is required")?, 351, 45, 135)
+        }
+        _ => Err(format!("unknown sweep command {command}")),
+    }
+}
+fn benchmark_drafters(root: &Path, args: &[OsString]) -> Result<(), String> {
+    let mut sweep = PathBuf::from("reports/validation-controls/real128-rust-native");
+    let mut target_arm = None;
+    let mut drafters = Vec::new();
+    let mut warmups = None;
+    let mut repetitions = None;
+    let mut i = 0;
+    while i < args.len() {
+        let key = args[i].to_str().unwrap_or("");
+        if i + 1 >= args.len() {
+            return Err(format!("missing value for {key}"));
+        }
+        let value = args[i + 1]
+            .to_str()
+            .ok_or("benchmark arguments must be UTF-8")?;
+        match key {
+            "--sweep" => sweep = PathBuf::from(value),
+            "--target-arm" => target_arm = Some(value.to_owned()),
+            "--drafter" => {
+                let (label, arm) = value.split_once('=').ok_or("--drafter expects LABEL=ARM")?;
+                if label.is_empty() || arm.is_empty() {
+                    return Err("--drafter expects LABEL=ARM".into());
+                }
+                drafters.push((label.to_owned(), arm.to_owned()));
+            }
+            "--warmups" => {
+                warmups = Some(value.parse().map_err(|_| "--warmups must be an integer")?)
+            }
+            "--repetitions" => {
+                repetitions = Some(
+                    value
+                        .parse()
+                        .map_err(|_| "--repetitions must be an integer")?,
+                )
+            }
+            _ => return Err(format!("unknown benchmark-drafters option: {key}")),
+        }
+        i += 2;
+    }
+    let manifest_path = if sweep.is_absolute() {
+        sweep.join("sweep.json")
+    } else {
+        root.join(&sweep).join("sweep.json")
+    };
+    let manifest: Value =
+        serde_json::from_slice(&std::fs::read(&manifest_path).map_err(|e| e.to_string())?)
+            .map_err(|e| format!("invalid sweep manifest: {e}"))?;
+    let config: ncm::sweep::SweepConfig = serde_json::from_value(
+        manifest
+            .get("config")
+            .cloned()
+            .ok_or("sweep manifest has no config")?,
+    )
+    .map_err(|e| e.to_string())?;
+    let protocol = config
+        .benchmark
+        .ok_or("sweep config has no drafter benchmark protocol")?;
+    let target_arm = target_arm.unwrap_or(protocol.target_arm);
+    let drafters = if drafters.is_empty() {
+        protocol
+            .drafters
+            .iter()
+            .map(|d| (d.label.clone(), d.arm.clone()))
+            .collect()
+    } else {
+        drafters
+    };
+    let options = ncm::sweep::DrafterTimingOptions {
+        draft_lengths: protocol.draft_lengths,
+        batch_sizes: protocol.batch_sizes,
+        warmups: warmups.unwrap_or(protocol.warmups),
+        repetitions: repetitions.unwrap_or(protocol.repetitions),
+        temperature: protocol.temperature,
+        top_k: protocol.top_k,
+    };
+    let output = PathBuf::from("reports/validation-controls/real128-rust-native");
+    let rows = ncm::sweep::benchmark_drafters(
+        root,
+        &sweep,
+        &output,
+        &target_arm,
+        &drafters,
+        &options,
+        true,
+    )?;
+    println!(
+        "wrote {rows} Rust-native drafter/reference timing rows to {}",
+        output.display()
+    );
+    Ok(())
+}
 fn main() -> ExitCode {
     let args: Vec<_> = env::args_os().skip(1).collect();
     if args.is_empty() || args[0] == "--help" || args[0] == "--list" {
         println!(
-            "ncm-run <command> [arguments]\n\nCommands:\n  engine-info\n  build-papers\n  train\n  real-text-reconstruction\n  run-tc-probe\n  run-decisive-benchmark\n  run-drafter-comparison\n  summarize-maintenance\n  summarize-domain-validation\n  summarize-dependency-results\n  domain-source-baselines\n  alignment-diagnosis\n  summarize-reconstruction-capacity\n  generate-results\n  generate-recent-results\n  generate-bibliographies\n  update-manifests\n  audit-papers"
+            "ncm-run <command> [arguments]\n\nCommands:\n  engine-info\n  build-papers\n  train\n  train-sweep --config PATH --output DIR\n  quality-eval --sweep DIR\n  checkpoint-audit --sweep DIR\n  benchmark-drafters --sweep DIR\n  validate-benchmark-suite --sweep DIR\n  real-text-reconstruction\n  run-tc-probe\n  run-decisive-benchmark\n  run-drafter-comparison\n  summarize-maintenance\n  summarize-domain-validation\n  summarize-dependency-results\n  domain-source-baselines\n  alignment-diagnosis\n  summarize-reconstruction-capacity\n  generate-results\n  generate-recent-results\n  generate-bibliographies\n  update-manifests\n  audit-papers"
         );
         return ExitCode::SUCCESS;
     }
@@ -290,6 +415,14 @@ fn main() -> ExitCode {
         decisive_benchmark(&root, &args[1..])
     } else if name == "run-drafter-comparison" {
         drafter_comparison(&root, &args[1..])
+    } else if name == "train-sweep"
+        || name == "quality-eval"
+        || name == "checkpoint-audit"
+        || name == "validate-benchmark-suite"
+    {
+        sweep_command(&root, &name, &args[1..])
+    } else if name == "benchmark-drafters" {
+        benchmark_drafters(&root, &args[1..])
     } else if name == "real-text-reconstruction" {
         let mut output = None;
         let mut steps = 100usize;

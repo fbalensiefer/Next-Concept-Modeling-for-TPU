@@ -55,6 +55,22 @@ class CausalBlock(nn.Module):
             output = jnp.where(valid[:, position, None], output, 0)
         return output, (cached_k, cached_v)
 
+    def decode_ragged(self, x, positions, cache, active):
+        """One cached step for rows with different current positions."""
+        qkv = self.projections(x)
+        q, k, v = qkv[:, 0], qkv[:, 1], qkv[:, 2]
+        rows = jnp.arange(x.shape[0])
+        old_k = cache[0][rows, positions]
+        old_v = cache[1][rows, positions]
+        cached_k = cache[0].at[rows, positions].set(jnp.where(active[:, None, None], k, old_k))
+        cached_v = cache[1].at[rows, positions].set(jnp.where(active[:, None, None], v, old_v))
+        logits = jnp.einsum('bhd,bshd->bhs', q, cached_k) / q.shape[-1]**.5
+        mask = jnp.arange(cached_k.shape[1])[None, None, :] <= positions[:, None, None]
+        probabilities = jax.nn.softmax(jnp.where(mask, logits, -1e30), -1)
+        attended = jnp.einsum('bhs,bshd->bhd', probabilities, cached_v)
+        output = self.finish(x, attended)
+        return jnp.where(active[:, None], output, 0), (cached_k, cached_v)
+
 
 class AutoregressiveBytes(nn.Module):
     config: TransformerConfig
@@ -83,6 +99,14 @@ class AutoregressiveBytes(nn.Module):
         updated = []
         for block, values in zip(self.blocks, cache):
             h, values = block.decode(h, position, values, valid=valid)
+            updated.append(values)
+        return self.head(self.norm(h)), tuple(updated)
+
+    def decode_step_ragged(self, token, positions, cache, active):
+        h = self.embedding(token) + jnp.asarray(self.position)[positions]
+        updated = []
+        for block, values in zip(self.blocks, cache):
+            h, values = block.decode_ragged(h, positions, values, active)
             updated.append(values)
         return self.head(self.norm(h)), tuple(updated)
 

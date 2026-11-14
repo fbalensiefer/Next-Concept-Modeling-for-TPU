@@ -45,6 +45,16 @@ cargo run --bin ncm-run -- run-drafter-comparison \
 
 These compact commands are smoke examples. The decisive runner evaluates a configured causal AR model; the drafter runner compares configured causal AR drafters with direct target generation. Their analytic FLOP figures use Rust estimates. They do not report compiler FLOPs or BPB without the corresponding measurements and evaluation data.
 
+## Native multi-arm sweeps
+
+`ncm-run train-sweep --config PATH --output DIR` runs a configured seed × prompt × arm matrix. The typed JSON config contains `train_file`, `validation_file`, `sequence_length`, `max_prompt_len`, `seeds`, `prompt_lengths`, `steps`, `checkpoint_steps`, `batch_size`, and `arms`. Each arm has a unique `name`, a `kind` of `ncm` or `causal_ar`, and a typed `config` object. Checkpoints are written under `seed-N/prompt-P/ARM/step-N.msgpack`; `sweep.json` records the inputs, hashes, training summaries, and checkpoint index.
+
+`ncm-run quality-eval --sweep DIR` restores each final checkpoint and evaluates held-out data. Causal AR reports exact byte-level BPB. NCM reports a reconstruction-plus-code-prior upper bound, labeled `upper_bound_bpb`. `ncm-run checkpoint-audit --sweep DIR` evaluates every scheduled snapshot and records its engine step, quality score, size, and audit time. Rust owns seed selection and scheduling; Flax serialization carries optimizer and model state through the worker.
+
+`ncm-run benchmark-drafters --sweep DIR --target-arm teacher --drafter ncm=ncm --drafter ar_distilled=ar_distilled --drafter ncm_sequence_distilled=ncm_sequence_distilled` adds the paired reference and speculative timing rows to the same sweep directory. The real128 protocol covers seeds 200–202, prompt buckets 0/16/64, draft lengths 2/4/8/16, batch sizes 1/16/128, five warmups, and thirty measured repetitions. It writes `drafter_comparison.csv`, its structured JSON counterpart, and a run summary. This command writes only under `reports/validation-controls/real128-rust-native/`; point `--sweep` at that directory so its training checkpoints and quality/audit rows stay together for suite validation.
+
+`ncm-run validate-benchmark-suite --sweep DIR` verifies the expected 351 drafter/timing rows, 45 quality rows, and 135 checkpoint observations, including coverage of seeds 200–202. Drafter/timing observations must already be present in `drafter_comparison.csv`; validation reports missing rows and never fills them with synthetic values.
+
 ## JSON-RPC over stdio
 
 `EngineClient::start` launches one long-lived worker process:
