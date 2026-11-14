@@ -60,13 +60,10 @@ state. A level-wise generator must condition on the cumulative representation
 available before predicting its current level. Shape-stable control flow must
 also preserve the semantics of codebook freezing and quantizer dropout.
 
-The evaluated model and training implementation uses JAX transformations~\citep{jax}
-and the Flax Linen module API~\citep{flax,flaxscan}; XLA provides compilation~\citep{xla}.
-A Rust crate has since been added for byte-preserving text utilities, fixed
-residual-vector-quantizer operations, categorical/speculative sampling, and
-bits-per-byte accounting. Neural-network training, the model architecture,
-accelerator execution, and the experiments reported here remain in Python/JAX;
-the Rust crate does not reproduce the evaluated results. The implementation is
+The model and training implementation uses JAX and Flax~\citep{jax,flax,flaxscan},
+compiled through XLA~\citep{xla}. Rust provides a small command-line layer for
+launching experiment programs; model execution remains in Python/JAX. The
+implementation is
 available in the public project repository, version 0.1.0, with historical baseline
 \code{1d600d7} and current research extensions identified by source hashes~\citep{localrepo}. Source hashes
 identify the files evaluated here independently of later branch updates.
@@ -540,18 +537,17 @@ averaging means of unequally padded shards. All replicas then apply the same
 EMA equations to the same global statistics. Codebooks are not sharded along
 \(V\); distributed nearest-neighbor lookup would require additional design.
 
-\subsection{Multi-host boundary and Rust tooling}
+\subsection{Multi-host boundary and orchestration}
 The repository includes a helper to construct global batches from
 process-local data. It requires distributed initialization before mesh creation
 and coordinated calls across hosts. The example initializes a complete small
 host state; scalable checkpoint restoration and multi-host initialization have
 not been validated.
 
-A future Rust layer could ingest corpora, form length buckets, validate
-IDs/masks, and coordinate runs. These functions are not yet ported. The current
-crate covers only deterministic primitives; neural forward passes, gradients,
-optimizer, EMA, collectives, and experiment runners remain in Python/JAX/XLA.
-No Rust performance or result-equivalence claim is made.
+The Rust command-line tool starts existing Python experiment entrypoints and
+forwards their arguments and exit status. Model computation, training, and
+device collectives remain in JAX/XLA. Rust does not change the results or
+performance reported in this paper.
 
 \section{Complexity and Potential Bottlenecks}
 \label{sec:complexity}

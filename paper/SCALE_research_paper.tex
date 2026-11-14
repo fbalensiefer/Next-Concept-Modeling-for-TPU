@@ -52,6 +52,9 @@ teacher-alignment benefit. The systems companion~\citep{systemscompanion}
 describes implementation contracts and uses the same empirical records; its
 results are not independent replications of this paper.
 
+The model engine is implemented in Python/JAX. A small Rust command-line tool
+coordinates existing experiment entrypoints; it does not replace model code.
+
 Contributions are a falsifiable compiler contract and conditional analysis;
 a completed paired-arm mechanism-study platform; an explicit collision-based
 failure diagnosis; and reproducible coverage/stability interventions with
@@ -361,8 +364,8 @@ not a calibrated general language distribution.
 Future work includes real-corpus held-out tests, further regularization ablations,
 robust alignment controls, scalable dependence estimation, cross-size learned
 interfaces, selective operator transplantation and complete adaptation accounting.
-Prompt/length/EOS interfaces, serialized mixed byte routing, Rust orchestration,
-TPU profiling and multi-host recovery remain systems work. A useful SCALE result
+Prompt/length/EOS interfaces, serialized mixed byte routing, richer Rust data
+orchestration, TPU profiling and multi-host recovery remain systems work. A useful SCALE result
 must demonstrate fidelity and cost together under declared gates.
 
 \section{Conclusion}

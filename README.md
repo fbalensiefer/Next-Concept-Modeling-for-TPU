@@ -42,5 +42,8 @@ See [Research.md](Research.md) for brief introductions and [paper sources](paper
 Hybrid coarse-AR generation, exact teacher verification, and the real-text experiment
 are described in [the decisive benchmark guide](docs/decisive-benchmark.md).
 
-The initial Rust core can be checked with `cargo test --offline`. See
-[`Cargo.toml`](Cargo.toml) and [`rust/src`](rust/src/) for the current port.
+Use `cargo run --offline --bin ncm-run -- examples/train.py` to launch a JAX
+workload through the Rust orchestrator. Set `NCM_PYTHON` to choose the Python
+environment. JAX and Flax remain the model engine; Python model, experiment,
+and paper scripts are retained as their implementations and reproducibility
+tools. The Rust crate is in [`rust/src`](rust/src/).

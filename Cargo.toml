@@ -16,3 +16,7 @@ thiserror = "2"
 [lib]
 name = "ncm"
 path = "rust/src/lib.rs"
+
+[[bin]]
+name = "ncm-run"
+path = "rust/src/bin/ncm-run.rs"
