@@ -4,16 +4,12 @@ pub const COMMANDS: &[(&str, &str)] = &[
         "ncm.workloads.research.audit_maintenance",
     ),
     (
-        "summarize-domain-validation",
-        "ncm.workloads.research.summarize_domain_validation",
+        "alignment-diagnosis",
+        "ncm.workloads.research.alignment_diagnosis",
     ),
     (
         "write-dependency-report",
         "ncm.workloads.research.write_dependency_report",
-    ),
-    (
-        "alignment-diagnosis",
-        "ncm.workloads.research.alignment_diagnosis",
     ),
     (
         "maintenance-timing",
@@ -50,10 +46,6 @@ pub const COMMANDS: &[(&str, &str)] = &[
     (
         "text-dependency-priors",
         "ncm.workloads.research.text_dependency_priors",
-    ),
-    (
-        "domain-source-baselines",
-        "ncm.workloads.research.domain_source_baselines",
     ),
     ("run-tc-probe", "ncm.workloads.validation.run_tc_probe"),
     (

@@ -185,7 +185,7 @@ fn main() -> ExitCode {
     let args: Vec<_> = env::args_os().skip(1).collect();
     if args.is_empty() || args[0] == "--help" || args[0] == "--list" {
         println!(
-            "ncm-run <command> [arguments]\n\nCommands:\n  engine-info\n  build-papers\n  train\n  summarize-maintenance\n  generate-bibliographies\n  update-manifests\n  audit-papers"
+            "ncm-run <command> [arguments]\n\nCommands:\n  engine-info\n  build-papers\n  train\n  summarize-maintenance\n  summarize-domain-validation\n  summarize-dependency-results\n  domain-source-baselines\n  generate-bibliographies\n  update-manifests\n  audit-papers"
         );
         for (name, _) in COMMANDS {
             println!("  {name}");
@@ -212,6 +212,34 @@ fn main() -> ExitCode {
         train(&root, &args[1..])
     } else if name == "summarize-maintenance" {
         ncm::reports::summarize_maintenance(&root).map(|_| ())
+    } else if name == "summarize-domain-validation" {
+        let from_reports = match args[1..].as_ref() {
+            [] => false,
+            [flag] if flag == "--from-reports" => true,
+            _ => {
+                return {
+                    eprintln!("summarize-domain-validation accepts only --from-reports");
+                    ExitCode::from(2)
+                };
+            }
+        };
+        ncm::research::summarize_domain_validation(&root, from_reports).map(|_| ())
+    } else if name == "summarize-dependency-results" {
+        if !args[1..].is_empty() {
+            return {
+                eprintln!("summarize-dependency-results takes no arguments");
+                ExitCode::from(2)
+            };
+        }
+        ncm::research::summarize_dependency_results(&root).map(|_| ())
+    } else if name == "domain-source-baselines" {
+        if !args[1..].is_empty() {
+            return {
+                eprintln!("domain-source-baselines takes no arguments");
+                ExitCode::from(2)
+            };
+        }
+        ncm::research::domain_source_baselines(&root).map(|_| ())
     } else if name == "generate-bibliographies" {
         generate_bibliographies(&root, &args[1..])
     } else if name == "update-manifests" {

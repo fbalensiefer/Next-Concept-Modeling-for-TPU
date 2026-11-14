@@ -16,7 +16,7 @@ cargo run --bin ncm-run -- audit-papers
 
 `NCM_PYTHON` selects the Python environment and defaults to `python3`. `NCM_TECTONIC` selects the paper compiler and defaults to `tectonic`. Paper builds accept `--offline` once the Tectonic resource cache is populated. The training command reads text or document JSONL inputs in Rust, and sends batches, optimizer steps, evaluation requests, and checkpoint operations through the JSON-RPC worker. Its manifest records input hashes and implementation provenance.
 
-Legacy Python scripts remain in the repository for output-parity checks. Model-backed codec training, maintenance summaries, bibliography generation, paper auditing, and manifest refreshes now run in Rust. Specialized experiment runners and the paper result table generators still use the compatibility launcher while their host protocols are migrated. These commands remain available under their current hyphenated names.
+Legacy Python scripts remain in the repository for output-parity checks. Model-backed codec training, maintenance summaries, fresh-domain summaries, dependency-prior summaries, exact source-law baselines, bibliography generation, paper auditing, and manifest refreshes now run in Rust. Specialized model-backed benchmark runners and the paper result table generators still use the compatibility launcher while their host protocols and JAX worker operations are migrated. These commands remain available under their current hyphenated names.
 
 Configuration and text fixtures remain in `examples/`; manuscript sources and evidence inputs remain in `paper/`. The initial duplicate Rust model primitives were removed because model execution belongs to JAX.
 

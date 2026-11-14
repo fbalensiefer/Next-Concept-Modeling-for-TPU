@@ -7,6 +7,7 @@ pub mod evaluation;
 pub mod flops;
 pub mod paper;
 pub mod reports;
+pub mod research;
 pub mod rpc;
 pub mod table_prior;
 pub mod validation_io;
