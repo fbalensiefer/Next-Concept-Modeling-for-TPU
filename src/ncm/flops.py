@@ -36,15 +36,26 @@ def ar_cached_decode_step(config,batch,capacity,*,head=True):
         20*batch*w+8*batch*r*w+5*batch*config.heads*capacity)+(2*batch*w*config.vocabulary+5*batch*config.vocabulary)*int(head))
 
 
+def ar_cache_prefill_step(config,batch,capacity):
+    """Cache-only step: the last layer needs K/V, not its attention/MLP.
+
+    Earlier layers still need their full output to construct the next layer's
+    K/V. Charge the fused QKV projection nominally (a compiler may prune Q).
+    """
+    layer=ar_cached_decode_step(config,batch,capacity,head=False)/config.layers
+    last_projection=6*batch*config.width**2+10*batch*config.width
+    return float((config.layers-1)*layer+last_projection)
+
+
 def ar_cached_generation(config,batch,capacity,prompt_len,new_tokens):
-    return prompt_len*ar_cached_decode_step(config,batch,capacity,head=False)+new_tokens*ar_cached_decode_step(config,batch,capacity)
+    return prompt_len*ar_cache_prefill_step(config,batch,capacity)+new_tokens*ar_cached_decode_step(config,batch,capacity)
 
 
 def codec_forward(batch,length,dim,vocabulary=256,*,levels=3,codes=64,lengths=None,encoder=True,decoder=True):
     lengths=lengths or (length,)*levels
     conv_block=16*batch*length*dim*dim+28*batch*length*dim
     count=2*conv_block*int(encoder)+2*conv_block*int(decoder)
-    if encoder:count+=2*batch*sum(lengths)*codes*dim+4*levels*batch*length*length*dim
+    if encoder:count+=2*batch*levels*length*codes*dim+4*levels*batch*length*length*dim
     if decoder:count+=2*batch*length*dim*vocabulary+5*batch*length*vocabulary
     return float(count)
 
@@ -57,7 +68,7 @@ def ncm_prior_forward(config,batch,lengths,dim,prompt_len,ar_coarse_levels=0,*,c
     count=0.
     for k,n in enumerate(lengths):
         if cached and k<ar_coarse_levels:
-            count+=prompt_len*ar_cached_decode_step(config,batch,prompt_len+n,head=False)+n*ar_cached_decode_step(config,batch,prompt_len+n)
+            count+=prompt_len*ar_cache_prefill_step(config,batch,prompt_len+n)+n*ar_cached_decode_step(config,batch,prompt_len+n)
         else:count+=transformer_forward(config,batch,prompt_len+n,head=False)+2*batch*n*config.width*config.vocabulary+5*batch*n*config.vocabulary
         count+=2*batch*n*dim*config.width+4*batch*n*max(lengths)*dim
     return count

@@ -73,3 +73,17 @@ also affected the legacy scanned generator when K=1. A new regression failed
 with the original broadcast error; a one-element index fixes it without
 changing multi-level parameter shapes. This is committed separately.
 The registered three-level experiment is unaffected.
+
+## Final audit: analytic operation model corrections
+
+git_commit: a1ed801 (original estimates). Compiler regression tests confirm
+cache-only prefill in a one-layer AR has no floating-point attention cost
+dependent on cache capacity: the last layer's attention/MLP/head is discarded.
+The analytic model incorrectly charged that work. A second compiler check
+confirms padded RVQ executes the same distance shapes when active lengths
+change inside a fixed K/L bucket; the analytic distance count incorrectly
+used active lengths. Both original tests failed, with their logs retained in
+accounting-audit-before.txt. These estimation fixes change no model samples,
+BPB values, acceptance counts, timings, thresholds, or seeds. Original a1ed801
+estimates remain in the immutable experiment folders; final tables retain
+raw-estimate columns and identify the corrected analytic revision.

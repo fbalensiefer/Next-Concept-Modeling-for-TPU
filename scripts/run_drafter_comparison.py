@@ -20,7 +20,7 @@ from ncm.baselines import CausalAR,matched_ar_config,parameter_count,sample_cond
 from ncm.config import NCMConfig,RVQConfig,TransformerConfig
 from ncm.data import load_text
 from ncm.flops import (FlopModel,transformer_forward,ar_training_step,ar_cached_generation,
-    ar_cached_decode_step,ncm_codec_step,ncm_prior_forward,ncm_prior_step,codec_forward,speculative_round)
+    ar_cached_decode_step,ar_cache_prefill_step,ncm_codec_step,ncm_prior_forward,ncm_prior_step,codec_forward,speculative_round)
 from ncm.generation import encode,level_geometry
 from ncm.generator import HybridGenerator
 from ncm.grids import align,grid_matrices
@@ -287,7 +287,7 @@ def run_seed(seed,profile,out,progress):
                 speedup_vs_cached_teacher=1.,compiler_flops=timing['compiler_flops'],
                 analytic_flops=ar_cached_generation(teacher_shape,size,capacity,p,length),
                 analytic_flops_per_round=ar_cached_decode_step(teacher_shape,size,capacity),measured_rounds=length,
-                analytic_prefill_flops=p*ar_cached_decode_step(teacher_shape,size,capacity,head=False),
+                analytic_prefill_flops=p*ar_cache_prefill_step(teacher_shape,size,capacity),
                 bpb_kind='exact',teacher_bpb=teacher_bpb,teacher_warning=teacher_warning,**LABELS))
         teacher_adapter=ar_adapter(teacher,tp)
         for drafter in ('ncm','ar_distilled','ncm_sequence_distilled'):
@@ -320,7 +320,7 @@ def run_seed(seed,profile,out,progress):
                     verify=transformer_forward(teacher_shape,size,p+length+draft_len+1)
                     if drafter=='ar_distilled':
                         prefill_steps=float(np.mean([v['prefill_iterations'] for v in observations]))
-                        total_draft=prefill_steps*ar_cached_decode_step(small_shape,size,capacity,head=False)
+                        total_draft=prefill_steps*ar_cache_prefill_step(small_shape,size,capacity)
                         total_draft+=batch_rounds*draft_len*ar_cached_decode_step(small_shape,size,capacity)
                         draft_cost=total_draft/batch_rounds
                     else:
