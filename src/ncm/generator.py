@@ -45,7 +45,7 @@ class LevelCell(nn.Module):
         resample = sparse_align if self.sparse else align
         context, _ = resample(cumulative, source_mask, down)
         h = nn.Dense(self.transformer.width, name="context_projection")(context)
-        h += nn.Embed(self.rvq.levels, self.transformer.width, name="level_embedding")(level)
+        h += nn.Embed(self.rvq.levels, self.transformer.width, name="level_embedding")(jnp.atleast_1d(level))[0]
         position = self.param("position", nn.initializers.normal(.02),
                               (self.rvq.max_length, self.transformer.width))
         h = jnp.where(valid[..., None], h + position[None, :context.shape[1]], 0)

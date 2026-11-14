@@ -1,0 +1,59 @@
+git_commit: a1ed801
+Command: XLA_FLAGS=--xla_force_host_platform_device_count=4 python -m pytest tests/test_accounting_regressions.py -q --tb=short
+
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+______________________ test_legacy_single_level_generator ______________________
+tests/test_accounting_regressions.py:23: in test_legacy_single_level_generator
+    variables=model.init(jax.random.key(200),books,mask,target)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/ncm/generator.py:118: in __call__
+    cumulative, (logits, codes) = cell(cumulative, (
+.venv312/lib/python3.12/site-packages/flax/core/axes_scan.py:186: in scan_fn
+    _, out_pvals, _ = pe.trace_to_jaxpr_nounits(f_flat, in_pvals)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv312/lib/python3.12/site-packages/flax/core/axes_scan.py:157: in body_fn
+    broadcast_out, c, ys = fn(broadcast_in, c, *xs)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^
+src/ncm/generator.py:48: in __call__
+    h += nn.Embed(self.rvq.levels, self.transformer.width, name="level_embedding")(level)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv312/lib/python3.12/site-packages/flax/linen/linear.py:1193: in __call__
+    return jnp.broadcast_to(embedding, inputs.shape + (self.features,))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv312/lib/python3.12/site-packages/jax/_src/numpy/lax_numpy.py:3120: in broadcast_to
+    return util._broadcast_to(array, shape, sharding=out_sharding)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv312/lib/python3.12/site-packages/jax/_src/numpy/util.py:282: in _broadcast_to
+    return lax.broadcast_to(arr, shape, sharding)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   ValueError: Cannot broadcast to shape with fewer dimensions: arr_shape=(1, 8) shape=(8,)
+E   --------------------
+E   For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+____________ test_cache_only_prefill_has_no_capacity_attention_cost ____________
+tests/test_accounting_regressions.py:43: in test_cache_only_prefill_has_no_capacity_attention_cost
+    np.testing.assert_allclose(increments[0],increments[1],atol=0,rtol=0)
+E   AssertionError: 
+E   Not equal to tolerance rtol=0, atol=0
+E   
+E   Mismatched elements: 1 / 1 (100%)
+E   Max absolute difference among violations: 4704.
+E   Max relative difference among violations: 0.50689655
+E    ACTUAL: array(4576.)
+E    DESIRED: array(9280.)
+_____________ test_padded_rvq_distance_execution_uses_stored_grid ______________
+tests/test_accounting_regressions.py:55: in test_padded_rvq_distance_execution_uses_stored_grid
+    np.testing.assert_allclose(analytic[0],analytic[1],atol=0,rtol=0)
+E   AssertionError: 
+E   Not equal to tolerance rtol=0, atol=0
+E   
+E   Mismatched elements: 1 / 1 (100%)
+E   Max absolute difference among violations: 96.
+E   Max relative difference among violations: 0.01020408
+E    ACTUAL: array(9312.)
+E    DESIRED: array(9408.)
+=========================== short test summary info ============================
+FAILED tests/test_accounting_regressions.py::test_legacy_single_level_generator
+FAILED tests/test_accounting_regressions.py::test_cache_only_prefill_has_no_capacity_attention_cost
+FAILED tests/test_accounting_regressions.py::test_padded_rvq_distance_execution_uses_stored_grid
+3 failed in 4.60s
