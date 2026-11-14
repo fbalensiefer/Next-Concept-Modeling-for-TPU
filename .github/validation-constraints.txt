@@ -1,0 +1,7 @@
+# Tested local validation versions; source git_commit: a1ed801
+jax==0.10.2
+jaxlib==0.10.2
+flax==0.12.8
+optax==0.2.8
+numpy==2.5.4
+pytest==9.2.0

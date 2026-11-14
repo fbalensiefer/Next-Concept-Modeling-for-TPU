@@ -334,6 +334,7 @@ def run_seed(seed,profile,out,progress):
                         bpb_kind='exact_teacher',teacher_bpb=teacher_bpb,teacher_warning=teacher_warning,
                         measured_rounds_kind='mean of maximum batched rounds across all 30 timed observations',
                         mean_sequence_rounds=passes,batch_tokens_per_teacher_call=size*length/batch_rounds,
+                        measured_prefill_iterations=prefill_steps if drafter=='ar_distilled' else 0,
                         timing_observations=30,
                         mean_prefix_length=mean_prefix,latency_note='coarse KV cache measured' if drafter!='ar_distilled' else 'prefix cache rebuilt each round',
                         compiler_label='compiler estimate')

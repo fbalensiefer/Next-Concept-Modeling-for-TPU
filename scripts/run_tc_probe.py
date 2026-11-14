@@ -58,7 +58,7 @@ Synthetic >=30% coarse-share decision: {fraction>=.3}.
 These pooled finite-model estimates are biased diagnostics, not real-text TC.
 '''
     if not passed:
-        text+='\nNo TC claim is permitted on real text. Real-text code probing is stopped.\nCopied-bit has only two distinct sequences; identity-disjoint train/eval\nwith the same nondegenerate source law is impossible. Overlaps and numerical\nfailures remain in the table. No additional hybrid models are trained.\n'
+        text+='\nNo TC claim is permitted on real text. Real-text code probing is stopped.\nCopied-bit has only two distinct sequences; identity-disjoint train/eval\nwith the same nondegenerate source law is impossible. Overlaps and numerical\nfailures remain in the table. No extra hybrid training is triggered by this decision;\nindependent preregistered benchmark models proceed as planned.\n'
     else:
         text+='\nEnumerable gate passes. No text codes were supplied; real-text TC remains untested.\n'
     (output/'tc_probe_decision.md').write_text(text)

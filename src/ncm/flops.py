@@ -55,6 +55,7 @@ def codec_forward(batch,length,dim,vocabulary=256,*,levels=3,codes=64,lengths=No
     lengths=lengths or (length,)*levels
     conv_block=16*batch*length*dim*dim+28*batch*length*dim
     count=2*conv_block*int(encoder)+2*conv_block*int(decoder)
+    # The RVQ scan retains L storage positions at every level, including padding.
     if encoder:count+=2*batch*levels*length*codes*dim+4*levels*batch*length*length*dim
     if decoder:count+=2*batch*length*dim*vocabulary+5*batch*length*vocabulary
     return float(count)

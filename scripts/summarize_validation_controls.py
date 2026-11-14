@@ -6,9 +6,11 @@ import json
 from pathlib import Path
 import numpy as np
 from ncm.validation_io import identity,write_json,write_csv,paired_bootstrap
+from revise_validation_estimates import revise
 
 
 def summarize(root,real):
+    analysis_commit=identity()['git_commit']
     raw=json.loads((real/'results.json').read_text())
     if raw['seeds']!=[200,201,202] or [r['seed'] for r in raw['outcomes'] if r['status']=='complete']!=[200,201,202]:
         raise ValueError('all three preregistered real128 seeds must complete')
@@ -30,9 +32,50 @@ def summarize(root,real):
             raise ValueError('continuation/context fairness failure')
         for r in grouped:
             if r['arm'].startswith('ncm') and r['bpb_kind']!='upper_bound':raise ValueError('unlabeled NCM bound')
+    revisions=revise(raw,real,analysis_commit)
+    write_json(root/'analytic_revision.json',revisions)
+    write_csv(root/'analytic_component_corrections.csv',revisions['components'])
+    for row in raw['training_rows']+quality:
+        if 'parameters' in row:
+            row['parameter_mismatch_fraction']=(row['parameters']-row['parameter_match_target'])/row['parameter_match_target']
+    training=list(raw['training_rows'])
+    training_by_key={(r['seed'],r['prompt_len'],r['arm']):r for r in training}
+    verified_names={'ncm':'ncm_coarse_1','ar_distilled':'ar_distilled',
+                    'ncm_sequence_distilled':'ncm_sequence_distilled'}
+    for row in rows:
+        seed,prompt=row['seed'],row['prompt_len']
+        if row['drafter']=='cached_teacher_reference':
+            metadata=json.loads((real/f'seed-{seed}'/'metadata.json').read_text())
+            row['total_training_flops']=metadata['teacher_training_analytic_flops']
+            row['total_training_compiler_estimate']=metadata['teacher_training_compiler_flops']
+        else:
+            base=training_by_key[seed,prompt,verified_names[row['drafter']]]
+            row['total_training_flops']=base['total_training_flops']
+            row['total_training_compiler_estimate']=base['total_training_compiler_estimate']
+        row['training_cost_basis']='standalone arm; shared prerequisites charged once, not additive across arms'
+        row['analysis_git_commit']=analysis_commit
+        row['teacher_context_policy']='full committed prefix'
+        row['draft_context_policy']=('last prompt_len bytes' if row['drafter'].startswith('ncm')
+            else 'full committed prefix; sequential conditionals')
+    for seed,prompt in itertools.product((200,201,202),(0,16,64)):
+        reference=next(r for r in rows if (r['seed'],r['prompt_len'],r['drafter'])==(seed,prompt,'cached_teacher_reference'))
+        for drafter,base_arm in verified_names.items():
+            base=training_by_key[seed,prompt,base_arm]
+            training.append(dict(base,arm=drafter+'_verified',heldout_bpb=reference['teacher_bpb'],
+                bpb_kind='exact_teacher',likelihood_model='AR teacher output law; not NCM student marginal',
+                training_cost_basis='same trained drafter/teacher; verification is inference, not additional training'))
+        metadata=json.loads((real/f'seed-{seed}'/'metadata.json').read_text())
+        training.append(dict(seed=seed,prompt_len=prompt,arm='cached_teacher_reference',
+            heldout_bpb=reference['teacher_bpb'],bpb_kind='exact_teacher',
+            total_training_flops=metadata['teacher_training_analytic_flops'],
+            total_training_compiler_estimate=metadata['teacher_training_compiler_flops'],
+            compiler_flops=metadata['teacher_training_compiler_flops']/metadata['teacher_steps'],
+            analytic_flops=metadata['teacher_training_analytic_flops']/metadata['teacher_steps'],
+            flop_scope='teacher training step',compiler_label='compiler estimate',analytic_label='analytic estimate'))
     write_csv(root/'drafter_comparison.csv',rows)
-    write_csv(root/'bpb_vs_train_flops.csv',raw['training_rows'])
+    write_csv(root/'bpb_vs_train_flops.csv',training)
     write_csv(root/'checkpoint_curves.csv',raw['checkpoint_rows'])
+    write_csv(root/'quality.csv',quality)
     matched=list(raw['matched_rows'])
     # Fixed-teacher controls have identical target BPB by their verified law,
     # so interpolation is unnecessary. Retain the student curve comparisons too.
@@ -55,11 +98,14 @@ def summarize(root,real):
     paired=[]
     for p,d,b in itertools.product((0,16,64),(2,4,8,16),(1,16,128)):
         def get(seed,name):return next(r for r in rows if (r['seed'],r['prompt_len'],r['draft_len'],r['batch'],r['drafter'])==(seed,p,d,b,name))
-        for metric in ('acceptance','median_ms','tokens_per_pass'):
-            a=[get(s,'ncm')[metric] for s in (200,201,202)]
-            c=[get(s,'ar_distilled')[metric] for s in (200,201,202)]
-            paired.append(dict(prompt_len=p,draft_len=d,batch=b,metric=metric,
-                contrast='NCM minus distilled AR drafter',**paired_bootstrap(a,c)))
+        for first,second,label in [('ncm','ar_distilled','NCM minus distilled AR drafter'),
+                                   ('ncm_sequence_distilled','ncm','sequence-distilled NCM minus real-text NCM')]:
+            for metric in ('acceptance','median_ms','tokens_per_pass'):
+                a=[get(s,first)[metric] for s in (200,201,202)]
+                c=[get(s,second)[metric] for s in (200,201,202)]
+                paired.append(dict(prompt_len=p,draft_len=d,batch=b,metric=metric,
+                    contrast=label,seed_list=[200,201,202],bootstrap_seed=202,
+                    bootstrap_repetitions=10000,**paired_bootstrap(a,c)))
     write_json(root/'drafter_paired_statistics.json',dict(contrasts=paired))
     power=json.loads((root/'power.json').read_text())
     probe=json.loads((root/'tc-probe/probe_results.json').read_text())
@@ -74,17 +120,21 @@ def summarize(root,real):
     write_csv(root/'tc_probe_sensitivity.csv',sensitivity)
     (root/'tc_probe_decision.md').write_text((root/'tc-probe/tc_probe_decision.md').read_text())
     within=sum(bool(r['teacher_warning']) for r in quality if r['arm']=='ar_scratch')
+    above_uniform=sum(r['teacher_bpb']>8. for r in quality if r['arm']=='ar_scratch')
     ncm_faster=0; pairs=0
     for r in rows:
         if r['drafter']=='ncm':
             c=next(c for c in rows if c['drafter']=='ar_distilled' and all(c[k]==r[k] for k in ('seed','prompt_len','draft_len','batch')))
             ncm_faster+=r['median_ms']<c['median_ms'];pairs+=1
+    verified=[r for r in rows if r['drafter']!='cached_teacher_reference']
+    faster_reference=sum(r['speedup_vs_cached_teacher']>1 for r in verified)
     summary=dict(status='complete',backend=raw['backend'],seeds=raw['seeds'],sweep_rows=len(rows),
-        quality_rows=len(quality),checkpoint_rows=len(raw['checkpoint_rows']),matched_rows=len(matched),
+        quality_rows=len(quality),training_cost_rows=len(training),checkpoint_rows=len(raw['checkpoint_rows']),matched_rows=len(matched),
         power_tv=power['exact']['tv'],power_floor95=power['exact']['floor_95'],negative_controls_rejected=all(power[n]['rejected'] for n in ('mismatched_q','bad_residual','future_leak','wrong_bonus')),
         probe_pass_fraction=probe['numerical_pass_fraction'],real_text_tc_permitted=False,
-        teacher_within_03_cases=within,teacher_context_seed_cases=9,
+        teacher_within_03_cases=within,teacher_context_seed_cases=9,teacher_worse_than_uniform_cases=above_uniform,
         ncm_faster_than_ar_drafter_cases=int(ncm_faster),paired_drafter_cases=pairs,
+        verified_faster_than_cached_teacher_cases=int(faster_reference),verified_cases=len(verified),
         sensitivity=sensitivity,limitations=raw['limitations'])
     write_json(root/'summary.json',summary)
     commit=identity()['git_commit']
@@ -99,10 +149,14 @@ git_commit: {commit}; model measurement commits are retained in every table row.
 - TC gate: {probe['numerical_pass_fraction']:.2%} numerical pass rate versus 90%; strict disjoint identity gate also failed. No real-text TC claim is permitted. The protocol and all 216 cases are retained. Numerical sensitivity to sample size is in tc_probe_sensitivity.csv.
 - Real text: three seeds, 128-byte continuations, 32 fixed windows per split including the final eligible partial window. All prompt buckets share continuation hashes and masks. {len(rows)} cached-reference/drafter rows, {len(quality)} quality rows, and {len(raw['checkpoint_rows'])} checkpoint observations completed.
 - Distilled AR drafter is present for every draft length, prompt length, batch and seed. NCM has lower raw median latency in {ncm_faster}/{pairs} paired cases. This is a bounded weak-model CPU pilot, not a general drafter advantage claim.
-- Teacher BPB is within 0.3 of the small AR in {within}/9 seed/context cases. All teacher sizes, steps and BPB are disclosed; eight steps do not establish a strong teacher.
+- Teacher BPB is within 0.3 of the small AR in {within}/9 seed/context cases. All teacher sizes, steps and BPB are disclosed; eight steps do not establish a strong teacher. The teacher is worse than the 8-BPB uniform-byte reference in {above_uniform}/9 cases.
+- AR width matching is approximate on the fixed heads=2/layers=1 grid. Actual mismatch fractions are retained in bpb_vs_train_flops.csv; the largest is about 14.6%, so these are not parameter-perfect student comparisons.
 - All NCM student BPB values are upper bounds. Intersections of these bounds with exact AR likelihood curves do not establish equal quality. Non-overlap is reported without extrapolation.
+- Verified drafters have lower raw median latency than the cached teacher in {faster_reference}/{len(verified)} cases under this full-prefix verifier. This is a local pilot result, not a general performance law.
 - Exact-teacher drafter comparisons are explicitly matched by distribution in latency_at_matched_bpb.csv. Per-arm student checkpoint curves and exploratory three-seed paired bootstrap intervals are separate.
+- Final analytic estimates correct the compiler-validated prefill and padded-distance accounting bugs. Raw a1ed801 estimates remain in the immutable study directory and raw_* columns; analytic_revision.json records the corrections. No measured timing, BPB, acceptance or round count was altered.
 - Compiler FLOPs are compiler estimates. Analytic FLOPs are operation-model estimates. Speculative estimates use all thirty timed round-count observations, including masked finished lanes in batched loops. Prefill and teacher/codec prerequisites, teacher distillation forwards, and 32 teacher-sample generations are charged without double-counting those forwards.
+- Initial prompt bytes are identical across drafters. During later rounds, NCM uses its most recent fixed prompt bucket, while the AR drafter uses the full committed prefix. These context policies are explicit in the table and limit general architecture conclusions.
 - Teacher verification remains full-prefix. NCM produces its complete 128-token latent block even when only 2/4/8/16 decoded token probabilities are used. Both costs are measured. Cached coarse levels remove recomputation but do not eliminate these costs.
 - No TPU evidence or general compute-saving claim exists. The discarded contended timing attempt and serialization failure remain recorded above.
 '''
@@ -115,7 +169,8 @@ git_commit: {commit}
 |---|---|---|
 | Speculative exactness passes the frozen enumerable power test and rejects all four controls | power.json | supported |
 | Hybrid coarse cache agrees with recomputation on the registered finite tests | tests.json | supported |
-| General NCM drafter advantage over the distilled AR drafter | drafter_comparison.csv; drafter_paired_statistics.json | untested |
+| AR-drafter control covers every registered draft/prompt/batch/seed case | drafter_comparison.csv | supported |\n| General NCM drafter advantage over the distilled AR drafter | drafter_comparison.csv; drafter_paired_statistics.json | untested |
+| Exact parameter-count matching was achieved | bpb_vs_train_flops.csv | refuted |
 | NCM student beats distilled AR at matched exact BPB | latency_at_matched_bpb.csv | untested |
 | Learned probe meets the frozen TC accuracy/disjointness gate | tc-probe/probe_results.json | refuted |
 | Hybrid versus parallel removes >=30% of real-text TC | tc_probe_decision.md | untested |

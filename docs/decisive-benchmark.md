@@ -170,3 +170,28 @@ from overlapping validation jobs are retained in `real128-contended/`; the clean
 run starts only after all 118 four-device tests complete. Use
 `python scripts/summarize_validation_controls.py` after all three seeds finish
 to assemble the claim ledger, seed outcomes, paired intervals, and final tables.
+
+
+Final analytic audits distinguish a cache-only prefill from a complete decode
+step: the last layer contributes K/V projections, without its unused attention,
+MLP, or head. RVQ distance estimates count the stored padded K*L grid. Historical
+estimates from the frozen a1ed801 execution remain untouched in its study
+folder. `scripts/revise_validation_estimates.py` derives corrected tables and
+retains raw-estimate columns and the analytic revision. Measured timings, BPB,
+acceptance and round counts are never rewritten. Compiler estimates retain
+the original execution revision. Fused QKV and elementwise counts remain
+nominal analytic estimates, not hardware counters.
+
+The fixed width grid gives approximate total-parameter matching, not exact
+matching: AR counts exceed the NCM target by about 14.6%, 7.3%, and 2.5% for
+initial prompt lengths 0, 16, and 64. No architecture is retuned after observing
+results. Initial prompt bytes are shared; subsequent NCM rounds condition on
+the most recent prompt bucket while the AR drafter uses the full committed
+prefix. These limitations are explicit in the final tables and prohibit a
+general student-advantage claim. Bootstrap intervals for sequence distillation
+versus real-text NCM are separate from the NCM-versus-AR drafter contrast.
+
+CI uses `.github/validation-constraints.txt` to reproduce the locally tested
+package versions. The final test count is recorded in
+`reports/validation-controls/tests.json`; earlier test counts in this guide
+refer to earlier validation revisions.
