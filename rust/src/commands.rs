@@ -16,10 +16,6 @@ pub const COMMANDS: &[(&str, &str)] = &[
         "ncm.workloads.research.alignment_diagnosis",
     ),
     (
-        "summarize-maintenance",
-        "ncm.workloads.research.summarize_maintenance",
-    ),
-    (
         "maintenance-timing",
         "ncm.workloads.research.maintenance_timing",
     ),
@@ -51,7 +47,6 @@ pub const COMMANDS: &[(&str, &str)] = &[
         "write-domain-report",
         "ncm.workloads.research.write_domain_report",
     ),
-    ("train", "ncm.workloads.research.train"),
     (
         "text-dependency-priors",
         "ncm.workloads.research.text_dependency_priors",
@@ -73,15 +68,9 @@ pub const COMMANDS: &[(&str, &str)] = &[
         "run-drafter-comparison",
         "ncm.workloads.validation.run_drafter_comparison",
     ),
-    ("update-manifests", "ncm.workloads.papers.update_manifests"),
     (
         "generate-recent-results",
         "ncm.workloads.papers.generate_recent_results",
     ),
-    (
-        "generate-bibliographies",
-        "ncm.workloads.papers.generate_bibliographies",
-    ),
     ("generate-results", "ncm.workloads.papers.generate_results"),
-    ("audit-papers", "ncm.workloads.papers.audit_papers"),
 ];

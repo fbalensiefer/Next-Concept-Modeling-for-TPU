@@ -28,6 +28,15 @@ pub struct ByteWindows {
     pub dropped_tail_bytes: usize,
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct MaskedByteWindows {
+    pub rows: Vec<Vec<u8>>,
+    pub masks: Vec<Vec<bool>>,
+    pub document_ids: Vec<String>,
+    pub sha256: String,
+    pub dropped_tail_bytes: usize,
+}
+
 pub fn sha256(bytes: &[u8]) -> String {
     format!("{:x}", Sha256::digest(bytes))
 }
@@ -96,6 +105,46 @@ pub fn document_byte_windows(
     }
     Ok(ByteWindows {
         rows,
+        document_ids: owners,
+        sha256: sha256(&raw),
+        dropped_tail_bytes: dropped,
+    })
+}
+
+/// Build fixed-width, zero-padded document windows without crossing document
+/// boundaries. Masks preserve each document's exact final partial window.
+pub fn document_masked_byte_windows(
+    path: impl AsRef<Path>,
+    length: usize,
+) -> Result<MaskedByteWindows, CorpusError> {
+    if length == 0 {
+        return Err(CorpusError::Invalid(
+            "window length must be positive".into(),
+        ));
+    }
+    let path = path.as_ref();
+    let raw = fs::read(path)?;
+    let docs = read_documents(path)?;
+    let (mut rows, mut masks, mut owners, mut dropped) = (Vec::new(), Vec::new(), Vec::new(), 0);
+    for document in docs {
+        let bytes = document.text.as_bytes();
+        dropped += bytes.len() % length;
+        for chunk in bytes.chunks(length) {
+            let mut row = vec![0; length];
+            let mut mask = vec![false; length];
+            row[..chunk.len()].copy_from_slice(chunk);
+            mask[..chunk.len()].fill(true);
+            rows.push(row);
+            masks.push(mask);
+            owners.push(document.id.clone());
+        }
+    }
+    if rows.is_empty() {
+        return Err(CorpusError::Invalid("no byte windows in corpus".into()));
+    }
+    Ok(MaskedByteWindows {
+        rows,
+        masks,
         document_ids: owners,
         sha256: sha256(&raw),
         dropped_tail_bytes: dropped,

@@ -1,27 +1,29 @@
 # Rust orchestration and the JAX engine
 
-Rust owns command dispatch, worker processes, paper build sequencing, byte-corpus validation/windowing, and host-side reconstruction summaries. Python/JAX/Flax owns model computation and training. There is one model implementation.
+Rust owns command dispatch, corpus preparation, report provenance and serialization, FLOP estimates, categorical statistics, dependence metrics, token accounting, and the migrated codec-training runner. Python/JAX/Flax owns model definitions, tensor computations, gradients, optimizer updates, and accelerator placement. There is one model implementation.
 
 Run commands from the repository or a subdirectory:
 
 ```sh
 export NCM_PYTHON="$PWD/.venv312/bin/python"
 cargo run --bin ncm-run -- --list
-cargo run --bin ncm-run -- run-drafter-comparison --help
+cargo run --bin ncm-run -- train --config examples/text/config.json --output runs/text-rust
 cargo run --bin ncm-run -- replay-dependency-results
 cargo run --bin ncm-run -- build-papers --build-dir /tmp/ncm-papers
+cargo run --bin ncm-run -- generate-bibliographies --check
+cargo run --bin ncm-run -- audit-papers
 ```
 
-`NCM_PYTHON` selects the Python environment and defaults to `python3`. `NCM_TECTONIC` selects the paper compiler and defaults to `tectonic`. Paper builds accept `--offline` once the Tectonic resource cache is populated. The launcher forwards worker arguments without invoking a shell, selects the repository working directory, exposes the source package, and propagates worker exit codes.
+`NCM_PYTHON` selects the Python environment and defaults to `python3`. `NCM_TECTONIC` selects the paper compiler and defaults to `tectonic`. Paper builds accept `--offline` once the Tectonic resource cache is populated. The training command reads text or document JSONL inputs in Rust, and sends batches, optimizer steps, evaluation requests, and checkpoint operations through the JSON-RPC worker. Its manifest records input hashes and implementation provenance.
 
-The former `examples/*.py`, `scripts/*.py`, and `paper/*.py` entrypoints have been removed. Their required calculations are packaged under `src/ncm/workloads/{research,validation,papers}`. Commands use the former filename with underscores replaced by hyphens, for example `run_drafter_comparison.py` becomes `run-drafter-comparison`. `build-papers` replaces the former Python build wrapper with Rust orchestration. Historical reports retain the original commands and source hashes as records of executed experiments.
+Legacy Python scripts remain in the repository for output-parity checks. Model-backed codec training, maintenance summaries, bibliography generation, paper auditing, and manifest refreshes now run in Rust. Specialized experiment runners and the paper result table generators still use the compatibility launcher while their host protocols are migrated. These commands remain available under their current hyphenated names.
 
 Configuration and text fixtures remain in `examples/`; manuscript sources and evidence inputs remain in `paper/`. The initial duplicate Rust model primitives were removed because model execution belongs to JAX.
 
-Rust library modules `corpus` and `evaluation` provide the first native host-side data and metric implementations. The Python research workers still use Python data helpers; migrating those remaining workflows is ongoing.
+Rust library modules `corpus`, `evaluation`, `accounting`, `dependence`, `flops`, `table_prior`, and `validation_io` provide native host-side data, metrics, statistics, and report implementations. Python files are retained in this phase.
 
 ## Model-engine IPC
 
-Rust starts one `ncm.engine_rpc` process and exchanges one JSON-RPC 2.0 request and response per line over stdin/stdout. Diagnostics belong on stderr. The initial methods are `engine.ping` and `engine.describe`; this is the boundary for adding model operations such as initialization, train steps, and inference. Tensor payloads and checkpoint transfer formats must be specified per method before workloads move across the boundary. Existing research commands still launch packaged Python workloads and have not all been migrated to this protocol.
+Rust starts one `ncm.engine_rpc` process and exchanges one JSON-RPC 2.0 request and response per line over stdin/stdout. Diagnostics belong on stderr. The worker supports model initialization, forward passes, training steps, and checkpoint save/load, in addition to `engine.ping` and `engine.describe`. Tensor payloads use typed Rust request structs and JSON arrays. Specialized research commands are being moved onto this boundary while Python remains the model engine.
 
 Run `cargo run --bin ncm-run -- engine-info` to check that Rust can start the configured JAX/Flax engine and query its devices.

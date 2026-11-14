@@ -79,18 +79,20 @@ fn engine_call(root: &Path, method: &str) -> Result<Value, String> {
         .ok_or_else(|| "JAX engine response has no result".into())
 }
 fn audit_papers(root: &Path, args: &[OsString]) -> Result<(), String> {
-    for module in [
-        "generate_results",
-        "generate_recent_results",
-        "generate_bibliographies",
-    ] {
-        worker(
-            root,
-            &format!("ncm.workloads.papers.{module}"),
-            &["--check".into()],
-        )?;
+    let mut build_dir = None;
+    let mut index = 0;
+    while index < args.len() {
+        match args[index].to_str() {
+            Some("--build-dir") if index + 1 < args.len() => {
+                build_dir = Some(PathBuf::from(&args[index + 1]));
+                index += 1;
+            }
+            _ => return Err("audit-papers accepts --build-dir PATH".into()),
+        }
+        index += 1;
     }
-    worker(root, "ncm.workloads.papers.audit_papers", args)
+    ncm::paper::generate_bibliographies(root, true)?;
+    ncm::paper::audit_papers(root, build_dir.as_deref())
 }
 fn build_papers(root: &Path, args: &[OsString]) -> Result<(), String> {
     let mut folder = root.join("build/papers");
@@ -106,13 +108,10 @@ fn build_papers(root: &Path, args: &[OsString]) -> Result<(), String> {
     }
     std::fs::create_dir_all(&folder).map_err(|e| e.to_string())?;
     let folder = folder.canonicalize().map_err(|e| e.to_string())?;
-    for module in [
-        "generate_results",
-        "generate_recent_results",
-        "generate_bibliographies",
-    ] {
+    for module in ["generate_results", "generate_recent_results"] {
         worker(root, &format!("ncm.workloads.papers.{module}"), &[])?;
     }
+    ncm::paper::generate_bibliographies(root, false)?;
     for stem in ["ncm_systems_paper", "SCALE_research_paper"] {
         let mut c = Command::new(env::var_os("NCM_TECTONIC").unwrap_or_else(|| "tectonic".into()));
         c.args(["--keep-logs", "--keep-intermediates", "--outdir"])
@@ -142,10 +141,52 @@ fn build_papers(root: &Path, args: &[OsString]) -> Result<(), String> {
     }
     Ok(())
 }
+fn train(root: &Path, args: &[OsString]) -> Result<(), String> {
+    let mut config = None;
+    let mut output = None;
+    let mut resume = false;
+    let mut i = 0;
+    while i < args.len() {
+        match args[i].to_str() {
+            Some("--config") if i + 1 < args.len() => {
+                config = Some(PathBuf::from(&args[i + 1]));
+                i += 1;
+            }
+            Some("--output") if i + 1 < args.len() => {
+                output = Some(PathBuf::from(&args[i + 1]));
+                i += 1;
+            }
+            Some("--resume") => resume = true,
+            _ => return Err("train accepts --config PATH --output DIR [--resume]".into()),
+        }
+        i += 1;
+    }
+    let config = config.ok_or("train requires --config PATH")?;
+    let output = output.ok_or("train requires --output DIR")?;
+    ncm::workloads::train_codec(root, &config, &output, resume)
+}
+fn generate_bibliographies(root: &Path, args: &[OsString]) -> Result<(), String> {
+    let check = match args {
+        [] => false,
+        [flag] if flag == "--check" => true,
+        _ => return Err("generate-bibliographies accepts only --check".into()),
+    };
+    ncm::paper::generate_bibliographies(root, check)
+}
+fn update_manifests(root: &Path, args: &[OsString]) -> Result<(), String> {
+    if !args.is_empty() {
+        return Err("update-manifests takes no arguments".into());
+    }
+    ncm::paper::update_manifests(root)?;
+    println!("Implementation and document manifests refreshed; verify with shasum -a 256 -c.");
+    Ok(())
+}
 fn main() -> ExitCode {
     let args: Vec<_> = env::args_os().skip(1).collect();
     if args.is_empty() || args[0] == "--help" || args[0] == "--list" {
-        println!("ncm-run <command> [arguments]\n\nCommands:\n  engine-info\n  build-papers");
+        println!(
+            "ncm-run <command> [arguments]\n\nCommands:\n  engine-info\n  build-papers\n  train\n  summarize-maintenance\n  generate-bibliographies\n  update-manifests\n  audit-papers"
+        );
         for (name, _) in COMMANDS {
             println!("  {name}");
         }
@@ -167,6 +208,14 @@ fn main() -> ExitCode {
         })
     } else if name == "build-papers" {
         build_papers(&root, &args[1..])
+    } else if name == "train" {
+        train(&root, &args[1..])
+    } else if name == "summarize-maintenance" {
+        ncm::reports::summarize_maintenance(&root).map(|_| ())
+    } else if name == "generate-bibliographies" {
+        generate_bibliographies(&root, &args[1..])
+    } else if name == "update-manifests" {
+        update_manifests(&root, &args[1..])
     } else if name == "audit-papers" {
         audit_papers(&root, &args[1..])
     } else if let Some((_, module)) = COMMANDS.iter().find(|(n, _)| *n == name) {

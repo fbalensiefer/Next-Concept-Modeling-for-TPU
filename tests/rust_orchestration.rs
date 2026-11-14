@@ -49,52 +49,31 @@ fn unknown_command_fails_and_help_lists_commands() {
     );
     let output = Command::new(binary).arg("--list").output().unwrap();
     assert!(output.status.success());
-    assert!(
-        String::from_utf8(output.stdout)
-            .unwrap()
-            .contains("build-papers")
-    );
+    let listing = String::from_utf8(output.stdout).unwrap();
+    assert!(listing.contains("build-papers"));
+    assert!(listing.contains("summarize-maintenance"));
 }
 
 #[cfg(unix)]
 #[test]
-fn rust_orders_paper_checks_and_stops_on_worker_failure() {
+fn rust_paper_audit_uses_native_tools_without_starting_python() {
     use std::{fs, os::unix::fs::PermissionsExt, process::Command};
     let dir = std::env::temp_dir().join(format!("ncm audit {}", std::process::id()));
     fs::create_dir_all(&dir).unwrap();
     let python = dir.join("worker");
-    let log = dir.join("calls");
-    fs::write(
-        &python,
-        "#!/bin/sh\nprintf '%s\\n' \"$*\" >> \"$NCM_AUDIT_LOG\"\nexit \"${NCM_FAKE_EXIT:-0}\"\n",
-    )
-    .unwrap();
+    fs::write(&python, "#!/bin/sh\nexit 71\n").unwrap();
     fs::set_permissions(&python, fs::Permissions::from_mode(0o700)).unwrap();
-    let invoke = |exit: &str| {
-        Command::new(env!("CARGO_BIN_EXE_ncm-run"))
-            .current_dir(env!("CARGO_MANIFEST_DIR"))
-            .env("NCM_PYTHON", &python)
-            .env("NCM_AUDIT_LOG", &log)
-            .env("NCM_FAKE_EXIT", exit)
-            .args(["audit-papers", "--build-dir", "example"])
-            .output()
-            .unwrap()
-    };
-    assert!(invoke("0").status.success());
-    assert_eq!(
-        fs::read_to_string(&log)
-            .unwrap()
-            .lines()
-            .collect::<Vec<_>>(),
-        vec![
-            "-m ncm.workloads.papers.generate_results --check",
-            "-m ncm.workloads.papers.generate_recent_results --check",
-            "-m ncm.workloads.papers.generate_bibliographies --check",
-            "-m ncm.workloads.papers.audit_papers --build-dir example"
-        ]
+    let output = Command::new(env!("CARGO_BIN_EXE_ncm-run"))
+        .current_dir(env!("CARGO_MANIFEST_DIR"))
+        .env("NCM_PYTHON", &python)
+        .arg("audit-papers")
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
     );
-    fs::remove_file(&log).unwrap();
-    assert_eq!(invoke("7").status.code(), Some(7));
-    assert_eq!(fs::read_to_string(&log).unwrap().lines().count(), 1);
+    assert!(!dir.join("calls").exists());
     fs::remove_dir_all(dir).unwrap();
 }

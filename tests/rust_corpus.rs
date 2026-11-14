@@ -30,6 +30,30 @@ fn windows_keep_document_boundaries_hash_input_and_count_tails() {
 }
 
 #[test]
+fn masked_windows_keep_each_document_tail_without_joining_documents() {
+    let path =
+        std::env::temp_dir().join(format!("ncm masked windows {}.jsonl", std::process::id()));
+    std::fs::write(
+        &path,
+        "{\"id\":\"a\",\"text\":\"abc\"}\n{\"id\":\"b\",\"text\":\"de\"}\n",
+    )
+    .unwrap();
+    let data = ncm::corpus::document_masked_byte_windows(&path, 4).unwrap();
+    assert_eq!(data.rows.len(), 2);
+    assert_eq!(data.document_ids, ["a", "b"]);
+    assert_eq!(data.rows[0], [b'a', b'b', b'c', 0]);
+    assert_eq!(
+        data.masks,
+        [
+            vec![true, true, true, false],
+            vec![true, true, false, false]
+        ]
+    );
+    assert_eq!(data.dropped_tail_bytes, 5);
+    let _ = std::fs::remove_file(path);
+}
+
+#[test]
 fn splits_reject_duplicate_id_or_text() {
     let a = fixture("split-a", r#"{"id":"a","text":"same"}"#);
     let b = fixture("split-b", r#"{"id":"b","text":"same"}"#);

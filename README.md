@@ -1,6 +1,6 @@
 # Next-Concept Modeling for TPU
 
-A research implementation of [Next-Concept Modeling](https://arxiv.org/abs/2610.14162). Rust handles command orchestration, corpus validation, and host-side evaluation. Python/JAX/Flax runs the model engine and current numerical research workloads.
+A research implementation of [Next-Concept Modeling](https://arxiv.org/abs/2610.14162). The target architecture assigns orchestration, corpus preparation, statistics, reporting, and experiment protocols to Rust, with Python/JAX/Flax as the model engine for tensor computation, gradients, and accelerator execution. The migration is in progress; Rust now owns core host utilities and the codec-training runner, while specialized legacy runners remain available during parity work.
 
 The central question is: **can a learned hierarchy make text generation faster while preserving information and modeling the dependencies that matter?**
 
@@ -19,7 +19,7 @@ python3.12 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[test]'
 python -m pytest -q
-cargo run --bin ncm-run -- train
+cargo run --bin ncm-run -- train --config examples/text/config.json --output runs/text-rust
 ```
 
 The [first document-separated real-text pilot](reports/real-text-reconstruction/report.md) records substantial reconstruction errors after short training runs. See the [reproduction instructions](docs/real-text-reconstruction.md). A [paired duration/capacity follow-up](reports/reconstruction-capacity/report.md) tests longer training and larger codebooks against exact representation controls.
