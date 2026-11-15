@@ -2807,18 +2807,28 @@ mod tests {
             serde_json::from_slice(&fs::read(root.join("configs/real128-sweep.json")).unwrap())
                 .unwrap();
         validate_config(&config).unwrap();
-        let train = select_windows(
-            &load_dataset(&resolve(&root, &config.train_file), 192).unwrap(),
-            &config.train_windows,
-            "train",
-        )
-        .unwrap();
-        let valid = select_windows(
-            &load_dataset(&resolve(&root, &config.validation_file), 192).unwrap(),
-            &config.validation_windows,
-            "validation",
-        )
-        .unwrap();
+        let mut expected_train = (0..31).collect::<Vec<_>>();
+        expected_train.push(786);
+        let mut expected_valid = (0..31).collect::<Vec<_>>();
+        expected_valid.push(899);
+        assert_eq!(config.train_windows, expected_train);
+        assert_eq!(config.validation_windows, expected_valid);
+
+        // Exercise selection without the ignored, locally prepared real-text corpus.
+        // Row identities make index or ordering errors observable in this fixture.
+        let width = config.max_prompt_len + config.sequence_length;
+        let fixture = Dataset {
+            tokens: (0..900).map(|index| vec![index; width]).collect(),
+            masks: vec![vec![true; width]; 900],
+            sha256: "synthetic-window-selection-fixture".into(),
+        };
+        let train = select_windows(&fixture, &config.train_windows, "train").unwrap();
+        let valid = select_windows(&fixture, &config.validation_windows, "validation").unwrap();
+        for (selected, indices) in [(&train, &expected_train), (&valid, &expected_valid)] {
+            for (row, index) in selected.tokens.iter().zip(indices) {
+                assert_eq!(row, &vec![*index as i32; width]);
+            }
+        }
         validate_profile_windows(&config, &train, "training").unwrap();
         validate_profile_windows(&config, &valid, "validation").unwrap();
         assert_eq!(config.seeds, [200, 201, 202]);
