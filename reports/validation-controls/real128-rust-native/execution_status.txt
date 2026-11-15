@@ -1,0 +1,5 @@
+Status: COMPLETE
+
+Strict suite validation passed on November 15, 2026 with 351 timing/reference rows, 45 quality rows and 135 checkpoint observations for seeds 200, 201 and 202 and prompt lengths 0, 16 and 64. There are also 45 training rows. See suite_validation.json.
+
+The earlier interrupted attempt is preserved in execution.log and run_provenance.txt. Timing was resumed using the atomic IPC bridge and .venv312 Python; see benchmark-drafters-atomic-20261115.log and sweep_progress.json. Historical archive checksums remained unchanged.

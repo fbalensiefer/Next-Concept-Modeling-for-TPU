@@ -49,3 +49,5 @@ protocol. Current supported commands are listed by `cargo run --bin ncm-run -- -
 The maintenance runner now includes its small historical teacher-domain input. The broader-domain runner generates its own sources and feature teachers. Training checkpoints remain ignored; the public replay inputs record their identities without requiring those checkpoints. Historical protocols and source hashes identify the actual executed versions, which can differ from later replay/diagnostic improvements. These counts are model fits, not independent dataset replications.
 
 Additional mathematical controls: [invertible innovations](invertible-baselines/report.md). Additional diagnostics: [causal alignment target](alignment-diagnosis/report.md).
+
+The [Rust-orchestrated real128 run](validation-controls/real128-rust-native/README.md) completed strict suite validation on November 15, 2026 (351 timing/reference rows, 45 quality rows, 135 checkpoint observations). Historical real128 artifacts are preserved separately.

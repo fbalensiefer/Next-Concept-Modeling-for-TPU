@@ -1,0 +1,29 @@
+commit=9c4d59b340e2c6c2790ee9c77a2a081654a1f1ce
+utc_start=2026-11-14T15:43:57Z
+host=Darwin Mac 25.6.0 Darwin Kernel Version 25.6.0: Fri Jul 31 19:18:43 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T8112 arm64
+rust=rustc 1.99.1 (58cf8f9c3 2026-10-13)
+46a1831be80ac004b17a1dd1a872b446f8e3a1f61612ca38aabd988df980800a  reports/validation-controls/real128/drafter_comparison.csv
+37e2343a37b1da4d31610a650cc1decbe6e1a4b53ea7aa0c75a8df9d9dce0c96  reports/validation-controls/real128/quality.csv
+ba099e8afb2a2c9c2f532790e37498c08b6ddfe87549990be6f8a8afe68b50df  reports/validation-controls/real128/checkpoint_curves.csv
+benchmark_drafters_started_utc=2026-11-14T17:04:13Z (log file creation timestamp; approximate)
+benchmark_drafters_stopped_utc=2026-11-14T23:28:54Z
+benchmark_drafters_elapsed=6h24m41s (approximate)
+benchmark_drafters_exit_code=130 (user-requested interrupt)
+validator_command=cargo run --release --bin ncm-run -- validate-benchmark-suite --sweep reports/validation-controls/real128-rust-native
+validator_exit_code=1
+validator_result=failed before row checks: No such file or directory (drafter_comparison.csv was not produced)
+completed_quality_rows=45; seeds=200,201,202; heldout_bpb values numeric and positive
+completed_checkpoint_rows=135; seeds=200,201,202
+training_rows=45; execution_telemetry_lines=363
+expected_timing_rows=351; timing rows produced=0
+suite_status=incomplete; strict suite validation not passed
+
+# Completion update (supersedes earlier incomplete status above)
+completion_date=2026-11-15
+worker_python=.venv312/bin/python3
+timing_log=benchmark-drafters-atomic-20261115.log
+validator_exit_code_final=0
+suite_status_final=complete
+final_timing_rows=351; final_quality_rows=45; final_checkpoint_rows=135
+source_state=base 9c4d59b plus IPC/progress working-tree enhancements committed with this report
+archive_sha256_recheck=matched all three values above

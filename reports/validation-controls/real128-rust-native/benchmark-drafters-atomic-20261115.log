@@ -1,0 +1,14 @@
+    Finished `release` profile [optimized] target(s) in 0.03s
+     Running `target/release/ncm-run benchmark-drafters --sweep reports/validation-controls/real128-rust-native/`
+Traceback (most recent call last):
+  File "<frozen runpy>", line 192, in _run_module_as_main
+  File "<frozen runpy>", line 113, in _get_module_details
+  File "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/__init__.py", line 3, in <module>
+    from .generator import SharedLevelGenerator
+  File "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/src/ncm/generator.py", line 4, in <module>
+    import jax
+ModuleNotFoundError: No module named 'jax'
+JAX engine exited or panicked before replying to causal_ar_init (status Some(ExitStatus(unix_wait_status(256))))
+    Finished `release` profile [optimized] target(s) in 0.02s
+     Running `target/release/ncm-run benchmark-drafters --sweep reports/validation-controls/real128-rust-native/`
+wrote 351 Rust-native drafter/reference timing rows to reports/validation-controls/real128-rust-native

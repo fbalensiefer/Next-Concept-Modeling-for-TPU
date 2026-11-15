@@ -1,0 +1,16 @@
+    Finished `release` profile [optimized] target(s) in 0.04s
+     Running `target/release/ncm-run train-sweep --config configs/real128-sweep.json --output reports/validation-controls/real128-rust-native`
+    Finished `release` profile [optimized] target(s) in 0.12s
+     Running `target/release/ncm-run quality-eval --sweep reports/validation-controls/real128-rust-native`
+    Finished `release` profile [optimized] target(s) in 0.02s
+     Running `target/release/ncm-run checkpoint-audit --sweep reports/validation-controls/real128-rust-native`
+    Finished `release` profile [optimized] target(s) in 0.12s
+     Running `target/release/ncm-run benchmark-drafters --sweep reports/validation-controls/real128-rust-native`
+
+$ cargo run --release --bin ncm-run -- validate-benchmark-suite --sweep reports/validation-controls/real128-rust-native
+    Finished `release` profile [optimized] target(s) in 0.19s
+     Running `target/release/ncm-run validate-benchmark-suite --sweep reports/validation-controls/real128-rust-native`
+No such file or directory (os error 2)
+(exit code 1)
+
+Drafter benchmark was interrupted on user instruction (exit code 130); no timing report was written.

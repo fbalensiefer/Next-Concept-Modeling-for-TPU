@@ -1,7 +1,7 @@
 use ncm::rpc::{
     CausalArConfig, CausalArEvaluateRequest, CausalArInitRequest, CausalArTrainStepRequest,
-    CheckpointRequest, EngineClient, EngineConfig, ForwardRequest, GenerateRaggedRequest,
-    GenerateRequest, InitModelRequest, LossConfig, ModelConfig, RvqConfig,
+    CheckpointRequest, EngineClient, EngineConfig, ForwardRequest, GenerateAndVerifyAtomicRequest,
+    GenerateRaggedRequest, GenerateRequest, InitModelRequest, LossConfig, ModelConfig, RvqConfig,
     SpeculativeVerifyRaggedRequest, SpeculativeVerifyRequest, TensorBatch, TrainStepRequest,
     TransformerConfig,
 };
@@ -52,6 +52,186 @@ fn batch() -> TensorBatch {
         prompt_ids: None,
         prompt_mask: None,
     }
+}
+
+#[derive(Debug, PartialEq, Eq)]
+struct LegacySpeculation {
+    tokens: Vec<Vec<u32>>,
+    accepted: usize,
+    proposed: usize,
+    accepted_by_position: Vec<usize>,
+    proposed_by_position: Vec<usize>,
+    batch_rounds: usize,
+    sequence_rounds: usize,
+    prefix_sum: usize,
+}
+
+struct LegacySpeculationConfig<'a> {
+    target_id: &'a str,
+    drafter_id: &'a str,
+    ncm_drafter: bool,
+    output_len: usize,
+    draft_len: usize,
+    seed: u32,
+}
+
+fn benchmark_seed(
+    seed: u32,
+    prompt_len: usize,
+    batch: usize,
+    draft: usize,
+    repetition: usize,
+    round: usize,
+    stream: u32,
+) -> u32 {
+    let mut value = u64::from(seed)
+        ^ (prompt_len as u64).wrapping_mul(0x9e3779b97f4a7c15)
+        ^ (batch as u64).rotate_left(11)
+        ^ (draft as u64).rotate_left(23)
+        ^ (repetition as u64).wrapping_mul(0xd6e8feb86659fd93)
+        ^ (round as u64).wrapping_mul(0xa0761d6478bd642f)
+        ^ u64::from(stream);
+    value ^= value >> 30;
+    value = value.wrapping_mul(0xbf58476d1ce4e5b9);
+    value ^= value >> 27;
+    value = value.wrapping_mul(0x94d049bb133111eb);
+    value ^= value >> 31;
+    value as u32
+}
+
+fn legacy_speculation(
+    engine: &mut EngineClient,
+    prompts: &[Vec<i32>],
+    run: LegacySpeculationConfig<'_>,
+) -> LegacySpeculation {
+    let LegacySpeculationConfig {
+        target_id,
+        drafter_id,
+        ncm_drafter,
+        output_len,
+        draft_len,
+        seed,
+    } = run;
+    let mut contexts = prompts.to_vec();
+    let mut result = LegacySpeculation {
+        tokens: Vec::new(),
+        accepted: 0,
+        proposed: 0,
+        accepted_by_position: vec![0; draft_len],
+        proposed_by_position: vec![0; draft_len],
+        batch_rounds: 0,
+        sequence_rounds: 0,
+        prefix_sum: 0,
+    };
+    while contexts.iter().any(|row| row.len() < output_len) {
+        let active = contexts
+            .iter()
+            .enumerate()
+            .filter_map(|(index, row)| (row.len() < output_len).then_some(index))
+            .collect::<Vec<_>>();
+        let remaining = active
+            .iter()
+            .map(|index| output_len - contexts[*index].len())
+            .min()
+            .unwrap();
+        let width = draft_len.min(remaining);
+        result.batch_rounds += 1;
+        result.sequence_rounds += active.len();
+        let active_contexts = active
+            .iter()
+            .map(|index| contexts[*index].clone())
+            .collect::<Vec<_>>();
+        result.prefix_sum += active_contexts.iter().map(Vec::len).sum::<usize>();
+
+        let (draft_prompts, prompt_lengths) = if ncm_drafter {
+            (vec![Vec::new(); active.len()], None)
+        } else {
+            let width = active_contexts
+                .iter()
+                .map(Vec::len)
+                .max()
+                .unwrap_or(0)
+                .max(1);
+            let padded = active_contexts
+                .iter()
+                .map(|row| {
+                    let mut row = row.clone();
+                    row.resize(width, 0);
+                    row
+                })
+                .collect::<Vec<_>>();
+            let lengths = active_contexts.iter().map(Vec::len).collect::<Vec<_>>();
+            (padded, Some(lengths))
+        };
+        let draft_seed =
+            benchmark_seed(seed, 0, prompts.len(), draft_len, 0, result.batch_rounds, 1);
+        let generated = if let Some(prompt_lengths) = prompt_lengths {
+            engine
+                .generate_ragged(&GenerateRaggedRequest {
+                    engine_id: drafter_id.into(),
+                    prompts: draft_prompts,
+                    prompt_lengths,
+                    max_new_tokens: width,
+                    temperature: 1.,
+                    top_k: 0,
+                    seed: draft_seed,
+                })
+                .unwrap()
+        } else {
+            engine
+                .generate(&GenerateRequest {
+                    engine_id: drafter_id.into(),
+                    prompts: draft_prompts,
+                    max_new_tokens: width,
+                    temperature: 1.,
+                    top_k: 0,
+                    seed: draft_seed,
+                })
+                .unwrap()
+        };
+        let prefix_width = active_contexts.iter().map(Vec::len).max().unwrap_or(0);
+        let prefixes = active_contexts
+            .iter()
+            .map(|row| {
+                let mut row = row.clone();
+                row.resize(prefix_width, 0);
+                row
+            })
+            .collect::<Vec<_>>();
+        let prefix_lengths = active_contexts.iter().map(Vec::len).collect::<Vec<_>>();
+        let verified = engine
+            .speculative_verify_ragged(&SpeculativeVerifyRaggedRequest {
+                engine_id: target_id.into(),
+                prefixes,
+                prefix_lengths,
+                draft_tokens: generated.tokens.clone(),
+                proposal_probs: generated.probabilities,
+                temperature: 1.,
+                top_k: 0,
+                seed: benchmark_seed(seed, 0, prompts.len(), draft_len, 0, result.batch_rounds, 2),
+            })
+            .unwrap();
+        for (local, global) in active.iter().enumerate() {
+            let accepted = verified.accepted_lengths[local];
+            result.accepted += accepted;
+            result.proposed += generated.tokens[local].len();
+            for position in 0..generated.tokens[local].len() {
+                result.proposed_by_position[position] += 1;
+                if position < accepted {
+                    result.accepted_by_position[position] += 1;
+                }
+            }
+            contexts[*global].extend_from_slice(&generated.tokens[local][..accepted]);
+            if contexts[*global].len() < output_len {
+                contexts[*global].push(verified.tokens[local][width]);
+            }
+        }
+    }
+    result.tokens = contexts
+        .into_iter()
+        .map(|row| row.into_iter().map(|token| token as u32).collect())
+        .collect();
+    result
 }
 
 #[test]
@@ -340,6 +520,17 @@ fn rust_drives_causal_ar_evaluation_generation_and_speculative_verification() {
             seed: 10,
         })
         .expect("generate conditioned tokens");
+    let tokens_only = engine
+        .generate_tokens(&GenerateRequest {
+            engine_id: model.engine_id.clone(),
+            prompts: vec![vec![1, 2], vec![3, 4]],
+            max_new_tokens: 3,
+            temperature: 0.8,
+            top_k: 5,
+            seed: 10,
+        })
+        .expect("generate tokens without probability payload");
+    assert_eq!(tokens_only.tokens, generated.tokens);
     assert_eq!(generated.tokens.len(), 2);
     assert!(generated.tokens.iter().all(|x| x.len() == 3));
     assert_eq!(generated.probabilities[0].len(), 3);
@@ -433,4 +624,91 @@ fn rust_drives_ragged_ar_generation_and_verification_including_empty_prefixes() 
             .all(|accepted| *accepted <= 2)
     );
     assert!(verified.tokens.iter().all(|row| row.len() == 3));
+}
+
+#[test]
+fn atomic_speculation_matches_legacy_round_seeds_tokens_and_accounting() {
+    let mut engine = EngineClient::start(&repository_root()).expect("start JAX worker");
+    let target = engine
+        .causal_ar_init(&CausalArInitRequest {
+            config: CausalArConfig {
+                transformer: TransformerConfig {
+                    width: 4,
+                    heads: 2,
+                    layers: 1,
+                    mlp_ratio: 2,
+                    dropout: 0.,
+                },
+                max_length: 8,
+                learning_rate: 1e-3,
+            },
+            seed: 701,
+            tokens: vec![vec![1]],
+            mask: None,
+        })
+        .expect("initialize target AR");
+    let ar_drafter = engine
+        .causal_ar_init(&CausalArInitRequest {
+            config: CausalArConfig {
+                transformer: TransformerConfig {
+                    width: 4,
+                    heads: 2,
+                    layers: 1,
+                    mlp_ratio: 2,
+                    dropout: 0.,
+                },
+                max_length: 8,
+                learning_rate: 1e-3,
+            },
+            seed: 702,
+            tokens: vec![vec![1]],
+            mask: None,
+        })
+        .expect("initialize AR drafter");
+    let ncm_drafter = engine
+        .init_model(&model_request())
+        .expect("initialize NCM drafter");
+    let prompts = vec![vec![], vec![]];
+    let seed = 0x1234_abcd;
+
+    for (drafter_id, is_ncm) in [
+        (ncm_drafter.engine_id.as_str(), true),
+        (ar_drafter.engine_id.as_str(), false),
+    ] {
+        let atomic = engine
+            .generate_and_verify_atomic(&GenerateAndVerifyAtomicRequest {
+                target_engine_id: target.engine_id.clone(),
+                drafter_engine_id: drafter_id.into(),
+                prompts: prompts.clone(),
+                prompt_len: 0,
+                output_len: 2,
+                draft_len: 1,
+                temperature: 1.,
+                top_k: 0,
+                seed,
+            })
+            .expect("atomic speculative observation");
+        assert!(atomic.engine_elapsed_ms.is_finite() && atomic.engine_elapsed_ms >= 0.);
+        assert!((0. ..=1.).contains(&atomic.acceptance_rate));
+        let legacy = legacy_speculation(
+            &mut engine,
+            &prompts,
+            LegacySpeculationConfig {
+                target_id: &target.engine_id,
+                drafter_id,
+                ncm_drafter: is_ncm,
+                output_len: 2,
+                draft_len: 1,
+                seed,
+            },
+        );
+        assert_eq!(atomic.tokens, legacy.tokens);
+        assert_eq!(atomic.accepted_tokens, legacy.accepted);
+        assert_eq!(atomic.proposed_tokens, legacy.proposed);
+        assert_eq!(atomic.accepted_by_position, legacy.accepted_by_position);
+        assert_eq!(atomic.proposed_by_position, legacy.proposed_by_position);
+        assert_eq!(atomic.batch_rounds, legacy.batch_rounds);
+        assert_eq!(atomic.sequence_rounds, legacy.sequence_rounds);
+        assert_eq!(atomic.prefix_sum, legacy.prefix_sum);
+    }
 }

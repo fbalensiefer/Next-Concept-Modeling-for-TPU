@@ -14,6 +14,7 @@ name = "ncm-run"
 path = "rust/src/bin/ncm-run.rs"
 
 [dependencies]
+indicatif = "0.17"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", features = ["preserve_order"] }
 sha2 = "0.10"

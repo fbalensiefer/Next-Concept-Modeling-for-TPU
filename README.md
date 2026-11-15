@@ -27,6 +27,8 @@ cargo run --bin ncm-run -- train \
 
 The [document-separated real-text pilot](reports/real-text-reconstruction/report.md) records reconstruction errors after short training runs. The [dependency controls](reports/text-dependency-priors/report.md) show local dependency gains without establishing a learned-code generation advantage.
 
+The [Rust real128 benchmark record](reports/validation-controls/real128-rust-native/README.md) covers seeds 200–202: the strict validator accepted 351 timing/reference rows, 45 quality rows and 135 checkpoint observations. This records pipeline completion; no speedup or TPU performance claim follows.
+
 Research papers:
 
 - [NCM systems paper (PDF)](output/pdf/ncm_systems_paper.pdf)

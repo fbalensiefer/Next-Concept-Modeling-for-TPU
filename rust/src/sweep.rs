@@ -3,12 +3,13 @@ use crate::{
     corpus,
     rpc::{
         CausalArConfig, CausalArEvaluateRequest, CausalArInitRequest, CausalArTrainStepRequest,
-        CheckpointRequest, EngineClient, EngineConfig, ForwardRequest, GenerateRaggedRequest,
-        GenerateRequest, InitModelRequest, SpeculativeVerifyRaggedRequest, TensorBatch,
+        CheckpointRequest, EngineClient, EngineConfig, ForwardRequest,
+        GenerateAndVerifyAtomicRequest, GenerateRequest, InitModelRequest, TensorBatch,
         TrainStepRequest,
     },
     validation_io,
 };
+use indicatif::{ProgressBar, ProgressStyle};
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value, json};
 use std::{
@@ -1491,6 +1492,227 @@ struct SpecRunConfig {
     seed: u32,
 }
 
+const DRAFTER_PROGRESS_SCHEMA: &str = "ncm-drafter-progress-v1";
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct BenchmarkProgress {
+    schema: String,
+    fingerprint: String,
+    cells: BTreeMap<String, BenchmarkProgressCell>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct BenchmarkProgressCell {
+    status: String,
+    metrics: Map<String, Value>,
+}
+
+fn benchmark_cell_id(
+    seed: u32,
+    prompt_len: usize,
+    drafter: &str,
+    batch_size: usize,
+    draft_len: usize,
+) -> String {
+    let quoted_drafter =
+        serde_json::to_string(drafter).expect("string serialization is infallible");
+    format!(
+        "seed={seed};prompt={prompt_len};drafter={quoted_drafter};batch={batch_size};draft={draft_len}"
+    )
+}
+
+fn benchmark_cell_id_from_metrics(metrics: &Map<String, Value>) -> Result<String, String> {
+    let seed = u32::try_from(
+        metrics
+            .get("seed")
+            .and_then(Value::as_u64)
+            .ok_or("completed progress cell is missing an unsigned seed")?,
+    )
+    .map_err(|error| error.to_string())?;
+    let prompt_len = metrics
+        .get("prompt_len")
+        .and_then(Value::as_u64)
+        .and_then(|value| usize::try_from(value).ok())
+        .ok_or("completed progress cell is missing prompt_len")?;
+    let drafter = metrics
+        .get("drafter")
+        .and_then(Value::as_str)
+        .ok_or("completed progress cell is missing drafter")?;
+    let batch_size = metrics
+        .get("batch")
+        .and_then(Value::as_u64)
+        .and_then(|value| usize::try_from(value).ok())
+        .ok_or("completed progress cell is missing batch")?;
+    let draft_len = metrics
+        .get("draft_len")
+        .and_then(Value::as_u64)
+        .and_then(|value| usize::try_from(value).ok())
+        .ok_or("completed progress cell is missing draft_len")?;
+    Ok(benchmark_cell_id(
+        seed, prompt_len, drafter, batch_size, draft_len,
+    ))
+}
+
+fn persist_benchmark_progress(path: &Path, progress: &BenchmarkProgress) -> Result<(), String> {
+    let bytes = serde_json::to_vec_pretty(progress).map_err(|error| error.to_string())?;
+    let temporary = path.with_extension("tmp");
+    let mut file = fs::File::create(&temporary).map_err(|error| error.to_string())?;
+    file.write_all(&bytes).map_err(|error| error.to_string())?;
+    file.write_all(b"\n").map_err(|error| error.to_string())?;
+    file.sync_all().map_err(|error| error.to_string())?;
+    fs::rename(&temporary, path).map_err(|error| error.to_string())
+}
+
+fn load_benchmark_progress(path: &Path, fingerprint: String) -> Result<BenchmarkProgress, String> {
+    if path.exists() {
+        let bytes = fs::read(path).map_err(|error| error.to_string())?;
+        let progress: BenchmarkProgress = serde_json::from_slice(&bytes)
+            .map_err(|error| format!("invalid drafter progress file: {error}"))?;
+        if progress.schema != DRAFTER_PROGRESS_SCHEMA || progress.fingerprint != fingerprint {
+            return Err("drafter progress file does not match this benchmark protocol or inputs; move it aside before restarting".into());
+        }
+        for (cell_id, cell) in &progress.cells {
+            if cell.status != "completed" {
+                return Err(
+                    "drafter progress file contains a cell with an unsupported status".into(),
+                );
+            }
+            if benchmark_cell_id_from_metrics(&cell.metrics)? != *cell_id {
+                return Err(format!(
+                    "drafter progress cell key does not match its metrics: {cell_id}"
+                ));
+            }
+        }
+        Ok(progress)
+    } else {
+        let progress = BenchmarkProgress {
+            schema: DRAFTER_PROGRESS_SCHEMA.into(),
+            fingerprint,
+            cells: BTreeMap::new(),
+        };
+        persist_benchmark_progress(path, &progress)?;
+        Ok(progress)
+    }
+}
+
+fn complete_benchmark_cell(
+    path: &Path,
+    progress: &mut BenchmarkProgress,
+    cell_id: String,
+    metrics: Map<String, Value>,
+) -> Result<(), String> {
+    progress.cells.insert(
+        cell_id,
+        BenchmarkProgressCell {
+            status: "completed".into(),
+            metrics,
+        },
+    );
+    persist_benchmark_progress(path, progress)
+}
+
+fn checkpoint_fingerprint(path: &Path) -> Result<String, String> {
+    let bytes = fs::read(path).map_err(|error| {
+        format!("could not read checkpoint for drafter progress fingerprint: {error}")
+    })?;
+    Ok(corpus::sha256(&bytes))
+}
+
+struct BenchmarkProgressInputs<'a> {
+    root: &'a Path,
+    sweep_dir: &'a Path,
+    config: &'a SweepConfig,
+    checkpoints: &'a [CheckpointRow],
+    target_arm: &'a str,
+    drafters: &'a [(String, SweepArm)],
+    options: &'a DrafterTimingOptions,
+    validation_sha256: &'a str,
+    strict_protocol: bool,
+}
+
+fn benchmark_progress_fingerprint(input: BenchmarkProgressInputs<'_>) -> Result<String, String> {
+    let BenchmarkProgressInputs {
+        root,
+        sweep_dir,
+        config,
+        checkpoints,
+        target_arm,
+        drafters,
+        options,
+        validation_sha256,
+        strict_protocol,
+    } = input;
+    let mut checkpoint_hashes = Vec::new();
+    for seed in &config.seeds {
+        if target_arm == "teacher" {
+            let relative = teacher_checkpoint_path(root, sweep_dir, *seed)?;
+            let absolute = resolve(root, sweep_dir).join(relative);
+            checkpoint_hashes.push(json!({
+                "seed": seed,
+                "prompt_len": Value::Null,
+                "arm": "teacher",
+                "sha256": checkpoint_fingerprint(&absolute)?,
+            }));
+        } else {
+            for prompt_len in &config.prompt_lengths {
+                let checkpoint = checkpoints
+                    .iter()
+                    .find(|checkpoint| {
+                        checkpoint.seed == *seed
+                            && checkpoint.prompt_len == *prompt_len
+                            && checkpoint.arm == target_arm
+                            && checkpoint.step == config.steps
+                    })
+                    .ok_or_else(|| {
+                        format!(
+                            "target final checkpoint missing for seed {seed}, prompt {prompt_len}"
+                        )
+                    })?;
+                checkpoint_hashes.push(json!({
+                    "seed": seed,
+                    "prompt_len": prompt_len,
+                    "arm": target_arm,
+                    "sha256": checkpoint_fingerprint(&resolve(root, sweep_dir).join(&checkpoint.path))?,
+                }));
+            }
+        }
+        for prompt_len in &config.prompt_lengths {
+            for (_, spec) in drafters {
+                let checkpoint = checkpoints
+                    .iter()
+                    .find(|checkpoint| {
+                        checkpoint.seed == *seed
+                            && checkpoint.prompt_len == *prompt_len
+                            && checkpoint.arm == spec.name
+                            && checkpoint.step == config.steps
+                    })
+                    .ok_or_else(|| format!("final checkpoint missing for {}", spec.name))?;
+                checkpoint_hashes.push(json!({
+                    "seed": seed,
+                    "prompt_len": prompt_len,
+                    "arm": spec.name,
+                    "sha256": checkpoint_fingerprint(&resolve(root, sweep_dir).join(&checkpoint.path))?,
+                }));
+            }
+        }
+    }
+    let payload = json!({
+        "schema": DRAFTER_PROGRESS_SCHEMA,
+        "implementation": validation_io::identity(root)?,
+        "config": config,
+        "target_arm": target_arm,
+        "drafters": drafters,
+        "options": options,
+        "validation_sha256": validation_sha256,
+        "strict_protocol": strict_protocol,
+        "checkpoint_hashes": checkpoint_hashes,
+    });
+    let canonical = serde_json::to_vec(&payload).map_err(|error| error.to_string())?;
+    Ok(corpus::sha256(&canonical))
+}
+
 fn derive_seed(
     seed: u32,
     prompt_len: usize,
@@ -1515,19 +1737,6 @@ fn derive_seed(
     value as u32
 }
 
-fn pad_rows(rows: &[Vec<i32>], min_width: usize) -> (Vec<Vec<i32>>, Vec<usize>) {
-    let width = rows.iter().map(Vec::len).max().unwrap_or(0).max(min_width);
-    let padded = rows
-        .iter()
-        .map(|row| {
-            let mut value = row.clone();
-            value.resize(width, 0);
-            value
-        })
-        .collect();
-    (padded, rows.iter().map(Vec::len).collect())
-}
-
 fn run_speculative_observation(
     engine: &mut EngineClient,
     target: &Session,
@@ -1536,144 +1745,34 @@ fn run_speculative_observation(
     run: &SpecRunConfig,
 ) -> Result<SpecObservation, String> {
     let started = Instant::now();
-    let mut contexts = prompts.to_vec();
-    let mut result = SpecObservation {
-        accepted_by_position: vec![0; run.draft_len],
-        proposed_by_position: vec![0; run.draft_len],
-        ..SpecObservation::default()
-    };
-    while contexts
-        .iter()
-        .any(|row| row.len() - run.prompt_len < run.output_len)
+    let result = engine.generate_and_verify_atomic(&GenerateAndVerifyAtomicRequest {
+        target_engine_id: target.engine_id.clone(),
+        drafter_engine_id: drafter.engine_id.clone(),
+        prompts: prompts.to_vec(),
+        prompt_len: run.prompt_len,
+        output_len: run.output_len,
+        draft_len: run.draft_len,
+        temperature: run.temperature,
+        top_k: run.top_k,
+        seed: run.seed,
+    })?;
+    if result.tokens.len() != prompts.len()
+        || result.tokens.iter().any(|row| row.len() != run.output_len)
+        || result.accepted_by_position.len() != run.draft_len
+        || result.proposed_by_position.len() != run.draft_len
     {
-        let active = contexts
-            .iter()
-            .enumerate()
-            .filter_map(|(i, row)| (row.len() - run.prompt_len < run.output_len).then_some(i))
-            .collect::<Vec<_>>();
-        let remaining = active
-            .iter()
-            .map(|i| run.output_len - (contexts[*i].len() - run.prompt_len))
-            .min()
-            .unwrap_or(0);
-        let width = run.draft_len.min(remaining);
-        if width == 0 {
-            return Err("speculative scheduler encountered an empty active row".into());
-        }
-        result.batch_rounds += 1;
-        result.sequence_rounds += active.len();
-        result.prefix_sum += active.iter().map(|i| contexts[*i].len()).sum::<usize>();
-        let active_contexts = active
-            .iter()
-            .map(|i| contexts[*i].clone())
-            .collect::<Vec<_>>();
-        let (draft_prompts, generated) = match &drafter.model {
-            SweepModel::Ncm(_) => {
-                let rows = if run.prompt_len == 0 {
-                    active_contexts
-                        .iter()
-                        .map(|_| Vec::new())
-                        .collect::<Vec<_>>()
-                } else {
-                    active_contexts
-                        .iter()
-                        .map(|row| row[row.len() - run.prompt_len..].to_vec())
-                        .collect()
-                };
-                let generated = engine.generate(&GenerateRequest {
-                    engine_id: drafter.engine_id.clone(),
-                    prompts: rows.clone(),
-                    max_new_tokens: width,
-                    temperature: run.temperature,
-                    top_k: run.top_k,
-                    seed: derive_seed(
-                        run.seed,
-                        run.prompt_len,
-                        prompts.len(),
-                        run.draft_len,
-                        0,
-                        result.batch_rounds,
-                        1,
-                    ),
-                })?;
-                (rows, generated)
-            }
-            SweepModel::CausalAr(_) => {
-                let (padded, lengths) = pad_rows(&active_contexts, 1);
-                let generated = engine.generate_ragged(&GenerateRaggedRequest {
-                    engine_id: drafter.engine_id.clone(),
-                    prompts: padded.clone(),
-                    prompt_lengths: lengths,
-                    max_new_tokens: width,
-                    temperature: run.temperature,
-                    top_k: run.top_k,
-                    seed: derive_seed(
-                        run.seed,
-                        run.prompt_len,
-                        prompts.len(),
-                        run.draft_len,
-                        0,
-                        result.batch_rounds,
-                        1,
-                    ),
-                })?;
-                (padded, generated)
-            }
-        };
-        let _ = draft_prompts;
-        if generated.tokens.len() != active.len() || generated.probabilities.len() != active.len() {
-            return Err("drafter returned a mismatched batch".into());
-        }
-        let (prefixes, prefix_lengths) = pad_rows(&active_contexts, 0);
-        let verified = engine.speculative_verify_ragged(&SpeculativeVerifyRaggedRequest {
-            engine_id: target.engine_id.clone(),
-            prefixes,
-            prefix_lengths,
-            draft_tokens: generated.tokens.clone(),
-            proposal_probs: generated.probabilities,
-            temperature: run.temperature,
-            top_k: run.top_k,
-            seed: derive_seed(
-                run.seed,
-                run.prompt_len,
-                prompts.len(),
-                run.draft_len,
-                0,
-                result.batch_rounds,
-                2,
-            ),
-        })?;
-        for (local, global) in active.iter().enumerate() {
-            let proposed = generated.tokens[local].len();
-            let accepted = *verified
-                .accepted_lengths
-                .get(local)
-                .ok_or("verifier omitted accepted length")?;
-            if accepted > proposed || generated.tokens[local].len() != width {
-                return Err("verifier acceptance or proposal width is invalid".into());
-            }
-            result.accepted += accepted;
-            result.proposed += proposed;
-            for pos in 0..proposed {
-                result.proposed_by_position[pos] += 1;
-                if pos < accepted {
-                    result.accepted_by_position[pos] += 1;
-                }
-            }
-            contexts[*global].extend_from_slice(&generated.tokens[local][..accepted]);
-            if contexts[*global].len() - run.prompt_len < run.output_len {
-                let bonus = verified
-                    .tokens
-                    .get(local)
-                    .and_then(|row| row.get(width))
-                    .copied()
-                    .ok_or("verifier omitted correction/bonus token")?;
-                contexts[*global].push(bonus);
-            }
-        }
+        return Err("atomic speculative worker returned invalid output shapes".into());
     }
-    result.elapsed_ms = started.elapsed().as_secs_f64() * 1000.0;
-    Ok(result)
+    Ok(SpecObservation {
+        elapsed_ms: started.elapsed().as_secs_f64() * 1000.0,
+        accepted: result.accepted_tokens,
+        proposed: result.proposed_tokens,
+        batch_rounds: result.batch_rounds,
+        sequence_rounds: result.sequence_rounds,
+        prefix_sum: result.prefix_sum,
+        accepted_by_position: result.accepted_by_position,
+        proposed_by_position: result.proposed_by_position,
+    })
 }
 
 fn median(values: &mut [f64]) -> f64 {
@@ -1924,10 +2023,101 @@ pub fn benchmark_drafters(
         config.max_prompt_len,
         config.sequence_length,
     );
+    let fingerprint = benchmark_progress_fingerprint(BenchmarkProgressInputs {
+        root,
+        sweep_dir,
+        config: &config,
+        checkpoints: &checkpoints,
+        target_arm,
+        drafters: &drafter_specs,
+        options,
+        validation_sha256: &valid.sha256,
+        strict_protocol,
+    })?;
+    let progress_path = output.join("sweep_progress.json");
+    let mut progress = load_benchmark_progress(&progress_path, fingerprint)?;
+    let mut expected_cells = BTreeSet::new();
+    for seed in &config.seeds {
+        for prompt_len in &config.prompt_lengths {
+            for batch_size in &options.batch_sizes {
+                expected_cells.insert(benchmark_cell_id(
+                    *seed,
+                    *prompt_len,
+                    "cached_teacher_reference",
+                    *batch_size,
+                    0,
+                ));
+                for (label, _) in &drafter_specs {
+                    for draft_len in &options.draft_lengths {
+                        expected_cells.insert(benchmark_cell_id(
+                            *seed,
+                            *prompt_len,
+                            label,
+                            *batch_size,
+                            *draft_len,
+                        ));
+                    }
+                }
+            }
+        }
+    }
+    if progress
+        .cells
+        .keys()
+        .any(|cell_id| !expected_cells.contains(cell_id))
+    {
+        return Err(
+            "drafter progress file contains cells outside the configured benchmark grid".into(),
+        );
+    }
+    let progress_bar = ProgressBar::new(expected_cells.len() as u64);
+    progress_bar.set_style(
+        ProgressStyle::with_template("{wide_bar} {pos}/{len} {msg}")
+            .unwrap_or_else(|_| ProgressStyle::default_bar()),
+    );
+    progress_bar.set_message("benchmark-drafters");
     let mut rows = Vec::<Map<String, Value>>::new();
     let mut contexts_total = 0usize;
     for seed in &config.seeds {
         for prompt_len in &config.prompt_lengths {
+            let mut context_cell_ids = Vec::new();
+            for batch_size in &options.batch_sizes {
+                context_cell_ids.push(benchmark_cell_id(
+                    *seed,
+                    *prompt_len,
+                    "cached_teacher_reference",
+                    *batch_size,
+                    0,
+                ));
+            }
+            for (label, _) in &drafter_specs {
+                for draft_len in &options.draft_lengths {
+                    for batch_size in &options.batch_sizes {
+                        context_cell_ids.push(benchmark_cell_id(
+                            *seed,
+                            *prompt_len,
+                            label,
+                            *batch_size,
+                            *draft_len,
+                        ));
+                    }
+                }
+            }
+            if context_cell_ids
+                .iter()
+                .all(|cell_id| progress.cells.contains_key(cell_id))
+            {
+                for cell_id in context_cell_ids {
+                    let cell = progress
+                        .cells
+                        .get(&cell_id)
+                        .ok_or("completed benchmark cell disappeared")?;
+                    rows.push(cell.metrics.clone());
+                    progress_bar.inc(1);
+                    contexts_total += 1;
+                }
+                continue;
+            }
             let mut engine = EngineClient::start(root)?;
             let target = if target_arm == "teacher" {
                 let teacher_config = config.teacher.as_ref().ok_or("teacher config missing")?;
@@ -1995,6 +2185,23 @@ pub fn benchmark_drafters(
             let prompt_hash = benchmark_rows_hash(&valid, &selected, prompt_start, *prompt_len);
             let mut reference_by_batch = std::collections::BTreeMap::new();
             for batch_size in &options.batch_sizes {
+                let cell_id = benchmark_cell_id(
+                    *seed,
+                    *prompt_len,
+                    "cached_teacher_reference",
+                    *batch_size,
+                    0,
+                );
+                if let Some(cell) = progress.cells.get(&cell_id) {
+                    let median_ms = cell.metrics["median_ms"]
+                        .as_f64()
+                        .ok_or("completed reference cell has no numeric median_ms")?;
+                    reference_by_batch.insert(*batch_size, median_ms);
+                    rows.push(cell.metrics.clone());
+                    progress_bar.inc(1);
+                    contexts_total += 1;
+                    continue;
+                }
                 let row_ids = (0..*batch_size)
                     .map(|i| selected[i % selected.len()])
                     .collect::<Vec<_>>();
@@ -2006,7 +2213,7 @@ pub fn benchmark_drafters(
                 let mut last_tokens = Vec::new();
                 for repetition in 0..(options.warmups + options.repetitions) {
                     let started = Instant::now();
-                    let generated = engine.generate(&GenerateRequest {
+                    let generated = engine.generate_tokens(&GenerateRequest {
                         engine_id: target.engine_id.clone(),
                         prompts: prompts.clone(),
                         max_new_tokens: config.sequence_length,
@@ -2052,12 +2259,22 @@ pub fn benchmark_drafters(
                 row.insert("continuation_sha256".into(), json!(continuation_hash));
                 row.insert("prompt_bucket_sha256".into(), json!(prompt_hash));
                 row.insert("tokens".into(), json!(last_tokens));
+                complete_benchmark_cell(&progress_path, &mut progress, cell_id, row.clone())?;
+                progress_bar.inc(1);
                 rows.push(row);
                 contexts_total += 1;
             }
             for (label, draft) in &loaded_drafters {
                 for draft_len in &options.draft_lengths {
                     for batch_size in &options.batch_sizes {
+                        let cell_id =
+                            benchmark_cell_id(*seed, *prompt_len, label, *batch_size, *draft_len);
+                        if let Some(cell) = progress.cells.get(&cell_id) {
+                            rows.push(cell.metrics.clone());
+                            progress_bar.inc(1);
+                            contexts_total += 1;
+                            continue;
+                        }
                         let row_ids = (0..*batch_size)
                             .map(|i| selected[i % selected.len()])
                             .collect::<Vec<_>>();
@@ -2208,6 +2425,13 @@ pub fn benchmark_drafters(
                         row.insert("bpb_kind".into(), json!("exact_teacher"));
                         row.insert("continuation_sha256".into(), json!(continuation_hash));
                         row.insert("prompt_bucket_sha256".into(), json!(prompt_hash));
+                        complete_benchmark_cell(
+                            &progress_path,
+                            &mut progress,
+                            cell_id,
+                            row.clone(),
+                        )?;
+                        progress_bar.inc(1);
                         rows.push(row);
                         contexts_total += 1;
                     }
@@ -2231,6 +2455,13 @@ pub fn benchmark_drafters(
             rows.len()
         ));
     }
+    if progress.cells.len() != expected {
+        return Err(format!(
+            "drafter progress has {} completed cells, expected {expected}",
+            progress.cells.len()
+        ));
+    }
+    progress_bar.finish_with_message("benchmark-drafters complete");
     let rows_json = rows.iter().cloned().map(Value::Object).collect::<Vec<_>>();
     validation_io::write_json(
         output.join("drafter_comparison.json"),
@@ -2714,6 +2945,38 @@ mod tests {
             validate_suite(&root, &dir, 12, 6, 6)
                 .unwrap_err()
                 .contains("duplicate timing cell")
+        );
+        fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn drafter_progress_persists_metrics_and_rejects_stale_protocols() {
+        let dir = std::env::temp_dir().join(format!(
+            "ncm drafter progress {} {}",
+            std::process::id(),
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("sweep_progress.json");
+        let fingerprint = "protocol-hash-a".to_owned();
+        let mut progress = load_benchmark_progress(&path, fingerprint.clone()).unwrap();
+        let cell_id = benchmark_cell_id(200, 16, "ncm", 128, 8);
+        let metrics = json!({"seed":200,"prompt_len":16,"drafter":"ncm","batch":128,"draft_len":8,"median_ms":12.5})
+            .as_object()
+            .unwrap()
+            .clone();
+        complete_benchmark_cell(&path, &mut progress, cell_id.clone(), metrics).unwrap();
+
+        let resumed = load_benchmark_progress(&path, fingerprint).unwrap();
+        assert_eq!(resumed.cells[&cell_id].status, "completed");
+        assert_eq!(resumed.cells[&cell_id].metrics["median_ms"], 12.5);
+        assert!(load_benchmark_progress(&path, "different-protocol".into()).is_err());
+        assert_ne!(
+            benchmark_cell_id(200, 16, "ncm", 128, 8),
+            benchmark_cell_id(200, 16, "ncm", 16, 8)
         );
         fs::remove_dir_all(dir).unwrap();
     }

@@ -292,6 +292,10 @@ pub struct GenerateRequest {
     pub seed: u32,
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct GenerateTokensResponse {
+    pub tokens: Vec<Vec<i32>>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct GenerateRaggedRequest {
     pub engine_id: String,
     pub prompts: Vec<Vec<i32>>,
@@ -351,6 +355,33 @@ pub struct SpeculativeVerifyResponse {
     pub accepted_lengths: Vec<usize>,
     pub acceptance_rate: f64,
     pub accepted_mask: Vec<Vec<bool>>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct GenerateAndVerifyAtomicRequest {
+    pub target_engine_id: String,
+    pub drafter_engine_id: String,
+    pub prompts: Vec<Vec<i32>>,
+    pub prompt_len: usize,
+    pub output_len: usize,
+    pub draft_len: usize,
+    pub temperature: f32,
+    pub top_k: usize,
+    pub seed: u32,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct GenerateAndVerifyAtomicResponse {
+    /// Generated continuation tokens, excluding each original prompt.
+    pub tokens: Vec<Vec<u32>>,
+    pub accepted_tokens: usize,
+    pub proposed_tokens: usize,
+    pub accepted_by_position: Vec<usize>,
+    pub proposed_by_position: Vec<usize>,
+    pub batch_rounds: usize,
+    pub sequence_rounds: usize,
+    pub prefix_sum: usize,
+    pub acceptance_rate: f64,
+    /// Worker wall time for generation and verification only.
+    pub engine_elapsed_ms: f64,
 }
 
 pub struct EngineClient {
@@ -505,6 +536,12 @@ impl EngineClient {
     pub fn generate(&mut self, request: &GenerateRequest) -> Result<GenerateResponse, String> {
         self.call("generate", request)
     }
+    pub fn generate_tokens(
+        &mut self,
+        request: &GenerateRequest,
+    ) -> Result<GenerateTokensResponse, String> {
+        self.call("generate_tokens", request)
+    }
     pub fn generate_ragged(
         &mut self,
         request: &GenerateRaggedRequest,
@@ -528,6 +565,12 @@ impl EngineClient {
         request: &SpeculativeVerifyRaggedRequest,
     ) -> Result<SpeculativeVerifyResponse, String> {
         self.call("speculative_verify", request)
+    }
+    pub fn generate_and_verify_atomic(
+        &mut self,
+        request: &GenerateAndVerifyAtomicRequest,
+    ) -> Result<GenerateAndVerifyAtomicResponse, String> {
+        self.call("generate_and_verify_atomic", request)
     }
 }
 impl Drop for EngineClient {

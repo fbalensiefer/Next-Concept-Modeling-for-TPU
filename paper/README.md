@@ -7,6 +7,8 @@ Both papers are authored by Fabian Balensiefer. The November 12, 2026 research e
 
 They describe shared experiments, not independent replications. The historical 20-model stability success remains valid within its domain. The later 360-run study finds failures under every quantizer condition; 480 training-only fits on frozen reference codecs demonstrate dependency-model improvements. No pretrained transfer, natural-language quality, total adaptation savings or TPU performance is established. Production defaults remain unchanged.
 
+The November 15 Rust-orchestrated real128 run is described concisely in the shared findings included by both papers. Its [run record](../reports/validation-controls/real128-rust-native/README.md) documents complete structural validation and the limits of the evidence.
+
 ## Build and check
 
 Use Rust, Python 3.12, and Tectonic with the packages in `shared_preamble.tex`. Set `NCM_PYTHON` to the project Python environment and `NCM_TECTONIC` if Tectonic is not on PATH:

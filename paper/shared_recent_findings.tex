@@ -1,3 +1,17 @@
+\subsection{Rust-orchestrated real-text benchmark record}
+The November 15, 2026 run completed the versioned real128 protocol for seeds
+200--202 and prompt lengths 0, 16 and 64. Rust controlled training, evaluation,
+checkpoint audits and reporting; a headless JAX/Flax worker performed numerical
+model operations. Resumable timing cells and an atomic generation/verification
+request kept intermediate probability tensors inside the worker.
+The strict suite validator accepted all 351 timing/reference rows, 45 quality
+rows and 135 checkpoint observations, including the expected parameter
+combinations and signature checks. Results are archived separately from the
+historical CPU record in \texttt{reports/validation-controls/real128-rust-native/}.
+This establishes completion and structural validity of the migrated pipeline;
+it does not establish numerical identity to historical runs, a measured speedup,
+or TPU performance. The CPU timing stage still required hours.
+
 \subsection{Matched maintenance ablations and fresh source distributions}
 The historical 20-model stability result above remains conditional on its
 original domain. A subsequent 100-run paired ablation reused seeds 13--17,

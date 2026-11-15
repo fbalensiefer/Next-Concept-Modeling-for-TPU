@@ -161,6 +161,214 @@ def _verify_ar_proposals(model, model_params, prefixes, prefix_lengths, drafts,
     return returned, prefix_accept, accepted_mask
 
 
+def _verify_arrays(entry, prefixes, prefix_lengths, drafts, proposal_probs,
+                   temperature, top_k, seed, trusted_proposals=False):
+    """Verify JAX proposal arrays; trusted internal proposals avoid host copies."""
+    import jax
+    import jax.numpy as jnp
+    import math
+    import numpy as np
+
+    if entry.get("kind") != "causal_ar":
+        raise ValueError("engine_id is not a causal AR model")
+    prefixes = jnp.asarray(prefixes, jnp.int32)
+    drafts = jnp.asarray(drafts, jnp.int32)
+    proposal_probs = jnp.asarray(proposal_probs, jnp.float32)
+    if prefixes.ndim != 2 or drafts.ndim != 2 or proposal_probs.ndim != 3:
+        raise ValueError("prefixes/drafts/proposal_probs have invalid rank")
+    batch, prompt_len = prefixes.shape
+    draft_len = drafts.shape[1]
+    if drafts.shape[0] != batch or proposal_probs.shape != (batch, draft_len, 256):
+        raise ValueError("proposal probabilities must be [batch,draft_len,256]")
+    prefix_lengths = jnp.asarray(prefix_lengths, jnp.int32)
+    if prefix_lengths.shape != (batch,) or bool(jnp.any(prefix_lengths < 0)) or bool(jnp.any(prefix_lengths > prompt_len)):
+        raise ValueError("prefix_lengths must fit the padded prefix width")
+    if int(prefix_lengths.max()) + draft_len + 1 > entry["model"].max_length or draft_len == 0:
+        raise ValueError("prefix and draft exceed AR model capacity")
+    if not math.isfinite(temperature) or temperature < 0 or not 0 <= top_k <= 256:
+        raise ValueError("temperature must be finite and nonnegative; top_k must be in 0..=256")
+    if not trusted_proposals:
+        qsum = np.asarray(proposal_probs.sum(-1))
+        prefix_values, draft_values = np.asarray(prefixes), np.asarray(drafts)
+        valid_prefix_mask = np.arange(prompt_len)[None, :] < np.asarray(prefix_lengths)[:, None]
+        if (np.any(prefix_values[valid_prefix_mask] < 0) or np.any(prefix_values[valid_prefix_mask] > 255)
+                or np.any(draft_values < 0) or np.any(draft_values > 255)):
+            raise ValueError("prefix and draft tokens must be byte IDs in 0..255")
+        if np.any(~np.isfinite(qsum)) or np.any(np.abs(qsum-1.) > 1e-4) or np.any(np.asarray(proposal_probs) < 0):
+            raise ValueError("proposal distributions must be finite, nonnegative and normalized")
+    cache_key = (prompt_len, draft_len, batch, temperature, top_k)
+    if cache_key not in entry["spec_verify"]:
+        model = entry["model"]
+        entry["spec_verify"][cache_key] = jax.jit(
+            lambda model_params, pfx, pfx_lengths, drf, q, key: _verify_ar_proposals(
+                model, model_params, pfx, pfx_lengths, drf, q, key, temperature, top_k
+            )
+        )
+    returned, prefix_accept, accepted_mask = entry["spec_verify"][cache_key](
+        entry["params"], prefixes, prefix_lengths, drafts, proposal_probs,
+        jax.random.PRNGKey(seed & 0xffffffff),
+    )
+    return returned, prefix_accept, accepted_mask
+
+
+def _derive_benchmark_seed(seed, prompt_len, batch, draft, repetition, round_index, stream):
+    """Mirror rust/src/sweep.rs::derive_seed exactly for per-round RNG parity."""
+    mask = (1 << 64) - 1
+
+    def rotl(value, shift):
+        value &= mask
+        return ((value << shift) | (value >> (64 - shift))) & mask
+
+    value = (
+        (seed & mask)
+        ^ ((prompt_len * 0x9e3779b97f4a7c15) & mask)
+        ^ rotl(batch, 11)
+        ^ rotl(draft, 23)
+        ^ ((repetition * 0xd6e8feb86659fd93) & mask)
+        ^ ((round_index * 0xa0761d6478bd642f) & mask)
+        ^ (stream & mask)
+    )
+    value ^= value >> 30
+    value = (value * 0xbf58476d1ce4e5b9) & mask
+    value ^= value >> 27
+    value = (value * 0x94d049bb133111eb) & mask
+    value ^= value >> 31
+    return value & 0xffffffff
+
+
+def _pad_rows(rows, min_width=0):
+    width = max(max((len(row) for row in rows), default=0), min_width)
+    return ([list(row) + [0] * (width - len(row)) for row in rows],
+            [len(row) for row in rows])
+
+
+def _generate_and_verify_atomic(params):
+    """Run one whole speculative observation, retaining q distributions in JAX."""
+    import jax
+    import jax.numpy as jnp
+    import numpy as np
+
+    try:
+        target = _models[params["target_engine_id"]]
+        drafter = _models[params["drafter_engine_id"]]
+    except KeyError as error:
+        raise ValueError("unknown target or drafter engine_id") from error
+    if target.get("kind") != "causal_ar":
+        raise ValueError("target engine_id must identify a causal AR model")
+    if drafter.get("kind") not in {"causal_ar", "ncm"}:
+        raise ValueError("drafter engine_id must identify a supported model")
+
+    prompts = [list(map(int, row)) for row in params["prompts"]]
+    prompt_len = int(params["prompt_len"])
+    output_len = int(params["output_len"])
+    draft_len = int(params["draft_len"])
+    temperature = float(params.get("temperature", 1.0))
+    top_k = int(params.get("top_k", 0))
+    seed = int(params["seed"])
+    if not prompts or prompt_len < 0 or output_len < 1 or draft_len < 1:
+        raise ValueError("atomic speculative request requires prompts and positive output/draft lengths")
+    if any(len(row) != prompt_len for row in prompts):
+        raise ValueError("each prompt must match prompt_len")
+    if any(token < 0 or token > 255 for row in prompts for token in row):
+        raise ValueError("prompt tokens must be byte IDs in 0..255")
+    if not np.isfinite(temperature) or temperature < 0 or not 0 <= top_k <= 256:
+        raise ValueError("temperature must be finite and nonnegative; top_k must be in 0..=256")
+
+    contexts = [row.copy() for row in prompts]
+    batch_size = len(prompts)
+    accepted_total = 0
+    proposed_total = 0
+    batch_rounds = 0
+    sequence_rounds = 0
+    prefix_sum = 0
+    accepted_by_position = [0] * draft_len
+    proposed_by_position = [0] * draft_len
+    started = time.perf_counter()
+
+    while any(len(row) - prompt_len < output_len for row in contexts):
+        active = [i for i, row in enumerate(contexts)
+                  if len(row) - prompt_len < output_len]
+        remaining = min(output_len - (len(contexts[i]) - prompt_len) for i in active)
+        width = min(draft_len, remaining)
+        if width < 1:
+            raise ValueError("speculative scheduler encountered an empty active row")
+        batch_rounds += 1
+        sequence_rounds += len(active)
+        active_contexts = [contexts[i].copy() for i in active]
+        prefix_sum += sum(len(row) for row in active_contexts)
+
+        if drafter.get("kind") == "ncm":
+            draft_prompts = (
+                [[] for _ in active_contexts]
+                if prompt_len == 0
+                else [row[-prompt_len:] for row in active_contexts]
+            )
+            draft_prompt_array = jnp.asarray(draft_prompts, jnp.int32)
+            draft_prompt_lengths = None
+        else:
+            draft_prompts, draft_prompt_lengths = _pad_rows(active_contexts, 1)
+            draft_prompt_array = jnp.asarray(draft_prompts, jnp.int32)
+
+        draft_seed = _derive_benchmark_seed(
+            seed, prompt_len, batch_size, draft_len, 0, batch_rounds, 1
+        )
+        generated_tokens, proposal_probs = _generate_arrays(
+            drafter, draft_prompt_array, draft_prompt_lengths, width,
+            temperature, top_k, draft_seed
+        )
+        prefixes, prefix_lengths = _pad_rows(active_contexts, 0)
+        verify_seed = _derive_benchmark_seed(
+            seed, prompt_len, batch_size, draft_len, 0, batch_rounds, 2
+        )
+        verified_tokens, accepted_lengths, _ = _verify_arrays(
+            target, jnp.asarray(prefixes, jnp.int32), prefix_lengths,
+            generated_tokens, proposal_probs, temperature, top_k, verify_seed,
+            trusted_proposals=True,
+        )
+
+        # Only compact token and count arrays cross from the accelerator to the
+        # worker host. Proposal distributions never leave JAX memory.
+        generated_host, verified_host, accepted_host = jax.device_get(
+            (generated_tokens, verified_tokens, accepted_lengths)
+        )
+        generated_host = np.asarray(generated_host, dtype=np.int32).tolist()
+        verified_host = np.asarray(verified_host, dtype=np.int32).tolist()
+        accepted_host = np.asarray(accepted_host, dtype=np.int32).tolist()
+        for local, global_index in enumerate(active):
+            accepted = int(accepted_host[local])
+            if accepted < 0 or accepted > width or len(generated_host[local]) != width:
+                raise ValueError("verifier acceptance or proposal width is invalid")
+            accepted_total += accepted
+            proposed_total += width
+            for position in range(width):
+                proposed_by_position[position] += 1
+                if position < accepted:
+                    accepted_by_position[position] += 1
+            contexts[global_index].extend(generated_host[local][:accepted])
+            if len(contexts[global_index]) - prompt_len < output_len:
+                bonus = verified_host[local][width]
+                contexts[global_index].append(int(bonus))
+
+    continuations = [
+        [int(token) for token in row[prompt_len:prompt_len + output_len]]
+        for row in contexts
+    ]
+    if any(len(row) != output_len for row in continuations):
+        raise ValueError("atomic speculative output did not reach the requested length")
+    return {
+        "tokens": continuations,
+        "accepted_tokens": accepted_total,
+        "proposed_tokens": proposed_total,
+        "accepted_by_position": accepted_by_position,
+        "proposed_by_position": proposed_by_position,
+        "batch_rounds": batch_rounds,
+        "sequence_rounds": sequence_rounds,
+        "prefix_sum": prefix_sum,
+        "acceptance_rate": accepted_total / max(proposed_total, 1),
+        "engine_elapsed_ms": (time.perf_counter() - started) * 1000.0,
+    }
+
+
 def _generate_ncm(model, model_params, codebooks, prompts, length, key, temperature, top_k):
     import jax
     import jax.numpy as jnp
@@ -255,6 +463,179 @@ def _generate_ar_ragged(model, model_params, prompts, prompt_lengths, length, ke
     return tokens.T, jnp.transpose(probabilities, (1, 0, 2))
 
 
+def _generate_arrays(entry, prompts, prompt_lengths, max_new_tokens, temperature, top_k, seed):
+    """Generate JAX arrays without converting intermediate proposals to JSON."""
+    import jax
+    import jax.numpy as jnp
+    import math
+
+    if prompts.ndim != 2 or prompts.shape[0] < 1:
+        raise ValueError("prompts must have shape [nonempty batch, prompt_length]")
+    if prompt_lengths is not None:
+        prompt_lengths = jnp.asarray(prompt_lengths, jnp.int32)
+        if prompt_lengths.shape != (prompts.shape[0],):
+            raise ValueError("prompt_lengths must have one entry per prompt")
+        if bool(jnp.any(prompt_lengths < 0)) or bool(jnp.any(prompt_lengths > prompts.shape[1])):
+            raise ValueError("prompt_lengths must fit the padded prompt width")
+    if max_new_tokens < 1:
+        raise ValueError("max_new_tokens must be positive")
+    if not math.isfinite(temperature) or temperature < 0 or not 0 <= top_k <= 256:
+        raise ValueError("temperature must be finite and nonnegative; top_k must be in 0..=256")
+
+    key = jax.random.PRNGKey(seed & 0xffffffff)
+    if entry.get("kind") == "ncm":
+        if max_new_tokens > entry["model"].rvq.max_length:
+            raise ValueError("continuation exceeds NCM codec bucket")
+        if prompts.shape[1] != entry["model"].config.prompt_len:
+            raise ValueError("prompt length must match NCM model config")
+        if prompt_lengths is not None and bool(jnp.any(prompt_lengths != prompts.shape[1])):
+            raise ValueError("NCM prompts must use the configured fixed prompt length")
+        if prompts.size and (int(prompts.min()) < 0 or int(prompts.max()) > 255):
+            raise ValueError("prompt tokens must be byte IDs in 0..255")
+        cache_key = (max_new_tokens, temperature, top_k)
+        if cache_key not in entry["generate"]:
+            model = entry["model"]
+            entry["generate"][cache_key] = jax.jit(
+                lambda model_params, codebooks, prompt, key: _generate_ncm(
+                    model, model_params, codebooks, prompt, max_new_tokens, key,
+                    temperature, top_k
+                )
+            )
+        tokens, probabilities = entry["generate"][cache_key](
+            entry["state"].params, entry["state"].codebooks, prompts, key
+        )
+        return tokens[:, :max_new_tokens], probabilities[:, :max_new_tokens]
+
+    if entry.get("kind") != "causal_ar":
+        raise ValueError("engine_id is not a causal AR model")
+    max_prompt_len = prompts.shape[1] if prompt_lengths is None else int(prompt_lengths.max())
+    if max_prompt_len + max_new_tokens > entry["model"].max_length:
+        raise ValueError("prompt plus continuation exceeds max_length")
+    if prompt_lengths is not None:
+        cache_key = ("ragged", prompts.shape[1], max_new_tokens, temperature, top_k)
+        if cache_key not in entry["generate"]:
+            model = entry["model"]
+            entry["generate"][cache_key] = jax.jit(
+                lambda model_params, padded, lengths, rng: _generate_ar_ragged(
+                    model, model_params, padded, lengths, max_new_tokens, rng,
+                    temperature, top_k
+                )
+            )
+        return entry["generate"][cache_key](
+            entry["params"], prompts, prompt_lengths, key
+        )
+
+    cache_key = (max_new_tokens, temperature, top_k)
+    if cache_key not in entry["generate"]:
+        model = entry["model"]
+
+        def generate(model_params, prompt, rng):
+            batch_size, prompt_len = prompt.shape
+            shape = (batch_size, model.max_length, model.config.heads,
+                     model.config.width // model.config.heads)
+            cache = tuple((jnp.zeros(shape), jnp.zeros(shape))
+                          for _ in range(model.config.layers))
+            inputs = jnp.concatenate([jnp.full((batch_size, 1), 256, jnp.int32), prompt], axis=1)
+
+            def prefill(cache, i):
+                _, cache = model.apply({"params": model_params}, inputs[:, i], i, cache,
+                                       method=model.decode_step)
+                return cache, None
+
+            cache, _ = jax.lax.scan(prefill, cache, jnp.arange(prompt_len))
+
+            def step(carry, i):
+                previous, cache = carry
+                logits, cache = model.apply({"params": model_params}, previous, prompt_len+i,
+                                            cache, method=model.decode_step)
+                if temperature > 0:
+                    logits = logits / temperature
+                    if top_k:
+                        cutoff = jax.lax.top_k(logits, top_k)[0][..., -1:]
+                        logits = jnp.where(logits >= cutoff, logits, -jnp.inf)
+                    probabilities = jax.nn.softmax(logits, -1)
+                    token = jax.random.categorical(jax.random.fold_in(rng, i), logits)
+                else:
+                    token = logits.argmax(-1)
+                    probabilities = jax.nn.one_hot(token, 256)
+                token = token.astype(jnp.int32)
+                return (token, cache), (token, probabilities)
+
+            _, (generated, probabilities) = jax.lax.scan(
+                step, (inputs[:, -1], cache), jnp.arange(max_new_tokens)
+            )
+            return generated.T, jnp.transpose(probabilities, (1, 0, 2))
+
+        entry["generate"][cache_key] = jax.jit(generate)
+    return entry["generate"][cache_key](entry["params"], prompts, key)
+
+
+def _generate_ar_tokens(entry, prompts, max_new_tokens, temperature, top_k, seed):
+    """AR generation for callers that need tokens but not proposal distributions."""
+    import jax
+    import jax.numpy as jnp
+    import math
+
+    if entry.get("kind") != "causal_ar":
+        raise ValueError("generate_tokens is supported for causal AR models")
+    prompts = jnp.asarray(prompts, jnp.int32)
+    if prompts.ndim != 2 or prompts.shape[0] < 1:
+        raise ValueError("prompts must have shape [nonempty batch, prompt_length]")
+    if max_new_tokens < 1:
+        raise ValueError("max_new_tokens must be positive")
+    if not math.isfinite(temperature) or temperature < 0 or not 0 <= top_k <= 256:
+        raise ValueError("temperature must be finite and nonnegative; top_k must be in 0..=256")
+    if prompts.shape[1] + max_new_tokens > entry["model"].max_length:
+        raise ValueError("prompt plus continuation exceeds max_length")
+
+    cache_key = ("tokens_only", max_new_tokens, temperature, top_k)
+    if cache_key not in entry["generate"]:
+        model = entry["model"]
+
+        def generate(model_params, prompt, rng):
+            batch_size, prompt_len = prompt.shape
+            shape = (batch_size, model.max_length, model.config.heads,
+                     model.config.width // model.config.heads)
+            cache = tuple((jnp.zeros(shape), jnp.zeros(shape))
+                          for _ in range(model.config.layers))
+            inputs = jnp.concatenate([jnp.full((batch_size, 1), 256, jnp.int32), prompt], axis=1)
+
+            def prefill(cache, index):
+                _, cache = model.apply({"params": model_params}, inputs[:, index], index, cache,
+                                       method=model.decode_step)
+                return cache, None
+
+            cache, _ = jax.lax.scan(prefill, cache, jnp.arange(prompt_len))
+
+            def step(carry, index):
+                previous, cache = carry
+                logits, cache = model.apply(
+                    {"params": model_params}, previous, prompt_len + index,
+                    cache, method=model.decode_step
+                )
+                if temperature > 0:
+                    logits = logits / temperature
+                    if top_k:
+                        cutoff = jax.lax.top_k(logits, top_k)[0][..., -1:]
+                        logits = jnp.where(logits >= cutoff, logits, -jnp.inf)
+                    token = jax.random.categorical(jax.random.fold_in(rng, index), logits)
+                else:
+                    token = logits.argmax(-1)
+                token = token.astype(jnp.int32)
+                return (token, cache), token
+
+            _, tokens = jax.lax.scan(
+                step, (inputs[:, -1], cache), jnp.arange(max_new_tokens)
+            )
+            return tokens.T
+
+        entry["generate"][cache_key] = jax.jit(generate)
+    tokens = entry["generate"][cache_key](
+        entry["params"], prompts, jax.random.PRNGKey(seed & 0xffffffff)
+    )
+    return {"tokens": _json_value(tokens)}
+
+
 def dispatch(method, params):
     if method == "engine.ping":
         return {"status": "ready"}
@@ -286,6 +667,8 @@ def dispatch(method, params):
                 "causal_ar_init",
                 "causal_ar_train_step",
                 "generate",
+                "generate_tokens",
+                "generate_and_verify_atomic",
                 "causal_ar_evaluate",
                 "speculative_verify",
                 "save_checkpoint",
@@ -385,6 +768,21 @@ def dispatch(method, params):
         entry["step"] += 1
         return {"step": entry["step"], "loss": _json_value(loss),
                 "grad_norm": _json_value(grad_norm), "step_time_ms": (time.perf_counter()-started)*1000}
+    if method == "generate_and_verify_atomic":
+        return _generate_and_verify_atomic(params)
+    if method == "generate_tokens":
+        try:
+            entry = _models[params["engine_id"]]
+        except KeyError as error:
+            raise ValueError("unknown engine_id; initialize a model first") from error
+        return _generate_ar_tokens(
+            entry,
+            params["prompts"],
+            int(params["max_new_tokens"]),
+            float(params.get("temperature", 1.0)),
+            int(params.get("top_k", 0)),
+            int(params.get("seed", 0)),
+        )
     if method == "generate":
         import jax
         import jax.numpy as jnp
