@@ -101,6 +101,19 @@ class LossConfig:
     entropy_weights: tuple[float, ...] = ()
 
 
+@dataclass(frozen=True)
+class PriorTrainingConfig:
+    """Training controls for a causal prior over frozen RVQ code indices."""
+    prior_loss_weight: float = 1.0
+    freeze_codec: bool = True
+
+    def __post_init__(self):
+        if not math.isfinite(self.prior_loss_weight) or self.prior_loss_weight <= 0:
+            raise ValueError('prior_loss_weight must be finite and positive')
+        if not isinstance(self.freeze_codec, bool):
+            raise ValueError('freeze_codec must be a boolean')
+
+
 def experiment_rvq_config(config):
     """Shared loader for flat experiment dimensions and optional coarse settings."""
     return RVQConfig(tuple(config['lengths']), config['codebook_size'], config['dim'],

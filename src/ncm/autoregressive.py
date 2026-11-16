@@ -111,6 +111,43 @@ class AutoregressiveBytes(nn.Module):
         return self.head(self.norm(h)), tuple(updated)
 
 
+class AutoregressiveCategorical(nn.Module):
+    """Causal sequence model for discrete RVQ indices with a dedicated BOS ID."""
+    config: TransformerConfig
+    max_length: int
+    vocab_size: int
+
+    def setup(self):
+        self.embedding = nn.Embed(self.vocab_size + 1, self.config.width)
+        self.position = self.param('position', nn.initializers.normal(.02),
+                                   (self.max_length, self.config.width))
+        self.blocks = [CausalBlock(self.config) for _ in range(self.config.layers)]
+        self.norm = nn.LayerNorm()
+        self.head = nn.Dense(self.vocab_size)
+
+    def __call__(self, inputs, valid):
+        if inputs.shape[1] > self.max_length:
+            raise ValueError('categorical sequence exceeds configured max_length')
+        h = self.embedding(inputs) + self.position[None, :inputs.shape[1]]
+        for block in self.blocks:
+            h = block(h, valid)
+        return self.head(self.norm(h))
+
+    def init_cache(self, batch_size):
+        shape = (batch_size, self.max_length, self.config.heads,
+                 self.config.width // self.config.heads)
+        return tuple((jnp.zeros(shape, jnp.float32), jnp.zeros(shape, jnp.float32))
+                     for _ in range(self.config.layers))
+
+    def decode_step(self, token, position, cache):
+        h = self.embedding(token) + jnp.asarray(self.position)[position]
+        updated = []
+        for block, values in zip(self.blocks, cache):
+            h, values = block.decode(h, position, values)
+            updated.append(values)
+        return self.head(self.norm(h)), tuple(updated)
+
+
 def shifted_inputs(tokens):
     return jnp.concatenate([jnp.full((tokens.shape[0], 1), 256, jnp.int32), tokens[:, :-1]], -1)
 
