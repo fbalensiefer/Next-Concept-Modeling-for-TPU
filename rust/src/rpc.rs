@@ -210,6 +210,12 @@ pub struct ForwardResponse {
     pub codes: Value,
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct ReconstructionMetricsPayload {
+    pub ber: f64,
+    pub exact_match: f64,
+    pub codebook_perplexity: Vec<f64>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct TrainStepRequest {
     pub engine_id: String,
     pub batch: TensorBatch,
@@ -493,6 +499,12 @@ impl EngineClient {
     }
     pub fn forward(&mut self, request: &ForwardRequest) -> Result<ForwardResponse, String> {
         self.call("forward", request)
+    }
+    pub fn evaluate_reconstruction(
+        &mut self,
+        request: &ForwardRequest,
+    ) -> Result<ReconstructionMetricsPayload, String> {
+        self.call("evaluate_reconstruction", request)
     }
     pub fn train_step(&mut self, request: &TrainStepRequest) -> Result<TrainStepResponse, String> {
         self.call("train_step", request)

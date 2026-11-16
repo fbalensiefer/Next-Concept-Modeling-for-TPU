@@ -1,0 +1,44 @@
+{
+  "protocol": "document-separated validation windows; final seed-0 checkpoints",
+  "results": [
+    {
+      "length_bytes": 32,
+      "windows": 5396,
+      "document_count": 1,
+      "corpus_sha256": "c6c72478d8e39d2b71fdfe923d43dd08da32d4dc59378f47ce221d63a8b811e6",
+      "byte_error_rate": 0.9934442179833985,
+      "exact_match_rate": 0.0,
+      "codebook_perplexity": [
+        6.733008300577649,
+        6.217198762123102,
+        4.037890225361682
+      ]
+    },
+    {
+      "length_bytes": 128,
+      "windows": 1349,
+      "document_count": 1,
+      "corpus_sha256": "c6c72478d8e39d2b71fdfe923d43dd08da32d4dc59378f47ce221d63a8b811e6",
+      "byte_error_rate": 0.9945156134615305,
+      "exact_match_rate": 0.0,
+      "codebook_perplexity": [
+        4.251316553226129,
+        9.06593994072758,
+        4.211446050894181
+      ]
+    },
+    {
+      "length_bytes": 512,
+      "windows": 337,
+      "document_count": 1,
+      "corpus_sha256": "c6c72478d8e39d2b71fdfe923d43dd08da32d4dc59378f47ce221d63a8b811e6",
+      "byte_error_rate": 0.9900025516659994,
+      "exact_match_rate": 0.0,
+      "codebook_perplexity": [
+        2.0895829639378216,
+        4.767028115269692,
+        8.653309923958707
+      ]
+    }
+  ]
+}

@@ -389,7 +389,7 @@ fn main() -> ExitCode {
     let args: Vec<_> = env::args_os().skip(1).collect();
     if args.is_empty() || args[0] == "--help" || args[0] == "--list" {
         println!(
-            "ncm-run <command> [arguments]\n\nCommands:\n  engine-info\n  build-papers\n  train\n  train-sweep --config PATH --output DIR\n  quality-eval --sweep DIR\n  checkpoint-audit --sweep DIR\n  benchmark-drafters --sweep DIR\n  validate-benchmark-suite --sweep DIR\n  real-text-reconstruction\n  run-tc-probe\n  run-decisive-benchmark\n  run-drafter-comparison\n  summarize-maintenance\n  summarize-domain-validation\n  summarize-dependency-results\n  domain-source-baselines\n  alignment-diagnosis\n  summarize-reconstruction-capacity\n  generate-results\n  generate-recent-results\n  generate-bibliographies\n  update-manifests\n  audit-papers"
+            "ncm-run <command> [arguments]\n\nCommands:\n  engine-info\n  build-papers\n  train\n  train-sweep --config PATH --output DIR\n  quality-eval --sweep DIR\n  checkpoint-audit --sweep DIR\n  benchmark-drafters --sweep DIR\n  validate-benchmark-suite --sweep DIR\n  reconstruct-pilot [--output DIR] [--length 32|128|512]\n  real-text-reconstruction\n  run-tc-probe\n  run-decisive-benchmark\n  run-drafter-comparison\n  summarize-maintenance\n  summarize-domain-validation\n  summarize-dependency-results\n  domain-source-baselines\n  alignment-diagnosis\n  summarize-reconstruction-capacity\n  generate-results\n  generate-recent-results\n  generate-bibliographies\n  update-manifests\n  audit-papers"
         );
         return ExitCode::SUCCESS;
     }
@@ -423,6 +423,31 @@ fn main() -> ExitCode {
         sweep_command(&root, &name, &args[1..])
     } else if name == "benchmark-drafters" {
         benchmark_drafters(&root, &args[1..])
+    } else if name == "reconstruct-pilot" {
+        let (mut output, mut length) = (PathBuf::from("reports/reconstruction-pilot"), None);
+        let mut i = 1;
+        while i < args.len() {
+            match args[i].to_str() {
+                Some("--output") if i + 1 < args.len() => {
+                    output = PathBuf::from(&args[i + 1]);
+                    i += 1;
+                }
+                Some("--length") if i + 1 < args.len() => {
+                    length = args[i + 1].to_str().and_then(|x| x.parse::<usize>().ok());
+                    if length.is_none() {
+                        eprintln!("--length must be 32, 128, or 512");
+                        return ExitCode::from(2);
+                    }
+                    i += 1;
+                }
+                _ => {
+                    eprintln!("reconstruct-pilot accepts --output DIR and --length 32|128|512");
+                    return ExitCode::from(2);
+                }
+            }
+            i += 1;
+        }
+        ncm::sweep::run_reconstruction_pilot(&output, length).map_err(|e| e.to_string())
     } else if name == "real-text-reconstruction" {
         let mut output = None;
         let mut steps = 100usize;

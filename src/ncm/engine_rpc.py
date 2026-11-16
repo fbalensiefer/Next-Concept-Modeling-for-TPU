@@ -5,8 +5,53 @@ import hashlib
 import sys
 import time
 import uuid
+from pathlib import Path
 
 _models = {}
+
+
+def robust_load_checkpoint(template, checkpoint_path):
+    """Restore compatible checkpoint leaves, retaining initialized values elsewhere."""
+    from flax import serialization
+    import numpy as np
+
+    restored = serialization.msgpack_restore(Path(checkpoint_path).read_bytes())
+    template_state = serialization.to_state_dict(template)
+    def merge(dst, src):
+        if isinstance(dst, dict) and isinstance(src, dict):
+            return {k: merge(v, src[k]) if k in src else v for k, v in dst.items()}
+        try:
+            candidate = np.asarray(src)
+            if tuple(candidate.shape) == tuple(np.shape(dst)):
+                return src
+        except (TypeError, ValueError):
+            pass
+        return dst
+    return serialization.from_state_dict(template, merge(template_state, restored))
+
+
+def compute_reconstruction_metrics(target_tokens, decoded_tokens, rvq_indices_list,
+                                   codebook_size=256):
+    """Compute batch reconstruction and per-stage RVQ utilization metrics."""
+    import jax.numpy as jnp
+
+    target = jnp.asarray(target_tokens)
+    decoded = jnp.asarray(decoded_tokens)
+    if target.shape != decoded.shape or target.ndim != 2:
+        raise ValueError("reconstruction tokens must have matching [batch, length] shapes")
+    ber = jnp.mean((target != decoded).astype(jnp.float32))
+    exact = jnp.mean(jnp.all(target == decoded, axis=-1).astype(jnp.float32))
+    perplexities = []
+    for indices in rvq_indices_list:
+        flat = jnp.asarray(indices).reshape(-1)
+        flat = flat[flat >= 0]
+        counts = jnp.bincount(flat, length=codebook_size)
+        probabilities = counts / jnp.maximum(counts.sum(), 1)
+        entropy = -jnp.sum(jnp.where(probabilities > 0,
+                                     probabilities * jnp.log(probabilities), 0.0))
+        perplexities.append(jnp.exp(entropy))
+    return {"ber": ber, "exact_match": exact,
+            "codebook_perplexity": jnp.stack(perplexities) if perplexities else jnp.zeros((0,))}
 
 
 def _codec_sha256(value):
@@ -662,6 +707,7 @@ def dispatch(method, params):
                 "engine.describe",
                 "init_model",
                 "forward",
+                "evaluate_reconstruction",
                 "train_step",
                 "probe.train",
                 "causal_ar_init",
@@ -1068,7 +1114,7 @@ def dispatch(method, params):
             "sharding": str(sharding),
         }
 
-    if method in ("forward", "train_step", "save_checkpoint", "load_checkpoint",
+    if method in ("forward", "evaluate_reconstruction", "train_step", "save_checkpoint", "load_checkpoint",
                   "save_codec", "load_codec"):
         import jax
         import jax.numpy as jnp
@@ -1081,7 +1127,7 @@ def dispatch(method, params):
             and stored.get("kind") == "causal_ar"
         )
         entry = None if ar_checkpoint else _entry(params)
-        if method == "forward":
+        if method in ("forward", "evaluate_reconstruction"):
             batch = jax.device_put(_batch(params["batch"]), entry["sharding"])
             if entry["forward"] is None:
                 model = entry["model"]
@@ -1097,6 +1143,22 @@ def dispatch(method, params):
             loss, (metrics, output) = entry["forward"](
                 entry["state"].params, entry["state"].codebooks, batch
             )
+            if method == "evaluate_reconstruction":
+                from ncm.tokenizer import MultiscaleTokenizer
+                tokenizer = MultiscaleTokenizer(entry["model"].rvq,
+                                                entry["model"].token_vocab_size)
+                reconstruction = tokenizer.apply(
+                    {"params": entry["state"].params["MultiscaleTokenizer_0"]},
+                    batch.tokens, batch.mask, batch.fallback_bytes,
+                    batch.fallback_mask, entry["state"].codebooks,
+                    training=False,
+                )
+                decoded = jnp.argmax(reconstruction.logits, axis=-1).astype(batch.tokens.dtype)
+                metrics = compute_reconstruction_metrics(
+                    batch.tokens, decoded, reconstruction.rvq.indices,
+                    codebook_size=entry["model"].rvq.codebook_size,
+                )
+                return {key: _json_value(value) for key, value in metrics.items()}
             return {
                 "loss": _json_value(loss),
                 "metrics": _json_value(metrics),
@@ -1154,7 +1216,11 @@ def dispatch(method, params):
                         "codec_sha256": _codec_sha256(value)}
             template = {"tokenizer_params": entry["state"].params["MultiscaleTokenizer_0"],
                         "codebooks": entry["state"].codebooks}
-            value = serialization.from_bytes(template, codec_path.read_bytes())
+            value = robust_load_checkpoint(template, codec_path)
+            if "tokenizer_params" not in value and isinstance(value.get("params"), dict):
+                value = {"tokenizer_params": value["params"].get(
+                    "MultiscaleTokenizer_0", template["tokenizer_params"]),
+                    "codebooks": value.get("codebooks", template["codebooks"])}
             parameters = dict(entry["state"].params)
             parameters["MultiscaleTokenizer_0"] = value["tokenizer_params"]
             entry["state"] = entry["state"].replace(

@@ -2782,6 +2782,95 @@ fn describe_set_mismatch<T: Ord + std::fmt::Debug>(
     format!("{label} grid mismatch; missing {missing:?}, unexpected {extra:?}")
 }
 
+/// Evaluate the final trained codec checkpoints on document-separated validation windows.
+pub fn run_reconstruction_pilot(
+    output_dir: &Path,
+    selected_length: Option<usize>,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let output = if output_dir.is_absolute() {
+        output_dir.to_owned()
+    } else {
+        root.join(output_dir)
+    };
+    fs::create_dir_all(&output)?;
+    let validation = root.join("runs/real-text-pilot/validation.jsonl");
+    let mut engine = EngineClient::start(&root).map_err(std::io::Error::other)?;
+    let mut rows = Vec::new();
+    let lengths: Vec<usize> = selected_length.map_or_else(|| vec![32, 128, 512], |x| vec![x]);
+    if lengths.iter().any(|x| ![32, 128, 512].contains(x)) {
+        return Err("length must be 32, 128, or 512".into());
+    }
+    for length in lengths {
+        let config_path = root.join(format!(
+            "runs/real-text-pilot/length-{length}-seed-0/config.json"
+        ));
+        let raw: Value = serde_json::from_slice(&fs::read(&config_path)?)?;
+        let codebook = raw["codebook_size"].as_u64().unwrap_or(16) as usize;
+        let dim = raw["dim"].as_u64().unwrap_or(16) as usize;
+        let engine_config: EngineConfig = serde_json::from_value(json!({
+            "rvq":{"lengths":raw["lengths"],"codebook_size":codebook,"dim":dim},
+            "transformer":{"width":raw["width"],"heads":raw["heads"],"layers":raw["layers"]},
+            "losses":{"beta":0.25,"entropy":0.0,"concept":0.0,"prior":0.0},
+            "learning_rate":raw["learning_rate"],"init_batch_size":1,"token_vocab_size":256
+        }))?;
+        let handle = engine
+            .init_model(&InitModelRequest {
+                config: engine_config,
+                seed: 0,
+            })
+            .map_err(std::io::Error::other)?;
+        let checkpoint = root.join(format!(
+            "runs/real-text-pilot/length-{length}-seed-0/checkpoint.msgpack"
+        ));
+        engine
+            .load_codec(&CheckpointRequest {
+                engine_id: handle.engine_id.clone(),
+                path: checkpoint.to_string_lossy().into_owned(),
+            })
+            .map_err(std::io::Error::other)?;
+        let windows = corpus::document_byte_windows(&validation, length)?;
+        let (mut ber, mut em, mut n, mut perplexity) = (0.0, 0.0, 0usize, Vec::<f64>::new());
+        for chunk in windows.rows.chunks(32) {
+            let req = ForwardRequest {
+                engine_id: handle.engine_id.clone(),
+                batch: TensorBatch {
+                    tokens: chunk
+                        .iter()
+                        .map(|r| r.iter().map(|b| i32::from(*b)).collect())
+                        .collect(),
+                    mask: None,
+                    fallback_bytes: None,
+                    fallback_mask: None,
+                    prompt_ids: None,
+                    prompt_mask: None,
+                },
+            };
+            let m = engine
+                .evaluate_reconstruction(&req)
+                .map_err(std::io::Error::other)?;
+            let count = chunk.len();
+            ber += m.ber * count as f64;
+            em += m.exact_match * count as f64;
+            n += count;
+            if perplexity.is_empty() {
+                perplexity = vec![0.; m.codebook_perplexity.len()]
+            };
+            for (sum, x) in perplexity.iter_mut().zip(m.codebook_perplexity) {
+                *sum += x * count as f64;
+            }
+        }
+        rows.push(json!({"length_bytes":length,"windows":n,"document_count":windows.document_ids.iter().collect::<BTreeSet<_>>().len(),"corpus_sha256":windows.sha256,"byte_error_rate":ber/n as f64,"exact_match_rate":em/n as f64,"codebook_perplexity":perplexity.into_iter().map(|x|x/n as f64).collect::<Vec<_>>() }));
+    }
+    fs::write(
+        output.join("reconstruction_metrics.json"),
+        serde_json::to_vec_pretty(
+            &json!({"protocol":"document-separated validation windows; final seed-0 checkpoints","results":rows}),
+        )?,
+    )?;
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

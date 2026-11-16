@@ -1,5 +1,5 @@
 {
-  "git_commit": "9c4d59b340e2c6c2790ee9c77a2a081654a1f1ce",
+  "git_commit": "acbd586a34cbf0faf1a10e74b71de5565167e7fa",
   "source_sha256": {
     "src/ncm/__init__.py": "19203b12a5ae8ee75bb48efe588012fb6a9a32ab569ddd32049bbc0464ddb070",
     "src/ncm/accounting.py": "354cfadc4e7b1b3ca528cb725a8a8cd1a981093a3939d610f25c683dd6ddbd8a",
@@ -13,7 +13,7 @@
     "src/ncm/dependence.py": "c7c9df1f405e2e56854f1679167f7b7a67d59f9b00bcc4ec75619f2af451e597",
     "src/ncm/dependency_validation.py": "63fd0ca5ab1227fa42c449560a766ed160d67deb84a6572b18e5cc3b6f92d1de",
     "src/ncm/domain_validation.py": "19abadaf9edb9163ccaa4e5c133a755dd4291c74ff199d6fd2e37ae6e70cf05e",
-    "src/ncm/engine_rpc.py": "7761ff0e7c663bae8db1f6818c3bd6ae1f4f4d8d873abced862bfc480266459d",
+    "src/ncm/engine_rpc.py": "500984adac609c7902fa851f3b587af6173761f582e539a747ea4165873a2ece",
     "src/ncm/experiment.py": "0ebc40f671118650501b9e398633a373e9d132538c35581c7135e2bd1ee6e19c",
     "src/ncm/fast_generation.py": "cd5d925c0c4d971a4ece9b00f67d3e14aa842e02bc0d17670ed788b5d6e6c378",
     "src/ncm/flops.py": "72217c944bbf2500520d58d17013c9ac9c152b25ad5b4c13bd4225df603143f0",
@@ -40,7 +40,7 @@
   },
   "rust_source_sha256": {
     "rust/src/accounting.rs": "9a8c661ea88a1de4bdbe8f712d2ecb00d45ece90416a65e307f24c631bb9164a",
-    "rust/src/bin/ncm-run.rs": "f74b4636e17257a157923af1c37c20ca744dfe34f277623db2636e827bf47830",
+    "rust/src/bin/ncm-run.rs": "3a61c71d0d5db455c03968d6b1a9418f8e85321825d4d20f01fe057e60871e08",
     "rust/src/corpus.rs": "21a66f5f75ac97607da81b0a1d69912c6202de32b7d2ecc921cddaec3e096331",
     "rust/src/dependence.rs": "eb2803e352a1164fe52f5de883c22a60021274b949a976145d100b23bd958284",
     "rust/src/evaluation.rs": "05261f4fea79a2a15ee95b785aac83f0de5713f808a94de2e9dd3a409f6b3c5c",
@@ -51,8 +51,8 @@
     "rust/src/probe.rs": "fcd5e5fca46b829ce68f4a0b658c900120c616ae0bf7ab586d14693c9710d5d2",
     "rust/src/reports.rs": "3952a8cc0c58823f7b7b06e8f454f60e28f18f15aeaf7cf4af64e0069431a321",
     "rust/src/research.rs": "ba78d4c6525bbad3682bc6244c657db5b6da28b0e738804cac8e212d003433a4",
-    "rust/src/rpc.rs": "7a5a6bff844b69ec98d631337011c77730ffe6ac0ac41eaa11891e12cc1cc024",
-    "rust/src/sweep.rs": "ddec0d065b9b4eb3c7dd9847d63e483acf57ab887c1aa7c7c21405d13dbeddfd",
+    "rust/src/rpc.rs": "796befb4c4d376c925fe2dabc319d6bf5cfd322f69a14128674cc9a2f06ab9aa",
+    "rust/src/sweep.rs": "f96709cb346e984d7f4f47f4da27d8f0cf2950835e86236a6108baca909fbc29",
     "rust/src/table_prior.rs": "c0b9511f5fdf2257f9dfc98ec357ffae03a34a9b7a9d1f9dc18924cd48e8e7bf",
     "rust/src/validation_io.rs": "6c4b39a96402a7a2a86b8d7bae9ad1eccfaa1fc552c694fbb8235ad161357b30",
     "rust/src/workloads.rs": "f9373d911d8c713b8cec2adc95697d670400047c2498ed32b5e2d53da5e160a6"
