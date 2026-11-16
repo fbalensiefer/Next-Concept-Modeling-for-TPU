@@ -77,4 +77,22 @@ After a useful scratch-trained generator exists, compare scratch training, teach
 
 `ncm.experiment` now supports document-separated JSONL windows, split identity/exact-content checks, exact-window accuracy and digit/punctuation slices. The [first bounded pilot](../reports/real-text-reconstruction/report.md) supplies nine real-text fits and a hashed protocol; fidelity remains poor. Broader corpus preparation, near-duplicate handling, rare-pattern evaluation and the complete frozen manifest above remain required. Legacy plain-text mode still chunks whole files. Its entropy default is nonzero: reconstruction-first configurations must set it explicitly to zero. The existing tiny text fixtures are smoke tests, not the public-corpus experiment. The benchmark provides synchronized timing and compiler-memory estimates; real TPU peak-memory measurement and quality-matched trained models remain to be supplied.
 
-Completion artifacts are the frozen manifest, environment/source identity, raw per-seed metrics, checkpoints or reproducible retrieval instructions, decoded samples, paired uncertainty analysis and a short decision record. None of the new work-package results is claimed complete here.
+Completion artifacts are the frozen manifest, environment/source identity, raw per-seed metrics, checkpoints or reproducible retrieval instructions, decoded samples, paired uncertainty analysis and a short decision record. The bounded Phase 2 unconditional pilot is now recorded below; strict compute matching and broader document support remain open.
+
+## Phase 2 bounded unconditional benchmark
+
+The [recorded benchmark](../reports/unconditional-benchmark/benchmark_summary.md) at implementation commit `ea44c2c` compares unconditional 512-byte generation with the strictly restored, frozen seed-0 codec. All neural priors start from fresh weights and receive 100 updates. The recorded decision is **`halt_quantizer_expansion_and_pivot`**: no learned RVQ candidate improves all three measured quality–cost coordinates over both lossless controls.
+
+| Candidate | Held-out BPB / bound | Bigram JSD | Recorded total ms/sequence | Sequential rounds / draws |
+|---|---:|---:|---:|---:|
+| Raw Byte AR | 4.93 | 0.555 | 3.99 | 512 |
+| Reversible XOR AR | 6.38 | 1.000 | 3.91 | 512 |
+| RVQ Level-Parallel | 7.23 | 0.280 | 5.63 | 3 levels |
+| RVQ Chow–Liu | 9.92 | 0.308 | 0.33 | See diagnostic caveat below |
+| RVQ Full-AR | 7.60 | 0.253 | 6.87 | 896 codes |
+
+The frozen codec achieves **83.90% byte accuracy but 0% exact window reconstruction** on 66 test windows. This substantial reconstruction error contributes to the RVQ likelihood bound; better surface bigram fits (JSD 0.253–0.308) do not establish better sequence likelihood. Reconstruction and prior error were not separately ablated, so the codec cannot be identified as the sole cause. Raw/XOR figures are model NLLs; RVQ figures are upper bounds that add code-prior NLL and decoder cross-entropy. Comparing these bounds does not prove dominance in exact marginal likelihood.
+
+One distinct Gutenberg book supplies each of train, validation and test. Non-overlapping test windows avoid training-book leakage, but the reported window standard errors do not measure variation between books. Updates, batch size and transformer dimensions are matched; parameter counts and FLOPs are not. Timings are the recorded batch-amortized CPU measurements, with compilation and warm-up recorded separately. The Chow–Liu diagnostic omits cross-level conditioning; its reported three levels are not a measured tree dependency depth. These results support pausing quantizer expansion for this configuration, not a universal rejection of learned representations or a TPU performance claim.
+
+The next priority is a corrected, compute-normalized comparison of lossless controls and simple structured priors across more independent documents, before any TPU scaling decision.

@@ -2830,7 +2830,8 @@ pub fn run_reconstruction_pilot(
             })
             .map_err(std::io::Error::other)?;
         let windows = corpus::document_byte_windows(&validation, length)?;
-        let (mut ber, mut em, mut n, mut perplexity) = (0.0, 0.0, 0usize, Vec::<f64>::new());
+        let (mut ber, mut em, mut n, mut valid_bytes) = (0.0, 0.0, 0usize, 0u64);
+        let mut codebook_counts = Vec::<Vec<u64>>::new();
         for chunk in windows.rows.chunks(32) {
             let req = ForwardRequest {
                 engine_id: handle.engine_id.clone(),
@@ -2850,17 +2851,41 @@ pub fn run_reconstruction_pilot(
                 .evaluate_reconstruction(&req)
                 .map_err(std::io::Error::other)?;
             let count = chunk.len();
-            ber += m.ber * count as f64;
+            ber += m.ber * m.valid_bytes as f64;
+            valid_bytes += m.valid_bytes;
             em += m.exact_match * count as f64;
             n += count;
-            if perplexity.is_empty() {
-                perplexity = vec![0.; m.codebook_perplexity.len()]
-            };
-            for (sum, x) in perplexity.iter_mut().zip(m.codebook_perplexity) {
-                *sum += x * count as f64;
+            if codebook_counts.is_empty() {
+                codebook_counts = vec![
+                    vec![0; m.codebook_counts.first().map_or(0, Vec::len)];
+                    m.codebook_counts.len()
+                ];
+            }
+            for (sum, batch) in codebook_counts.iter_mut().zip(m.codebook_counts) {
+                for (total, value) in sum.iter_mut().zip(batch) {
+                    *total += value;
+                }
             }
         }
-        rows.push(json!({"length_bytes":length,"windows":n,"document_count":windows.document_ids.iter().collect::<BTreeSet<_>>().len(),"corpus_sha256":windows.sha256,"byte_error_rate":ber/n as f64,"exact_match_rate":em/n as f64,"codebook_perplexity":perplexity.into_iter().map(|x|x/n as f64).collect::<Vec<_>>() }));
+        let perplexity = codebook_counts
+            .iter()
+            .map(|counts| {
+                let total: u64 = counts.iter().sum();
+                if total == 0 {
+                    return 0.0;
+                }
+                let entropy: f64 = counts
+                    .iter()
+                    .filter(|&&c| c > 0)
+                    .map(|&c| {
+                        let p = c as f64 / total as f64;
+                        -p * p.ln()
+                    })
+                    .sum();
+                entropy.exp()
+            })
+            .collect::<Vec<_>>();
+        rows.push(json!({"length_bytes":length,"windows":n,"valid_bytes":valid_bytes,"document_count":windows.document_ids.iter().collect::<BTreeSet<_>>().len(),"corpus_sha256":windows.sha256,"byte_error_rate":ber/valid_bytes as f64,"exact_match_rate":em/n as f64,"codebook_assignment_counts":codebook_counts,"codebook_perplexity":perplexity }));
     }
     fs::write(
         output.join("reconstruction_metrics.json"),

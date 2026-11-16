@@ -113,6 +113,51 @@ reconstruction changes teacher predictive probabilities by only
 matching but cannot make this target information-complete. This identifies a
 conditioning conflict, not a controlled causal explanation of all failures.
 
+\subsection{Causal RVQ prior and end-to-end generation telemetry}
+The reconstruction-only gate selected the seed-0 512-byte codec at byte error
+rate 0.16011568099171897 and exact-window accuracy 0.0. Its stage perplexities
+were 9.906031520677761, 15.14685696072266 and 14.976882163869677; normalized
+codebook utilization was 0.8339535551097937 and the screening score was
+0.8787270864765133. The strict loader accepted its parameter tree. The selector
+report records \code{generation_eligible=false} because it does not score a prior or
+generation quality; this is not a rejection of the later Phase 2 pair.
+
+Phase 2 keeps the selected Phase 1 encoder, decoder and codebooks frozen and
+fits a categorical causal Transformer to valid RVQ indices serialized in
+level-major order. The 512-byte codec has level lengths \((128,256,512)\),
+so the prior context contains 896 code positions with vocabulary size 16. This
+causal index model is distinct from the shared level-wise NCM predictor, which
+predicts spatial positions in a codebook level in parallel. The 3-step pilot
+used seed 0, batch size one, Adam rate 0.003 and prior-loss weight one. At step
+3, prior cross-entropy was 2.9945807456970215, reconstruction loss was
+0.5021113753318787, weighted commitment loss was 0.8349403738975525 and total
+loss was 4.331632614135742. These are final-minibatch values from a short run,
+not a convergence result or held-out evaluation.
+
+The Rust \code{ncm-run generate-pilot --mode rvq-prior} command strictly loads the
+Phase 1 codec and Phase 2 prior, encodes the supplied byte prompt to known code
+positions, autoregressively samples the remaining indices and decodes them
+through the codec. The recorded run used temperature 0.800000011920929,
+top-$k=50$, top-$p=0.949999988079071$ and seed 42. It retained the 56-byte
+prompt and returned 32 continuation bytes from 896 RVQ code decisions. Mean
+code log probability was -2.5274094066449573, mean sampling entropy was
+2.4040825506672263 nats, and measured prior-plus-decoder time was
+0.6235438750009052 seconds (0.31300058303168043 prior; 0.3105432919692248
+decoder). Since the prior vocabulary has only 16 entries, top-$k=50$ retained
+all codes; nucleus filtering still applied. Log probabilities use the raw prior
+distribution, whereas entropy is computed after filtering. This single
+first-call timing includes prior JIT compilation and is not steady-state
+latency. The generated sample and complete score vector are archived in
+\path{reports/generation-pilot/generated_samples.json}; settings and timing are in
+\path{reports/generation-pilot/generation_metrics.json}.
+
+This one-prompt, three-training-step run verifies strict checkpoint ingestion,
+deterministic sampling, codec decoding and finite telemetry. Its generated
+continuation is not fluent; no held-out generation quality, multi-prompt or
+multi-seed benchmark, uncertainty estimate, matched baseline, or TPU result is
+claimed. The selector's \code{generation_eligible=false} field remains scoped to its
+reconstruction-only protocol; it does not evaluate the separate Phase 2 prior.
+
 \subsection{Evidence scope, reproducibility and next steps}
 The 480 fits reuse 120 codecs; objective arms share seeds and datasets. They
 are not 480 independent replications. Paired analysis should treat student
@@ -136,3 +181,57 @@ float64 verification agreed with direct KL to \(1.11\times10^{-15}\). Training
 helpers and precision were unchanged; saved results and the affected checkpoint
 were resumed, with no seed replacement. One timing is missing and retained as
 null. The interruption and continuation are part of the evidence record.\par}
+
+
+\subsection{Phase 2 bounded unconditional generation and stop decision}
+The benchmark recorded in \code{reports/unconditional-benchmark/benchmark\_results.json}
+compares unconditional 512-byte outputs using the strictly restored seed-0 codec.
+All neural priors start from fresh weights and receive 100 updates.
+Table~\ref{tab:unconditional-pilot} reports the archived CPU measurements.
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{lrrrr}
+\hline
+Candidate & BPB / bound & Bigram JSD & ms/sequence & Rounds / draws\\
+\hline
+Raw Byte AR & 4.93 & 0.555 & 3.99 & 512\\
+Reversible XOR AR & 6.38 & 1.000 & 3.91 & 512\\
+RVQ Level-Parallel & 7.23 & 0.280 & 5.63 & 3 levels\\
+RVQ Chow--Liu & 9.92 & 0.308 & 0.33 & diagnostic\\
+RVQ Full-AR & 7.60 & 0.253 & 6.87 & 896 codes\\
+\hline
+\end{tabular}
+\caption{Recorded bounded unconditional pilot. Times are batch-amortized CPU
+measurements; compilation and warm-up are recorded separately. Chow--Liu's
+three code levels must not be interpreted as its tree dependency depth.}
+\label{tab:unconditional-pilot}
+\end{table}
+
+For a deterministic encoder $z=E(x)$, the RVQ bound is
+\[
+-\log_2 p(x)\;\leq\;-\log_2 p(z)-\log_2 p(x\mid z).
+\]
+Dividing by 512 gives the reported bits-per-byte upper bound. The decoder
+cross-entropy charges reconstruction error alongside prior error. Raw and XOR
+controls report their fitted autoregressive model NLL, with lossless inverses.
+The codec reaches 83.90\% byte accuracy but zero exact reconstructions among
+66 held-out windows. This is a substantial fidelity bottleneck; the lower
+surface bigram JSD of RVQ (0.253--0.308) does not establish better sequence
+likelihood. These measurements do not isolate reconstruction as the sole
+cause, and comparing upper bounds does not prove ordering of exact marginal
+likelihoods. The Chow--Liu held-out gain over independent marginals is
+$-2.3187$ bits/byte; it omits earlier-level conditioning and does not estimate
+conditional total correlation or the conditioning-summary gap.
+
+There is one distinct Gutenberg book per train, validation and test split.
+The 66 test windows are non-overlapping and independent of the training book;
+window standard errors are descriptive within one book, not evidence of
+between-document generalization. Equal updates, batch size and transformer
+dimensions do not equalize parameter counts or FLOPs. The recorded stop rule is
+\code{halt\_quantizer\_expansion\_and\_pivot}: no RVQ candidate strictly improves
+all three recorded coordinates over both lossless controls. This is a local
+stop decision, not a proof that lossless controls dominate every RVQ point;
+RVQ improves bigram fit, and Chow--Liu has lower recorded latency. Further
+scaling requires a compute-normalized comparison across more documents and
+validation of timing and dependency accounting.

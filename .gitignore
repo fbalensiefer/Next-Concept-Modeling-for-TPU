@@ -13,5 +13,7 @@ __pycache__/
 /dist/
 
 /runs/
+/reports/generation-training/checkpoints/*.msgpack
+/reports/generation-training/checkpoints/*.ckpt
 
 /target/

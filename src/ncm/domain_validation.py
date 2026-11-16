@@ -15,6 +15,7 @@ import jax.numpy as jnp
 import numpy as np
 import optax
 from flax import serialization
+from .checkpoint_audit import strict_from_bytes
 
 from .autoregressive import AutoregressiveBytes, shifted_inputs
 from .coarse import maintain_coarse, optimizer_state, warmup_codebooks
@@ -212,7 +213,7 @@ def run(resume=False):
                     compile_seconds=time.perf_counter()-start
                     jax.block_until_ready(exe(initial,batch,features,weights,iw))
                     if resume and (dest/'codec.msgpack').exists():
-                        state=serialization.from_bytes(initial,(dest/'codec.msgpack').read_bytes())
+                        state=strict_from_bytes(initial,(dest/'codec.msgpack').read_bytes())
                         assert int(state.step)==cfg['codec_steps']
                         codec_seconds=None  # The interrupted run did not persist its timing.
                     else:

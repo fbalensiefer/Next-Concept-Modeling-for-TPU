@@ -7,6 +7,7 @@ from pathlib import Path
 from .config import experiment_rvq_config
 
 from flax import serialization
+from .checkpoint_audit import strict_from_bytes
 import jax
 import jax.numpy as jnp
 import numpy as np
@@ -28,7 +29,7 @@ def load_codec(directory):
                       np.ones((1, cfg['lengths'][-1]), bool)), np.array([0]))
     template = initialize(model, optax.adam(cfg['learning_rate']), jax.random.key(cfg['seed']), batch, initialize_codebooks=False)
     raw = (directory / 'checkpoint.msgpack').read_bytes()
-    return model, serialization.from_bytes(template, raw), cfg, hashlib.sha256(raw).hexdigest()
+    return model, strict_from_bytes(template, raw), cfg, hashlib.sha256(raw).hexdigest()
 
 
 def run(config, output, resume=False):
@@ -66,7 +67,7 @@ def run(config, output, resume=False):
     params = codec.params['SharedLevelGenerator_0']
     state = PriorState(params, optimizer.init(params), jnp.asarray(0, jnp.int32))
     if resume:
-        state = serialization.from_bytes(state, checkpoint.read_bytes())
+        state = strict_from_bytes(state, checkpoint.read_bytes())
     codec_params = codec.params['MultiscaleTokenizer_0']
     step = jax.jit(make_prior_step(model, optimizer, codec_params, codec.codebooks))
     evaluate = jax.jit(lambda params, batch: evaluate_prior(
