@@ -1,0 +1,251 @@
+{
+  "protocol": "real-text reconstruction checkpoint screening; no generation-quality evaluation",
+  "reconstruction_report": "reports/reconstruction-pilot/reconstruction_metrics.json",
+  "criteria": {
+    "collapse_perplexity_threshold": 2.0,
+    "maximum_longer_window_ber_regression": 0.05,
+    "score_weights": {
+      "inverse_ber": 0.55,
+      "ber_stability": 0.25,
+      "normalized_codebook_utilization": 0.2
+    },
+    "loss_metric": "unavailable in reconstruction_metrics.json; excluded"
+  },
+  "candidates": [
+    {
+      "length_bytes": 128,
+      "seed": 0,
+      "checkpoint": "runs/real-text-pilot/length-128-seed-0/checkpoint.msgpack",
+      "source_config": "runs/real-text-pilot/length-128-seed-0/config.json",
+      "strict_loader": {
+        "valid": true,
+        "codec_sha256": "1ad2ad562a41374142c18c08cd10e467527fb2871a7046b6c8276a99941d753e"
+      },
+      "scores": {
+        "byte_error_rate": 0.20324661785403916,
+        "exact_match_rate": 0.0,
+        "stage_perplexity": [
+          7.672514693726504,
+          14.833540377959908,
+          13.894243860952002
+        ],
+        "collapsed_stages": [],
+        "codebook_healthy": true,
+        "ber_scaling_stable": true,
+        "maximum_longer_window_ber_regression": 0.0,
+        "normalized_codebook_utilization": 0.7583395610966336,
+        "combined_score": 0.8398822723996052,
+        "valid_loss": null
+      }
+    },
+    {
+      "length_bytes": 128,
+      "seed": 1,
+      "checkpoint": "runs/real-text-pilot/length-128-seed-1/checkpoint.msgpack",
+      "source_config": "runs/real-text-pilot/length-128-seed-1/config.json",
+      "strict_loader": {
+        "valid": true,
+        "codec_sha256": "3c283934c8cad6607d8e0fe44bf45b32cf3e6bc005f4f271eace8289faefbc1f"
+      },
+      "scores": null,
+      "score_status": "no matching per-seed reconstruction metrics"
+    },
+    {
+      "length_bytes": 128,
+      "seed": 2,
+      "checkpoint": "runs/real-text-pilot/length-128-seed-2/checkpoint.msgpack",
+      "source_config": "runs/real-text-pilot/length-128-seed-2/config.json",
+      "strict_loader": {
+        "valid": true,
+        "codec_sha256": "ae512bb800dc7f90d281a7747dc414160ec357a5f5c0ead8351b7c2b5b5e35ab"
+      },
+      "scores": null,
+      "score_status": "no matching per-seed reconstruction metrics"
+    },
+    {
+      "length_bytes": 32,
+      "seed": 0,
+      "checkpoint": "runs/real-text-pilot/length-32-seed-0/checkpoint.msgpack",
+      "source_config": "runs/real-text-pilot/length-32-seed-0/config.json",
+      "strict_loader": {
+        "valid": true,
+        "codec_sha256": "61cc51d7418bfe12ebc1343d5d17d93e52aadd8fe01e76f1f8906191b02345fa"
+      },
+      "scores": {
+        "byte_error_rate": 0.2700379910824297,
+        "exact_match_rate": 0.00018532246108228317,
+        "stage_perplexity": [
+          5.023969225861235,
+          12.220479715945617,
+          13.456720650895953
+        ],
+        "collapsed_stages": [],
+        "codebook_healthy": true,
+        "ber_scaling_stable": true,
+        "maximum_longer_window_ber_regression": 0.0,
+        "normalized_codebook_utilization": 0.639607699847975,
+        "combined_score": 0.7794006448742586,
+        "valid_loss": null
+      }
+    },
+    {
+      "length_bytes": 32,
+      "seed": 1,
+      "checkpoint": "runs/real-text-pilot/length-32-seed-1/checkpoint.msgpack",
+      "source_config": "runs/real-text-pilot/length-32-seed-1/config.json",
+      "strict_loader": {
+        "valid": true,
+        "codec_sha256": "681b84b1ccbfef8e2831bf58af3aa7b1823ac6971bb2a6db5b9f645a247e9b3a"
+      },
+      "scores": null,
+      "score_status": "no matching per-seed reconstruction metrics"
+    },
+    {
+      "length_bytes": 32,
+      "seed": 2,
+      "checkpoint": "runs/real-text-pilot/length-32-seed-2/checkpoint.msgpack",
+      "source_config": "runs/real-text-pilot/length-32-seed-2/config.json",
+      "strict_loader": {
+        "valid": true,
+        "codec_sha256": "1307a29ef2eafdc8d54e5ba59d306fc40a971eb4be0599540b8fb342d5e49ad8"
+      },
+      "scores": null,
+      "score_status": "no matching per-seed reconstruction metrics"
+    },
+    {
+      "length_bytes": 512,
+      "seed": 0,
+      "checkpoint": "runs/real-text-pilot/length-512-seed-0/checkpoint.msgpack",
+      "source_config": "runs/real-text-pilot/length-512-seed-0/config.json",
+      "strict_loader": {
+        "valid": true,
+        "codec_sha256": "679b8c6d85a8e2db5cf42204d3608c006f0a15d0b911fd99f6ff1fe51d93a82d"
+      },
+      "scores": {
+        "byte_error_rate": 0.16011568099171897,
+        "exact_match_rate": 0.0,
+        "stage_perplexity": [
+          9.906031520677761,
+          15.14685696072266,
+          14.976882163869677
+        ],
+        "collapsed_stages": [],
+        "codebook_healthy": true,
+        "ber_scaling_stable": true,
+        "maximum_longer_window_ber_regression": 0.0,
+        "normalized_codebook_utilization": 0.8339535551097937,
+        "combined_score": 0.8787270864765133,
+        "valid_loss": null
+      }
+    },
+    {
+      "length_bytes": 512,
+      "seed": 1,
+      "checkpoint": "runs/real-text-pilot/length-512-seed-1/checkpoint.msgpack",
+      "source_config": "runs/real-text-pilot/length-512-seed-1/config.json",
+      "strict_loader": {
+        "valid": true,
+        "codec_sha256": "8ce3b0d0e481ab420aa1ee23eab0ba3ec70d2d54ca3b274dda8059719cd2f24a"
+      },
+      "scores": null,
+      "score_status": "no matching per-seed reconstruction metrics"
+    },
+    {
+      "length_bytes": 512,
+      "seed": 2,
+      "checkpoint": "runs/real-text-pilot/length-512-seed-2/checkpoint.msgpack",
+      "source_config": "runs/real-text-pilot/length-512-seed-2/config.json",
+      "strict_loader": {
+        "valid": true,
+        "codec_sha256": "1c0ee5707519bb220d53bbea8313e1b2a52083fd1512a97914a3526bd2bd977b"
+      },
+      "scores": null,
+      "score_status": "no matching per-seed reconstruction metrics"
+    }
+  ],
+  "ranked_scored_candidates": [
+    {
+      "length_bytes": 512,
+      "seed": 0,
+      "checkpoint": "runs/real-text-pilot/length-512-seed-0/checkpoint.msgpack",
+      "source_config": "runs/real-text-pilot/length-512-seed-0/config.json",
+      "strict_loader": {
+        "valid": true,
+        "codec_sha256": "679b8c6d85a8e2db5cf42204d3608c006f0a15d0b911fd99f6ff1fe51d93a82d"
+      },
+      "scores": {
+        "byte_error_rate": 0.16011568099171897,
+        "exact_match_rate": 0.0,
+        "stage_perplexity": [
+          9.906031520677761,
+          15.14685696072266,
+          14.976882163869677
+        ],
+        "collapsed_stages": [],
+        "codebook_healthy": true,
+        "ber_scaling_stable": true,
+        "maximum_longer_window_ber_regression": 0.0,
+        "normalized_codebook_utilization": 0.8339535551097937,
+        "combined_score": 0.8787270864765133,
+        "valid_loss": null
+      }
+    },
+    {
+      "length_bytes": 128,
+      "seed": 0,
+      "checkpoint": "runs/real-text-pilot/length-128-seed-0/checkpoint.msgpack",
+      "source_config": "runs/real-text-pilot/length-128-seed-0/config.json",
+      "strict_loader": {
+        "valid": true,
+        "codec_sha256": "1ad2ad562a41374142c18c08cd10e467527fb2871a7046b6c8276a99941d753e"
+      },
+      "scores": {
+        "byte_error_rate": 0.20324661785403916,
+        "exact_match_rate": 0.0,
+        "stage_perplexity": [
+          7.672514693726504,
+          14.833540377959908,
+          13.894243860952002
+        ],
+        "collapsed_stages": [],
+        "codebook_healthy": true,
+        "ber_scaling_stable": true,
+        "maximum_longer_window_ber_regression": 0.0,
+        "normalized_codebook_utilization": 0.7583395610966336,
+        "combined_score": 0.8398822723996052,
+        "valid_loss": null
+      }
+    },
+    {
+      "length_bytes": 32,
+      "seed": 0,
+      "checkpoint": "runs/real-text-pilot/length-32-seed-0/checkpoint.msgpack",
+      "source_config": "runs/real-text-pilot/length-32-seed-0/config.json",
+      "strict_loader": {
+        "valid": true,
+        "codec_sha256": "61cc51d7418bfe12ebc1343d5d17d93e52aadd8fe01e76f1f8906191b02345fa"
+      },
+      "scores": {
+        "byte_error_rate": 0.2700379910824297,
+        "exact_match_rate": 0.00018532246108228317,
+        "stage_perplexity": [
+          5.023969225861235,
+          12.220479715945617,
+          13.456720650895953
+        ],
+        "collapsed_stages": [],
+        "codebook_healthy": true,
+        "ber_scaling_stable": true,
+        "maximum_longer_window_ber_regression": 0.0,
+        "normalized_codebook_utilization": 0.639607699847975,
+        "combined_score": 0.7794006448742586,
+        "valid_loss": null
+      }
+    }
+  ],
+  "selected_codec_checkpoint": "runs/real-text-pilot/length-512-seed-0/checkpoint.msgpack",
+  "selected_length_bytes": 512,
+  "selected_seed": 0,
+  "generation_eligible": false,
+  "generation_blocker": "Candidate is an NCM codec/training checkpoint. Its pilot config sets prior loss to zero, and the current generate-pilot command accepts causal-AR checkpoints. No compatible trained generator checkpoint or prior-quality evidence is present."
+}
