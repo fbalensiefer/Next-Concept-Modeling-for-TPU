@@ -1,0 +1,24 @@
+{
+  "root": ".",
+  "length": 512,
+  "seed": 2026,
+  "train_file": "runs/real-text-pilot/train.jsonl",
+  "validation_file": "runs/real-text-pilot/validation.jsonl",
+  "test_file": "runs/real-text-pilot/test.jsonl",
+  "codec_checkpoint": "runs/real-text-pilot/length-512-seed-0/checkpoint.msgpack",
+  "codec_config": "runs/real-text-pilot/length-512-seed-0/config.json",
+  "width": 16,
+  "heads": 2,
+  "layers": 1,
+  "training_steps": 100,
+  "batch_size": 2,
+  "learning_rate": 0.001,
+  "sample_count": 32,
+  "warmups": 2,
+  "timing_repeats": 9,
+  "pareto_tolerance": {
+    "held_out_bpb": 0.05,
+    "sample_ngram_jsd": 0.005,
+    "total_generation_ms_per_seq": 0.1
+  }
+}
