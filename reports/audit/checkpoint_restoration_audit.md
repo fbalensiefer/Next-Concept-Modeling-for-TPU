@@ -5,15 +5,20 @@ Scanned 1535 msgpack files under runs/ and reports/, excluding the immutable rea
 ## Checkpoint statuses
 
 - `dtype_mismatch`: 0
-- `exact_match`: 0
+- `exact_match`: 17
 - `extra_leaves`: 0
 - `file_missing`: 0
 - `missing_leaves`: 0
 - `shape_mismatch`: 0
-- `unmapped_template`: 1535
+- `unmapped_template`: 1518
 
-Every checkpoint is currently `unmapped_template`: artifacts were inventoried read-only, but the scanner does not infer templates from shapes or nearby names. Consequently this audit is not a strict-restoration clearance for the bounded benchmark.
+Exact-match checkpoints: 17. The 512-byte seed-0 codec and the Phase 2 prior are cleared as strict-restoration references for Step 2:
 
-The report classifications are conservative: without per-run production commits, reports are marked `unverified_permissive_era`. The real128 archive was excluded from scanning and is classified externally.
+- `runs/real-text-pilot/length-512-seed-0/checkpoint.msgpack`
+- `reports/generation-training/checkpoints/prior_checkpoint.msgpack`
 
-Direct Flax `serialization.from_bytes` checks tree structure and array shapes against its template, but does not establish exact dtype equality. See the machine-readable loader findings for call sites.
+Unmapped checkpoints: 1518. Their tree was inspected, but no authoritative config was available, so they are not cleared.
+
+Reports that directly reference exact-match checkpoints are marked `verified_strict`; other reports remain `unverified_permissive_era` when provenance is not recoverable. The protected real128 archive was neither scanned nor modified and is classified externally as unverified.
+
+All direct Flax checkpoint restoration sites now use explicit key, shape, and dtype checks before restoration.

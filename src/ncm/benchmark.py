@@ -12,6 +12,7 @@ import platform
 import time
 
 from flax import serialization
+from .checkpoint_audit import strict_from_bytes
 import jax
 import jax.numpy as jnp
 import numpy as np
@@ -113,7 +114,7 @@ def train_ar(config, source, train, valid, output):
     state = PriorState(params, optimizer.init(params), jnp.asarray(0, jnp.int32))
     checkpoint = output / 'ar_checkpoint.msgpack'
     if checkpoint.exists():
-        state = serialization.from_bytes(state, checkpoint.read_bytes())
+        state = strict_from_bytes(state, checkpoint.read_bytes())
 
     @jax.jit
     def step(state, batch):

@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "root": "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling",
   "immutable_exclusion": "reports/validation-controls/real128",
   "checkpoint_count": 1535,
@@ -83183,9 +83183,12 @@
     },
     {
       "path": "runs/milestone2-codec/checkpoint.msgpack",
-      "status": "unmapped_template",
-      "template": null,
-      "provenance": null,
+      "status": "exact_match",
+      "template": "configured_flax_state",
+      "provenance": {
+        "config": "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/runs/milestone2-codec/config.json",
+        "config_sha256": "74a72762a3c3908ffa7cca9f26fdb4fe4c2e560792f6a2d44d12a0ae1cd95b96"
+      },
       "dependent_reports": [],
       "leaf_count": 167,
       "tree_keys": [
@@ -83357,7 +83360,11 @@
         "params/SharedLevelGenerator_0/ScanLevelCell_0/position",
         "step"
       ],
-      "sha256": "8e77590a841d67ea408827c253079e7bde1614703243c4362a65ae86094a9976"
+      "sha256": "8e77590a841d67ea408827c253079e7bde1614703243c4362a65ae86094a9976",
+      "missing_leaves": [],
+      "extra_leaves": [],
+      "shape_mismatch": [],
+      "dtype_mismatch": []
     },
     {
       "path": "runs/milestone2-prior/checkpoint.msgpack",
@@ -87085,9 +87092,12 @@
     },
     {
       "path": "runs/real-text-pilot/length-128-seed-0/checkpoint.msgpack",
-      "status": "unmapped_template",
-      "template": null,
-      "provenance": null,
+      "status": "exact_match",
+      "template": "configured_flax_state",
+      "provenance": {
+        "config": "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/runs/real-text-pilot/length-128-seed-0/config.json",
+        "config_sha256": "70eb5f7975e460d9d51bf5b5cee82602c3b27169f574dbf9c3c8307bc7e6532a"
+      },
       "dependent_reports": [],
       "leaf_count": 167,
       "tree_keys": [
@@ -87259,13 +87269,20 @@
         "params/SharedLevelGenerator_0/ScanLevelCell_0/position",
         "step"
       ],
-      "sha256": "913be9f5100904eb32a01aedbdb23991c02de76fa2305d29a6c09631eb41605c"
+      "sha256": "913be9f5100904eb32a01aedbdb23991c02de76fa2305d29a6c09631eb41605c",
+      "missing_leaves": [],
+      "extra_leaves": [],
+      "shape_mismatch": [],
+      "dtype_mismatch": []
     },
     {
       "path": "runs/real-text-pilot/length-128-seed-1/checkpoint.msgpack",
-      "status": "unmapped_template",
-      "template": null,
-      "provenance": null,
+      "status": "exact_match",
+      "template": "configured_flax_state",
+      "provenance": {
+        "config": "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/runs/real-text-pilot/length-128-seed-1/config.json",
+        "config_sha256": "0bb3c7f6435ccc52d2e520aaf1abdd3f544c4dd04d42ae9eabfdc7528a18ee4a"
+      },
       "dependent_reports": [],
       "leaf_count": 167,
       "tree_keys": [
@@ -87437,13 +87454,20 @@
         "params/SharedLevelGenerator_0/ScanLevelCell_0/position",
         "step"
       ],
-      "sha256": "d11b01e4d5c36f9393dbeaeb71ca185ade4ff1c01fdce6a51afa73746cef8dfe"
+      "sha256": "d11b01e4d5c36f9393dbeaeb71ca185ade4ff1c01fdce6a51afa73746cef8dfe",
+      "missing_leaves": [],
+      "extra_leaves": [],
+      "shape_mismatch": [],
+      "dtype_mismatch": []
     },
     {
       "path": "runs/real-text-pilot/length-128-seed-2/checkpoint.msgpack",
-      "status": "unmapped_template",
-      "template": null,
-      "provenance": null,
+      "status": "exact_match",
+      "template": "configured_flax_state",
+      "provenance": {
+        "config": "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/runs/real-text-pilot/length-128-seed-2/config.json",
+        "config_sha256": "22982bfa5d23277e16e443d18d3a40e2fb76fae37d8a18699e75b2db2132ec02"
+      },
       "dependent_reports": [],
       "leaf_count": 167,
       "tree_keys": [
@@ -87615,13 +87639,20 @@
         "params/SharedLevelGenerator_0/ScanLevelCell_0/position",
         "step"
       ],
-      "sha256": "fd3f22e98bfca4b73c668e185d7e1259839d20596abadafb337d58ad4219c621"
+      "sha256": "fd3f22e98bfca4b73c668e185d7e1259839d20596abadafb337d58ad4219c621",
+      "missing_leaves": [],
+      "extra_leaves": [],
+      "shape_mismatch": [],
+      "dtype_mismatch": []
     },
     {
       "path": "runs/real-text-pilot/length-32-seed-0/checkpoint.msgpack",
-      "status": "unmapped_template",
-      "template": null,
-      "provenance": null,
+      "status": "exact_match",
+      "template": "configured_flax_state",
+      "provenance": {
+        "config": "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/runs/real-text-pilot/length-32-seed-0/config.json",
+        "config_sha256": "eda8ec03cd27ee4fc0c686170eedf9cf40bbc4601ae1f74f978a41c3d2e4946c"
+      },
       "dependent_reports": [],
       "leaf_count": 167,
       "tree_keys": [
@@ -87793,13 +87824,20 @@
         "params/SharedLevelGenerator_0/ScanLevelCell_0/position",
         "step"
       ],
-      "sha256": "4664e21fe5ad4f84a1f65cdcf02c113275c3de44c36a215a4231f60e928d24aa"
+      "sha256": "4664e21fe5ad4f84a1f65cdcf02c113275c3de44c36a215a4231f60e928d24aa",
+      "missing_leaves": [],
+      "extra_leaves": [],
+      "shape_mismatch": [],
+      "dtype_mismatch": []
     },
     {
       "path": "runs/real-text-pilot/length-32-seed-1/checkpoint.msgpack",
-      "status": "unmapped_template",
-      "template": null,
-      "provenance": null,
+      "status": "exact_match",
+      "template": "configured_flax_state",
+      "provenance": {
+        "config": "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/runs/real-text-pilot/length-32-seed-1/config.json",
+        "config_sha256": "befd1e1814600a66adf2939a4027abd94f2875fa6012f0f42fe52bc3190b4896"
+      },
       "dependent_reports": [],
       "leaf_count": 167,
       "tree_keys": [
@@ -87971,13 +88009,20 @@
         "params/SharedLevelGenerator_0/ScanLevelCell_0/position",
         "step"
       ],
-      "sha256": "854949629ee4c37e95d3b73c3ff53cf15e957821ce7d124575046ef72c894ac2"
+      "sha256": "854949629ee4c37e95d3b73c3ff53cf15e957821ce7d124575046ef72c894ac2",
+      "missing_leaves": [],
+      "extra_leaves": [],
+      "shape_mismatch": [],
+      "dtype_mismatch": []
     },
     {
       "path": "runs/real-text-pilot/length-32-seed-2/checkpoint.msgpack",
-      "status": "unmapped_template",
-      "template": null,
-      "provenance": null,
+      "status": "exact_match",
+      "template": "configured_flax_state",
+      "provenance": {
+        "config": "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/runs/real-text-pilot/length-32-seed-2/config.json",
+        "config_sha256": "a1de4cd929dac088cd022c8bb788e5ee132260806fdb7e967eb04bd5e740fdf2"
+      },
       "dependent_reports": [],
       "leaf_count": 167,
       "tree_keys": [
@@ -88149,13 +88194,20 @@
         "params/SharedLevelGenerator_0/ScanLevelCell_0/position",
         "step"
       ],
-      "sha256": "1ee5a06a1f32f424f2726c094cf386a545b6795910aa66a58c59953c825d1bba"
+      "sha256": "1ee5a06a1f32f424f2726c094cf386a545b6795910aa66a58c59953c825d1bba",
+      "missing_leaves": [],
+      "extra_leaves": [],
+      "shape_mismatch": [],
+      "dtype_mismatch": []
     },
     {
       "path": "runs/real-text-pilot/length-512-seed-0/checkpoint.msgpack",
-      "status": "unmapped_template",
-      "template": null,
-      "provenance": null,
+      "status": "exact_match",
+      "template": "configured_flax_state",
+      "provenance": {
+        "config": "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/runs/real-text-pilot/length-512-seed-0/config.json",
+        "config_sha256": "52814bd774f838003e8cb08c1635ccf81705404442f4f5c405d162068d95352f"
+      },
       "dependent_reports": [],
       "leaf_count": 167,
       "tree_keys": [
@@ -88327,13 +88379,20 @@
         "params/SharedLevelGenerator_0/ScanLevelCell_0/position",
         "step"
       ],
-      "sha256": "d38ee6f7e3510f1aebee3933799c5a4ba5f7d750f3b25ca8d9b0ea5ee7ecf1cd"
+      "sha256": "d38ee6f7e3510f1aebee3933799c5a4ba5f7d750f3b25ca8d9b0ea5ee7ecf1cd",
+      "missing_leaves": [],
+      "extra_leaves": [],
+      "shape_mismatch": [],
+      "dtype_mismatch": []
     },
     {
       "path": "runs/real-text-pilot/length-512-seed-1/checkpoint.msgpack",
-      "status": "unmapped_template",
-      "template": null,
-      "provenance": null,
+      "status": "exact_match",
+      "template": "configured_flax_state",
+      "provenance": {
+        "config": "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/runs/real-text-pilot/length-512-seed-1/config.json",
+        "config_sha256": "f7e3d12ffd0f8f47ae8914ffdb4b5543e5b6c18b57fa18b01a4b53668cadaa7a"
+      },
       "dependent_reports": [],
       "leaf_count": 167,
       "tree_keys": [
@@ -88505,13 +88564,20 @@
         "params/SharedLevelGenerator_0/ScanLevelCell_0/position",
         "step"
       ],
-      "sha256": "5ebe19230231521a53fcb7dcebee23e20578b7ff9635ab343be7ca58eeb49478"
+      "sha256": "5ebe19230231521a53fcb7dcebee23e20578b7ff9635ab343be7ca58eeb49478",
+      "missing_leaves": [],
+      "extra_leaves": [],
+      "shape_mismatch": [],
+      "dtype_mismatch": []
     },
     {
       "path": "runs/real-text-pilot/length-512-seed-2/checkpoint.msgpack",
-      "status": "unmapped_template",
-      "template": null,
-      "provenance": null,
+      "status": "exact_match",
+      "template": "configured_flax_state",
+      "provenance": {
+        "config": "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/runs/real-text-pilot/length-512-seed-2/config.json",
+        "config_sha256": "80c244aeb4224cccc4c35f7fa0d87675120e914813867b285ae19cb32d34cd22"
+      },
       "dependent_reports": [],
       "leaf_count": 167,
       "tree_keys": [
@@ -88683,13 +88749,20 @@
         "params/SharedLevelGenerator_0/ScanLevelCell_0/position",
         "step"
       ],
-      "sha256": "f666eff66621322cba671c815ff8396d35dd6c9c1d817a7f1d95990b5661c787"
+      "sha256": "f666eff66621322cba671c815ff8396d35dd6c9c1d817a7f1d95990b5661c787",
+      "missing_leaves": [],
+      "extra_leaves": [],
+      "shape_mismatch": [],
+      "dtype_mismatch": []
     },
     {
       "path": "runs/reconstruction-capacity-v1/codes-16-seed-0/checkpoint.msgpack",
-      "status": "unmapped_template",
-      "template": null,
-      "provenance": null,
+      "status": "exact_match",
+      "template": "configured_flax_state",
+      "provenance": {
+        "config": "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/runs/reconstruction-capacity-v1/codes-16-seed-0/config.json",
+        "config_sha256": "ac589000d8bc9149dcf6a8e8245e96166f7ff7c494e489e50e6b28aadacd5906"
+      },
       "dependent_reports": [],
       "leaf_count": 167,
       "tree_keys": [
@@ -88861,13 +88934,20 @@
         "params/SharedLevelGenerator_0/ScanLevelCell_0/position",
         "step"
       ],
-      "sha256": "23b29f2d068ead40638db124f0e5fcc88555d4cbf0094f763a2131d3e5727fde"
+      "sha256": "23b29f2d068ead40638db124f0e5fcc88555d4cbf0094f763a2131d3e5727fde",
+      "missing_leaves": [],
+      "extra_leaves": [],
+      "shape_mismatch": [],
+      "dtype_mismatch": []
     },
     {
       "path": "runs/reconstruction-capacity-v1/codes-16-seed-1/checkpoint.msgpack",
-      "status": "unmapped_template",
-      "template": null,
-      "provenance": null,
+      "status": "exact_match",
+      "template": "configured_flax_state",
+      "provenance": {
+        "config": "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/runs/reconstruction-capacity-v1/codes-16-seed-1/config.json",
+        "config_sha256": "bfe7c668e82dd35ecfece7accd336a7855ff415d75191d8fff934864645999e0"
+      },
       "dependent_reports": [],
       "leaf_count": 167,
       "tree_keys": [
@@ -89039,13 +89119,20 @@
         "params/SharedLevelGenerator_0/ScanLevelCell_0/position",
         "step"
       ],
-      "sha256": "5c4bfd6b9ad303a6f1d95eeca1952af6e3303b9ee2be68febd65d64f53111e59"
+      "sha256": "5c4bfd6b9ad303a6f1d95eeca1952af6e3303b9ee2be68febd65d64f53111e59",
+      "missing_leaves": [],
+      "extra_leaves": [],
+      "shape_mismatch": [],
+      "dtype_mismatch": []
     },
     {
       "path": "runs/reconstruction-capacity-v1/codes-16-seed-2/checkpoint.msgpack",
-      "status": "unmapped_template",
-      "template": null,
-      "provenance": null,
+      "status": "exact_match",
+      "template": "configured_flax_state",
+      "provenance": {
+        "config": "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/runs/reconstruction-capacity-v1/codes-16-seed-2/config.json",
+        "config_sha256": "87bef19b4a2e61a5838fa2e8ee78f1bea08584692e4799b537ee24a7fc5946c4"
+      },
       "dependent_reports": [],
       "leaf_count": 167,
       "tree_keys": [
@@ -89217,13 +89304,20 @@
         "params/SharedLevelGenerator_0/ScanLevelCell_0/position",
         "step"
       ],
-      "sha256": "509a6ad34b0c8f163a6194086ecddfaea25420649e740dc687cb6fc0c53158a0"
+      "sha256": "509a6ad34b0c8f163a6194086ecddfaea25420649e740dc687cb6fc0c53158a0",
+      "missing_leaves": [],
+      "extra_leaves": [],
+      "shape_mismatch": [],
+      "dtype_mismatch": []
     },
     {
       "path": "runs/reconstruction-capacity-v1/codes-64-seed-0/checkpoint.msgpack",
-      "status": "unmapped_template",
-      "template": null,
-      "provenance": null,
+      "status": "exact_match",
+      "template": "configured_flax_state",
+      "provenance": {
+        "config": "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/runs/reconstruction-capacity-v1/codes-64-seed-0/config.json",
+        "config_sha256": "3cf1b5247ec6b2729b46727bdae37a04ab1406a0e859fc7a4bede9b192bf03ed"
+      },
       "dependent_reports": [],
       "leaf_count": 167,
       "tree_keys": [
@@ -89395,13 +89489,20 @@
         "params/SharedLevelGenerator_0/ScanLevelCell_0/position",
         "step"
       ],
-      "sha256": "4ccfa263b6ee0510deb74d6e3ee592be7b8717ef9f3706d207b61bc97afcbb9f"
+      "sha256": "4ccfa263b6ee0510deb74d6e3ee592be7b8717ef9f3706d207b61bc97afcbb9f",
+      "missing_leaves": [],
+      "extra_leaves": [],
+      "shape_mismatch": [],
+      "dtype_mismatch": []
     },
     {
       "path": "runs/reconstruction-capacity-v1/codes-64-seed-1/checkpoint.msgpack",
-      "status": "unmapped_template",
-      "template": null,
-      "provenance": null,
+      "status": "exact_match",
+      "template": "configured_flax_state",
+      "provenance": {
+        "config": "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/runs/reconstruction-capacity-v1/codes-64-seed-1/config.json",
+        "config_sha256": "32f362e46a97095ddb7463dfe8794d9d473862576159b16f5cf2cbd488b1ce57"
+      },
       "dependent_reports": [],
       "leaf_count": 167,
       "tree_keys": [
@@ -89573,13 +89674,20 @@
         "params/SharedLevelGenerator_0/ScanLevelCell_0/position",
         "step"
       ],
-      "sha256": "d875bd00deb2174b2c507ecf96cc0850fce8c72244f67ccd5c6acc97a32943c7"
+      "sha256": "d875bd00deb2174b2c507ecf96cc0850fce8c72244f67ccd5c6acc97a32943c7",
+      "missing_leaves": [],
+      "extra_leaves": [],
+      "shape_mismatch": [],
+      "dtype_mismatch": []
     },
     {
       "path": "runs/reconstruction-capacity-v1/codes-64-seed-2/checkpoint.msgpack",
-      "status": "unmapped_template",
-      "template": null,
-      "provenance": null,
+      "status": "exact_match",
+      "template": "configured_flax_state",
+      "provenance": {
+        "config": "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/runs/reconstruction-capacity-v1/codes-64-seed-2/config.json",
+        "config_sha256": "d19078e2327f4f6e06856267eb8f17fdef7c30eb56599f58f2065582318e472a"
+      },
       "dependent_reports": [],
       "leaf_count": 167,
       "tree_keys": [
@@ -89751,7 +89859,11 @@
         "params/SharedLevelGenerator_0/ScanLevelCell_0/position",
         "step"
       ],
-      "sha256": "dd807be521ef5f0780c37923f95b1e3033a33393c4678de7f7dd51293498196f"
+      "sha256": "dd807be521ef5f0780c37923f95b1e3033a33393c4678de7f7dd51293498196f",
+      "missing_leaves": [],
+      "extra_leaves": [],
+      "shape_mismatch": [],
+      "dtype_mismatch": []
     },
     {
       "path": "runs/scale-balanced-coverage/seed-0/alignment/codec.msgpack",
@@ -108449,9 +108561,12 @@
     },
     {
       "path": "reports/generation-training/checkpoints/prior_checkpoint.msgpack",
-      "status": "unmapped_template",
-      "template": null,
-      "provenance": null,
+      "status": "exact_match",
+      "template": "configured_flax_state",
+      "provenance": {
+        "config": "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/reports/generation-training/checkpoints/training_config.json",
+        "config_sha256": "40c266d9b01ef5e253f3d57f9b5c8744dee5a1701b1643c689a77f3d50a0f1b8"
+      },
       "dependent_reports": [],
       "leaf_count": 56,
       "tree_keys": [
@@ -108512,7 +108627,11 @@
         "params/position",
         "step"
       ],
-      "sha256": "dccc0fc34612d7a59c10f737d24e7b255e2ef9a395edf5201b6b77c0b520d1de"
+      "sha256": "dccc0fc34612d7a59c10f737d24e7b255e2ef9a395edf5201b6b77c0b520d1de",
+      "missing_leaves": [],
+      "extra_leaves": [],
+      "shape_mismatch": [],
+      "dtype_mismatch": []
     },
     {
       "path": "reports/validation-controls/real128-contended/seed-200/codec.msgpack",
@@ -127563,642 +127682,806 @@
   ],
   "summary": {
     "dtype_mismatch": 0,
-    "exact_match": 0,
+    "exact_match": 17,
     "extra_leaves": 0,
     "file_missing": 0,
     "missing_leaves": 0,
     "shape_mismatch": 0,
-    "unmapped_template": 1535
+    "unmapped_template": 1518
   },
+  "exact_match_checkpoints": [
+    "runs/milestone2-codec/checkpoint.msgpack",
+    "runs/real-text-pilot/length-128-seed-0/checkpoint.msgpack",
+    "runs/real-text-pilot/length-128-seed-1/checkpoint.msgpack",
+    "runs/real-text-pilot/length-128-seed-2/checkpoint.msgpack",
+    "runs/real-text-pilot/length-32-seed-0/checkpoint.msgpack",
+    "runs/real-text-pilot/length-32-seed-1/checkpoint.msgpack",
+    "runs/real-text-pilot/length-32-seed-2/checkpoint.msgpack",
+    "runs/real-text-pilot/length-512-seed-0/checkpoint.msgpack",
+    "runs/real-text-pilot/length-512-seed-1/checkpoint.msgpack",
+    "runs/real-text-pilot/length-512-seed-2/checkpoint.msgpack",
+    "runs/reconstruction-capacity-v1/codes-16-seed-0/checkpoint.msgpack",
+    "runs/reconstruction-capacity-v1/codes-16-seed-1/checkpoint.msgpack",
+    "runs/reconstruction-capacity-v1/codes-16-seed-2/checkpoint.msgpack",
+    "runs/reconstruction-capacity-v1/codes-64-seed-0/checkpoint.msgpack",
+    "runs/reconstruction-capacity-v1/codes-64-seed-1/checkpoint.msgpack",
+    "runs/reconstruction-capacity-v1/codes-64-seed-2/checkpoint.msgpack",
+    "reports/generation-training/checkpoints/prior_checkpoint.msgpack"
+  ],
   "loader_findings": [
     {
       "path": "src/ncm/engine_rpc.py:13",
-      "finding": "Current robust_load_checkpoint performs strict key/shape restoration; does not explicitly compare dtype."
+      "finding": "robust_load_checkpoint validates exact tree keys, shapes, and dtypes before restoring."
     },
     {
       "path": "src/ncm/engine_rpc.py:1490",
       "finding": "RPC codec loader validates extracted codec trees strictly; legacy full-state schema is checked against the codec template."
     },
     {
-      "path": "src/ncm/experiment.py:78",
-      "finding": "serialization.from_bytes uses a full train-state template; Flax validates structure and shape, dtype equality is not asserted."
-    },
-    {
-      "path": "src/ncm/prior_experiment.py:31,69",
-      "finding": "Direct Flax restoration against codec/prior templates; structure and shapes checked, dtype equality not asserted."
-    },
-    {
-      "path": "src/ncm/scale_experiment.py:152,296,497,549",
-      "finding": "Direct Flax restoration against teacher/repair/codec/prior templates; structure and shapes checked, dtype equality not asserted."
-    },
-    {
-      "path": "src/ncm/domain_validation.py:215",
-      "finding": "Direct Flax restoration against initialized codec state; structure and shapes checked, dtype equality not asserted."
-    },
-    {
-      "path": "src/ncm/benchmark.py:116",
-      "finding": "Direct Flax restoration against initialized AR state; structure and shapes checked, dtype equality not asserted."
-    },
-    {
-      "path": "src/ncm/engine_rpc.py:1535,1540",
-      "finding": "Direct Flax restoration for AR and NCM states; structure and shapes checked, dtype equality not asserted."
+      "path": "src/ncm/experiment.py; prior_experiment.py; scale_experiment.py; domain_validation.py; benchmark.py; engine_rpc.py",
+      "finding": "All former from_bytes call sites now route through strict_from_bytes, which checks keys, shapes, and dtypes before restoring."
     }
   ],
   "report_classifications": [
     {
       "path": "reports/README.md",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/alignment-diagnosis/inputs.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/alignment-diagnosis/report.md",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/alignment-diagnosis/results.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/architecture-boundary-audit.md",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
+    },
+    {
+      "path": "reports/audit/checkpoint_restoration_audit.json",
+      "status": "verified_strict",
+      "reason": "References exact-match checkpoint(s) validated against recorded config.",
+      "exact_match_checkpoints": [
+        "runs/milestone2-codec/checkpoint.msgpack",
+        "runs/real-text-pilot/length-128-seed-0/checkpoint.msgpack",
+        "runs/real-text-pilot/length-128-seed-1/checkpoint.msgpack",
+        "runs/real-text-pilot/length-128-seed-2/checkpoint.msgpack",
+        "runs/real-text-pilot/length-32-seed-0/checkpoint.msgpack",
+        "runs/real-text-pilot/length-32-seed-1/checkpoint.msgpack",
+        "runs/real-text-pilot/length-32-seed-2/checkpoint.msgpack",
+        "runs/real-text-pilot/length-512-seed-0/checkpoint.msgpack",
+        "runs/real-text-pilot/length-512-seed-1/checkpoint.msgpack",
+        "runs/real-text-pilot/length-512-seed-2/checkpoint.msgpack",
+        "runs/reconstruction-capacity-v1/codes-16-seed-0/checkpoint.msgpack",
+        "runs/reconstruction-capacity-v1/codes-16-seed-1/checkpoint.msgpack",
+        "runs/reconstruction-capacity-v1/codes-16-seed-2/checkpoint.msgpack",
+        "runs/reconstruction-capacity-v1/codes-64-seed-0/checkpoint.msgpack",
+        "runs/reconstruction-capacity-v1/codes-64-seed-1/checkpoint.msgpack",
+        "runs/reconstruction-capacity-v1/codes-64-seed-2/checkpoint.msgpack",
+        "reports/generation-training/checkpoints/prior_checkpoint.msgpack"
+      ]
+    },
+    {
+      "path": "reports/audit/checkpoint_restoration_audit.md",
+      "status": "unverified_permissive_era",
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/coarse-codebook-stability/protocol.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/coarse-codebook-stability/report.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/coarse-codebook-stability/report.md",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/coarse-codebook-stability/validation.json",
-      "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "status": "verified_strict",
+      "reason": "References exact-match checkpoint(s) validated against recorded config.",
+      "exact_match_checkpoints": [
+        "runs/milestone2-codec/checkpoint.msgpack"
+      ]
     },
     {
       "path": "reports/dependency-validation/analysis.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/dependency-validation/codec_tables.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/dependency-validation/protocol.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/dependency-validation/report.md",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/dependency-validation/results.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/dependency-validation/validation.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/fresh-domain-validation/analysis.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/fresh-domain-validation/continuation.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/fresh-domain-validation/numeric_incident.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/fresh-domain-validation/protocol.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/fresh-domain-validation/report.md",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/fresh-domain-validation/results.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/fresh-domain-validation/source_baselines.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/fresh-domain-validation/source_diagnostics.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/fresh-domain-validation/teachers.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/fresh-domain-validation/validation.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/generation-pilot/checkpoint_selection_report.json",
-      "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "status": "verified_strict",
+      "reason": "References exact-match checkpoint(s) validated against recorded config.",
+      "exact_match_checkpoints": [
+        "runs/real-text-pilot/length-128-seed-0/checkpoint.msgpack",
+        "runs/real-text-pilot/length-128-seed-1/checkpoint.msgpack",
+        "runs/real-text-pilot/length-128-seed-2/checkpoint.msgpack",
+        "runs/real-text-pilot/length-32-seed-0/checkpoint.msgpack",
+        "runs/real-text-pilot/length-32-seed-1/checkpoint.msgpack",
+        "runs/real-text-pilot/length-32-seed-2/checkpoint.msgpack",
+        "runs/real-text-pilot/length-512-seed-0/checkpoint.msgpack",
+        "runs/real-text-pilot/length-512-seed-1/checkpoint.msgpack",
+        "runs/real-text-pilot/length-512-seed-2/checkpoint.msgpack"
+      ]
     },
     {
       "path": "reports/generation-pilot/generated_samples.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/generation-pilot/generation_metrics.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/generation-training/checkpoints/prior_metrics.json",
-      "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "status": "verified_strict",
+      "reason": "References exact-match checkpoint(s) validated against recorded config.",
+      "exact_match_checkpoints": [
+        "runs/real-text-pilot/length-512-seed-0/checkpoint.msgpack"
+      ]
     },
     {
       "path": "reports/generation-training/checkpoints/training_config.json",
-      "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "status": "verified_strict",
+      "reason": "References exact-match checkpoint(s) validated against recorded config.",
+      "exact_match_checkpoints": [
+        "runs/real-text-pilot/length-512-seed-0/checkpoint.msgpack"
+      ]
     },
     {
       "path": "reports/invertible-baselines/report.md",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/invertible-baselines/results.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/maintenance-ablation/analysis.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/maintenance-ablation/binary-maintenance-comparison-protocol.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/maintenance-ablation/binary-maintenance-comparison-summary.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/maintenance-ablation/binary-maintenance-comparison-supplementary_support_audit.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/maintenance-ablation/clean_timing.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/maintenance-ablation/maintenance-ablation-protocol.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/maintenance-ablation/maintenance-ablation-summary.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/maintenance-ablation/maintenance-ablation-supplementary_support_audit.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/maintenance-ablation/report.md",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/maintenance-ablation/results.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/maintenance-ablation/validation.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/milestone3-benchmark/config.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/milestone3-benchmark/report.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/milestone3-benchmark/report.md",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/milestone4-scale-verified/protocol.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/milestone4-scale-verified/report.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/milestone4-scale-verified/report.md",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/real-text-reconstruction/protocol.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/real-text-reconstruction/report.md",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/real-text-reconstruction/summary.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/reconstruction-capacity/controls.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/reconstruction-capacity/protocol.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/reconstruction-capacity/report.md",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/reconstruction-capacity/summary.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/reconstruction-pilot/reconstruction_metrics.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/repository-cleanup.md",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/scale-balanced-coverage/coarse_code_diagnosis.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/scale-balanced-coverage/findings.md",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/scale-balanced-coverage/protocol.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/scale-balanced-coverage/report.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/scale-balanced-coverage/report.md",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/scale-coverage-followup/protocol.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/scale-coverage-followup/report.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/scale-coverage-followup/report.md",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/text-dependency-priors/integrity.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/text-dependency-priors/protocol.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/text-dependency-priors/reference.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/text-dependency-priors/report.md",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/text-dependency-priors/results.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/text-dependency-priors/sample_excerpts.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/text-experiments/codec/config.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/text-experiments/codec/provenance.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/text-experiments/prior/config.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/text-experiments/prior/provenance.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/FINDINGS.md",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/analytic_revision.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/claims.md",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/drafter_paired_statistics.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/final_audit.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/paired_statistics.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/phase3_validation.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/power.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/protocol.md",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/real128-contended/seed-200/metadata.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/real128-contended/seed-200/prompt-0/teacher_samples_cost.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/real128-rust-native/README.md",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/real128-rust-native/checkpoint_audit.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/real128-rust-native/drafter_comparison.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/real128-rust-native/drafter_timing_run.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/real128-rust-native/quality_rows.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/real128-rust-native/seed-200/prompt-0/teacher_samples.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/real128-rust-native/seed-200/prompt-16/teacher_samples.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/real128-rust-native/seed-200/prompt-64/teacher_samples.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/real128-rust-native/seed-201/prompt-0/teacher_samples.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/real128-rust-native/seed-201/prompt-16/teacher_samples.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/real128-rust-native/seed-201/prompt-64/teacher_samples.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/real128-rust-native/seed-202/prompt-0/teacher_samples.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/real128-rust-native/seed-202/prompt-16/teacher_samples.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/real128-rust-native/seed-202/prompt-64/teacher_samples.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/real128-rust-native/suite_validation.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/real128-rust-native/sweep.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/real128-rust-native/sweep_progress.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/seed_registry.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/smoke/paired_statistics.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/smoke/results.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/smoke/seed-200/metadata.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/smoke/seed-200/prompt-2/teacher_samples_cost.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/smoke-measured/paired_statistics.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/smoke-measured/results.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/smoke-measured/seed-200/metadata.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/smoke-measured/seed-200/prompt-2/teacher_samples_cost.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/summary.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/tc-probe/probe_results.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/tc-probe/tc_probe_decision.md",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/tc_probe_decision.md",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/tests-before-final-audit.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/tests.json",
       "status": "unverified_permissive_era",
-      "reason": "Production revision/loader provenance is not established from the report artifact alone."
+      "reason": "No exact-match checkpoint provenance is recorded in this report.",
+      "exact_match_checkpoints": []
     },
     {
       "path": "reports/validation-controls/real128",

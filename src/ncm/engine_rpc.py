@@ -19,23 +19,21 @@ def robust_load_checkpoint(template, checkpoint_path):
     return _strict_restore(template, restored, serialization, np)
 
 
+def _strict_from_bytes(template, payload):
+    from .checkpoint_audit import strict_from_bytes
+    return strict_from_bytes(template, payload)
+
+
 def _strict_restore(template, restored, serialization, np):
-    template_state = serialization.to_state_dict(template)
-    def merge(dst, src, path="checkpoint"):
-        if isinstance(dst, dict) and isinstance(src, dict):
-            if set(dst) != set(src):
-                raise ValueError(f"{path} keys do not match model template")
-            return {k: merge(v, src[k], f"{path}.{k}") for k, v in dst.items()}
-        if isinstance(dst, dict) or isinstance(src, dict):
-            raise ValueError(f"{path} structure does not match model template")
-        try:
-            candidate = np.asarray(src)
-            if tuple(candidate.shape) == tuple(np.shape(dst)):
-                return src
-        except (TypeError, ValueError):
-            pass
-        raise ValueError(f"{path} shape does not match model template")
-    return serialization.from_state_dict(template, merge(template_state, restored))
+    from .checkpoint_audit import compare_trees
+
+    expected = serialization.to_state_dict(template)
+    actual = serialization.to_state_dict(restored)
+    result = compare_trees(expected, actual)
+    if result["status"] != "exact_match":
+        details = ", ".join(f"{key}={value}" for key, value in result.items() if key != "status" and value)
+        raise ValueError(f"checkpoint {result['status']}: {details}")
+    return serialization.from_state_dict(template, actual)
 
 
 def compute_reconstruction_metrics(target_tokens, decoded_tokens, rvq_indices_list,
@@ -1532,12 +1530,12 @@ def dispatch(method, params):
                 "opt_state": ar["opt_state"],
                 "step": ar["step"],
             }
-            state = serialization.from_bytes(template, Path(path).read_bytes())
+            state = _strict_from_bytes(template, Path(path).read_bytes())
             ar["params"], ar["opt_state"], ar["step"] = (
                 state["params"], state["opt_state"], int(state["step"])
             )
             return {"path": path, "step": ar["step"]}
-        entry["state"] = serialization.from_bytes(entry["state"], Path(path).read_bytes())
+        entry["state"] = _strict_from_bytes(entry["state"], Path(path).read_bytes())
         return {"path": path, "step": int(entry["state"].step)}
 
     raise MethodNotFound(method)

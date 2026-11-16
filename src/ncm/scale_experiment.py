@@ -11,6 +11,7 @@ from pathlib import Path
 import time
 
 from flax import serialization
+from .checkpoint_audit import strict_from_bytes
 import jax
 import jax.numpy as jnp
 import numpy as np
@@ -149,7 +150,7 @@ def teacher_setup(config, output, resume):
     state = PriorState(params, optimizer.init(params), jnp.asarray(0, jnp.int32))
     path = output / 'teacher.msgpack'
     if resume and path.exists():
-        state = serialization.from_bytes(state, path.read_bytes())
+        state = strict_from_bytes(state, path.read_bytes())
 
     @jax.jit
     def step(state, batch):
@@ -293,7 +294,7 @@ def repair_decoder(config, model, codec, tokens, train_ids, seed, directory, res
     repair = PriorState(params, optimizer.init(params), jnp.asarray(0, jnp.int32))
     path = directory / 'decoder_repair.msgpack'
     if resume and path.exists():
-        repair = serialization.from_bytes(repair, path.read_bytes())
+        repair = strict_from_bytes(repair, path.read_bytes())
     step = jax.jit(make_decoder_repair_step(model.rvq.dim, optimizer))
     example_ids = np.arange(config['batch_size']) % len(distinct)
     executable = step.lower(repair, representations[example_ids], batch.tokens[example_ids]).compile()
@@ -494,7 +495,7 @@ def run(config, output, resume=False):
             state = initial
             codec_path = directory / 'codec.msgpack'
             if resume and codec_path.exists():
-                state = serialization.from_bytes(initial, codec_path.read_bytes())
+                state = strict_from_bytes(initial, codec_path.read_bytes())
             elif model.rvq.coarse.enabled:
                 if initialized_initial is None:
                     warmups = []
@@ -546,7 +547,7 @@ def run(config, output, resume=False):
             prior = PriorState(prior_params, prior_optimizer.init(prior_params), jnp.asarray(0, jnp.int32))
             prior_path = directory / 'prior.msgpack'
             if resume and prior_path.exists():
-                prior = serialization.from_bytes(prior, prior_path.read_bytes())
+                prior = strict_from_bytes(prior, prior_path.read_bytes())
             prior_step = jax.jit(make_prior_step(model, prior_optimizer, state.params, state.codebooks))
             executable_prior = prior_step.lower(prior, first, key).compile()
             prior_flops = executable_prior.cost_analysis().get('flops')

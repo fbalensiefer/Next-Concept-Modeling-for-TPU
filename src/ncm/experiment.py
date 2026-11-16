@@ -7,6 +7,7 @@ from pathlib import Path
 from .config import experiment_rvq_config
 
 from flax import serialization
+from .checkpoint_audit import strict_from_bytes
 import jax
 import jax.numpy as jnp
 import numpy as np
@@ -75,7 +76,7 @@ def run(config, output, resume=False):
                        initialize_codebooks=not resume)
     checkpoint = output / 'checkpoint.msgpack'
     if resume:
-        state = serialization.from_bytes(state, checkpoint.read_bytes())
+        state = strict_from_bytes(state, checkpoint.read_bytes())
     step = jax.jit(make_train_step(model, optimizer))
 
     @jax.jit
