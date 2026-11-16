@@ -1,0 +1,28 @@
+{
+  "data_format": "documents_jsonl",
+  "train_file": "runs/real-text-pilot/train.jsonl",
+  "validation_file": "runs/real-text-pilot/validation.jsonl",
+  "test_file": "runs/real-text-pilot/test.jsonl",
+  "lengths": [
+    128,
+    256,
+    512
+  ],
+  "codebook_size": 16,
+  "dim": 16,
+  "width": 16,
+  "heads": 2,
+  "layers": 1,
+  "batch_size": 1,
+  "seed": 0,
+  "learning_rate": 0.003,
+  "steps": 3,
+  "checkpoint_every": 100,
+  "entropy": 0.0,
+  "train_sha256": "9b9b640d78534c383583b720752ed3cde1599e49f8d6c5f1ebe17c18b7481093",
+  "validation_sha256": "c6c72478d8e39d2b71fdfe923d43dd08da32d4dc59378f47ce221d63a8b811e6",
+  "codec_checkpoint": "runs/real-text-pilot/length-512-seed-0/checkpoint.msgpack",
+  "prior_loss_weight": 1.0,
+  "freeze_codec": true,
+  "log_every": 1
+}

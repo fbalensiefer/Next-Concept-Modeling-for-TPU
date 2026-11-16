@@ -1,0 +1,19 @@
+{
+  "codec_checkpoint": "/Users/fabian/Documents/ChatGPT/TPU First Model Based on Next-Concept Modeling/runs/real-text-pilot/length-512-seed-0/checkpoint.msgpack",
+  "codec_step": 100,
+  "prior_loss_weight": 1.0,
+  "freeze_codec": true,
+  "codebook_size": 16,
+  "levels": 3,
+  "max_sequence_length": 896,
+  "steps": 3,
+  "final": {
+    "step": 3,
+    "commitment_loss": 0.8349403738975525,
+    "grad_norm": 0.9893022775650024,
+    "prior_loss": 2.9945807456970215,
+    "reconstruction_loss": 0.5021113753318787,
+    "total_loss": 4.331632614135742,
+    "weighted_prior_loss": 2.9945807456970215
+  }
+}

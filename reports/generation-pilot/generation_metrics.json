@@ -1,0 +1,21 @@
+{
+  "mode": "rvq_categorical_prior",
+  "config": {
+    "max_length": 32,
+    "temperature": 0.800000011920929,
+    "top_k": 50,
+    "top_p": 0.949999988079071,
+    "seed": 42
+  },
+  "metrics": {
+    "sequence_count": 1,
+    "token_count": 896,
+    "mean_log_probability": -2.5274094066449573,
+    "mean_entropy_nats": 2.4040825506672263,
+    "generation_seconds": 0.6235438750009052,
+    "prior_generation_seconds": 0.31300058303168043,
+    "codec_decode_seconds": 0.3105432919692248,
+    "prompt_bytes": 56,
+    "generated_bytes": 32
+  }
+}
