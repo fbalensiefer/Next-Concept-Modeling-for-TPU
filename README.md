@@ -6,10 +6,10 @@ The central research question is whether a learned hierarchy can improve the qua
 
 ## Quick start
 
-Install Rust and Python 3.12. Set up the JAX model-engine environment, then use the native Rust CLI for research commands:
+Install Rust and Python 3.11 or newer. Set up the JAX model-engine environment, then use the native Rust CLI for research commands:
 
 ```sh
-python3.12 -m venv .venv
+python3.11 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[test]'
 export NCM_PYTHON="$PWD/.venv/bin/python"
@@ -26,6 +26,10 @@ cargo run --bin ncm-run -- train \
 ## Research status
 
 The [document-separated real-text pilot](reports/real-text-reconstruction/report.md) records reconstruction errors after short training runs. The [dependency controls](reports/text-dependency-priors/report.md) show local dependency gains without establishing a learned-code generation advantage.
+
+The two-stage RVQ path first screens a reconstruction codec, then trains a causal Transformer over its level-major discrete indices with `freeze_codec=true`. The selected 512-byte seed-0 codec has byte error rate 0.16011568099171897. A three-step prior run and one Rust generation run verify checkpoint loading, prompt conditioning, sampling telemetry and codec decoding; they are pipeline checks, not generation-quality results. See the [RVQ prior and generation guide](docs/rvq-prior-generation.md) and its [recorded metrics](reports/generation-training/checkpoints/prior_metrics.json).
+
+Run the Phase 1 checkpoint gate with `python -m ncm.checkpoint_selection`; it validates matching checkpoint trees strictly and writes `reports/generation-pilot/checkpoint_selection_report.json`. The guide documents the Phase 2 trainer and `ncm-run generate-pilot --mode rvq-prior` arguments and artifacts.
 
 The [Rust real128 benchmark record](reports/validation-controls/real128-rust-native/README.md) covers seeds 200–202: the strict validator accepted 351 timing/reference rows, 45 quality rows and 135 checkpoint observations. This records pipeline completion; no speedup or TPU performance claim follows.
 

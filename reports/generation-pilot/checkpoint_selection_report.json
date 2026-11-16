@@ -247,5 +247,5 @@
   "selected_length_bytes": 512,
   "selected_seed": 0,
   "generation_eligible": false,
-  "generation_blocker": "Candidate is an NCM codec/training checkpoint. Its pilot config sets prior loss to zero, and the current generate-pilot command accepts causal-AR checkpoints. No compatible trained generator checkpoint or prior-quality evidence is present."
+  "generation_blocker": "This selector evaluates codec reconstruction and codebook health only; it does not evaluate generation quality. Use the selected Phase 1 codec with a separately trained Phase 2 prior, and treat generation quality as unmeasured until a held-out benchmark."
 }

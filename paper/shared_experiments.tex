@@ -12,8 +12,11 @@ CPU sharding checks. Test runtime is not an algorithmic benchmark.
 The completed engineering path includes UTF-8 byte loading and chunking,
 configuration/data hashes, atomic checkpoint replacement, step-addressed random
 batches, a frozen-codec prior, seeded categorical code sampling with temperature
-and optional top-$k$, and byte decoding. Output length remains a caller input;
-there is no prompt-conditioning, learned-length or EOS interface. The separate
+and optional top-$k$, and byte decoding. This historical baseline had no
+prompt-conditioning, learned-length or EOS interface. The Phase 2 RVQ-prior
+extension adds fixed-prompt conditioning and a caller-selected byte continuation
+length, but no learned stopping criterion; see the following generation-pilot
+record. The separate
 26-byte training and 13-byte validation fixture reached 100\% training-byte
 reconstruction by step 100 of a 500-step run. Validation CE increased from
 1.949 nats at step 100 to 3.550 at step 500: this was overfitting, not a

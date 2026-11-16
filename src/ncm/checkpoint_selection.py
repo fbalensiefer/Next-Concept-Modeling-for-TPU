@@ -127,9 +127,9 @@ def select(root: Path):
         'selected_seed': winner['seed'],
         'generation_eligible': False,
         'generation_blocker': (
-            'Candidate is an NCM codec/training checkpoint. Its pilot config sets prior loss to zero, '
-            'and the current generate-pilot command accepts causal-AR checkpoints. '
-            'No compatible trained generator checkpoint or prior-quality evidence is present.'
+            'This selector evaluates codec reconstruction and codebook health only; it does not '
+            'evaluate generation quality. Use the selected Phase 1 codec with a separately trained '
+            'Phase 2 prior, and treat generation quality as unmeasured until a held-out benchmark.'
         ),
     }
 

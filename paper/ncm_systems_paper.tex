@@ -101,7 +101,10 @@ and a generator that predicts positions within a level in
 parallel~\citep{kumbong2026ncm}. The published work includes tokenizer/prior
 staging and conditioning corruption. The repository provides both a joint optimizer interface and staged frozen-codec
 prior training, clean earlier-level conditioning, and greedy or seeded categorical
-code selection. It is therefore a systems adaptation, not a reproduction of the
+code selection. A separate experimental Phase 2 prior serializes valid RVQ
+indices level-major and predicts them causally; it is not the shared parallel
+NCM prior and is evaluated only as a short end-to-end pilot below. The repository
+is therefore a systems adaptation, not a reproduction of the
 published training recipe, checkpoints, or experimental results. The entropy
 and concept objectives described below are additional project choices. The
 companion SCALE manuscript~\citep{scalecompanion} develops a conditional
@@ -700,9 +703,12 @@ formalizes broader hypotheses without presenting them as completed experiments.
 No TPU, multi-host throughput or fault-injection recovery was evaluated.
 Virtual CPU devices test placement semantics, not accelerator interconnects.
 Atomic local checkpoints and exact resume are implemented, but a distributed
-fault-tolerant lifecycle remains future work. The generator has no prompt,
-learned-length or EOS interface. Complete mixed-symbol byte serialization,
-fallback selection, vocabulary-sharded lookup and richer Rust data orchestration are open.
+fault-tolerant lifecycle remains future work. The shared level-wise generator
+has no prompt interface; the experimental categorical RVQ route accepts fixed
+byte prompts and a caller-selected continuation length. Neither route learns
+when to stop or provides EOS prediction. Complete mixed-symbol byte
+serialization, fallback selection, vocabulary-sharded lookup and richer Rust
+data orchestration are open.
 Actual-length inference reduces the padded cost locally; large-vocabulary
 distance and dense attention costs still need investigation.
 
