@@ -11,6 +11,8 @@ jobs:
       JAX_PLATFORMS: cpu
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
