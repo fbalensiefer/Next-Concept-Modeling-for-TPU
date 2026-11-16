@@ -1,0 +1,57 @@
+{
+  "protocol": "rate-tc-audit-stage-a-v1",
+  "real_text_evaluated": false,
+  "laws": {
+    "independent_uniform": {
+      "true_tc_nats": 0.0,
+      "tree_gain_nats_per_sequence": 0.0015689069584896038,
+      "gain_ci": [
+        -0.005456551233127838,
+        0.008835237397916126
+      ],
+      "identity_overlap": 15
+    },
+    "rich_disjoint_identity": {
+      "true_tc_nats": 0.0,
+      "tree_gain_nats_per_sequence": -0.01750229976323791,
+      "gain_ci": [
+        -0.03953627690859306,
+        0.0018157305180616433
+      ],
+      "identity_overlap": 0
+    },
+    "markov": {
+      "true_tc_nats": 1.1041926215054914,
+      "tree_gain_nats_per_sequence": 1.199972021782076,
+      "gain_ci": [
+        0.9347539388596171,
+        1.4393539008516685
+      ],
+      "identity_overlap": 9
+    },
+    "blocks": {
+      "true_tc_nats": 0.5408761855079088,
+      "tree_gain_nats_per_sequence": 0.6161121236926471,
+      "gain_ci": [
+        0.3874218509959822,
+        0.8010772545585542
+      ],
+      "identity_overlap": 14
+    },
+    "parity": {
+      "true_tc_nats": 0.6931471805599453,
+      "tree_gain_nats_per_sequence": -0.00025334224916979665,
+      "ar_gain_nats_per_sequence": 0.6929468534622326
+    }
+  },
+  "gates": {
+    "uniform_gain": true,
+    "disjoint_identity": true,
+    "parity_tree_blindness": true,
+    "parity_ar_detects": true,
+    "replicated_markov_block_accuracy_and_coverage": false,
+    "markov_block_replication_accuracy_coverage": false
+  },
+  "status": "halted_calibration_failure",
+  "halt_reason": "Preregistered 100-replication, two-evaluation-size accuracy and bootstrap-coverage calibration has not been executed; no real-text evaluation is permitted."
+}

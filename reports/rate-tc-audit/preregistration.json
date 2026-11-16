@@ -1,0 +1,28 @@
+{
+  "protocol": "rate-tc-audit-stage-a-v1",
+  "status": "preregistered_before_calibration",
+  "real_text_access": "prohibited_in_stage_a",
+  "target_schedule": [128, 256, 512],
+  "estimand": {
+    "conditioning_context": "phi_i(Z_<k) is the tuple of nearest aligned parent-level categorical code(s) at the coordinate's dyadic ancestor locations, plus a deterministic coarse summary bin computed only from those parent codes. Context definition and binning are fixed per law; no held-out outcomes enter context construction.",
+    "independent_model": "q_ind(z_i|phi_i), categorical table fit on fit split with symmetric Dirichlet alpha=0.5 per outcome category",
+    "tree_model": "Maximum spanning tree selected on fit split using conditional pairwise mutual information pooled within phi strata; each node table conditions on phi and its selected parent code, with symmetric Dirichlet alpha=0.5 per outcome category. Root conditions on phi only.",
+    "causal_ar_model": "q_AR(z_i|phi_i,z_{i-1},z_{i-2}), categorical table with the same Dirichlet smoothing; order is fixed at two and only preceding within-level coordinates are used.",
+    "held_out_estimand": "Mean per-sequence summed log-loss difference DeltaH_tree = Hhat_eval(q_ind)-Hhat_eval(q_tree); bootstrap resamples whole independent sequences, 2000 replicates, percentile 95% interval.",
+    "finite_sample_claim": "Conditional on a fitted q independent of the evaluation sample, the evaluation mean cross-entropy is an unbiased estimate of H(P,q)=H(P)+KL(P||q), hence of an upper bound on the true conditional entropy. DeltaH_tree is an out-of-sample predictive gain of the selected pairwise tree over the independent-coordinate model; it is not an unbiased estimate or finite-sample lower bound on true total correlation."
+  },
+  "smoothing": {"selection": "fixed before calibration", "dirichlet_alpha_per_category": 0.5, "zero_probability_policy": "none; positive Dirichlet smoothing", "tree_selection_split": "fit only"},
+  "stage_a_gates": {
+    "independent_uniform": {"sequences": 4096, "eval_sizes": [66, 512], "max_gain_nats_per_sequence": 0.02},
+    "rich_support_disjoint_identity": {"fit_sequences": 2048, "eval_sequences": 66, "identity_overlap_required": 0, "max_gain_nats_per_sequence": 0.02},
+    "markov_and_block_correlated": {"replications": 100, "eval_sizes": [66, 512], "relative_error_tolerance": 0.20, "minimum_numerical_pass_fraction": 0.95, "bootstrap_replicates": 2000, "minimum_95pct_interval_coverage": 0.90},
+    "parity": {"coordinates": 3, "tree_gain_abs_max_nats_per_sequence": 0.02, "ar_gain_min_nats_per_sequence": 0.10, "interpretation": "Pairwise trees cannot capture pure three-way parity; AR is a diagnostic comparison, not a universal TC oracle."}
+  },
+  "stage_b_kill_criterion": {
+    "finest_level_tc_gain_threshold_nats_per_sequence": 128.0,
+    "alternative_threshold": "fine-level estimated predictive dependence gain greater than the sum of measured coarse-level marginal-rate reductions",
+    "decision": "If either threshold is exceeded by the lower endpoint of the 95% sequence-bootstrap interval, pure level-parallel K=3 is rejected for this codec/data regime.",
+    "stage_b_authorized": false
+  },
+  "prohibitions": ["No real-text files, splits, or checkpoints may be opened in Stage A.", "A failed calibration gate terminates the audit; no Stage B estimate is permitted."]
+}
