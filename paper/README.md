@@ -49,4 +49,4 @@ Model checkpoints stay under ignored `runs/`; source laws and compressed public 
 
 See [consistency audit](consistency_audit.md). No archival DOI is assigned.
 
-The editable manuscripts now include the Phase 2 unconditional benchmark table and stop decision through `shared_recent_findings.tex`. The checked-in PDFs predate this documentation update and have not been rebuilt. See the [benchmark summary](../reports/unconditional-benchmark/benchmark_summary.md) for the recorded measurements and limitations.
+The editable manuscripts now include the Phase 2 unconditional benchmark table and stop decision through `shared_recent_findings.tex`. Both checked-in PDFs have been rebuilt with these findings, visually reviewed, and validated by the native paper audit. See the [benchmark summary](../reports/unconditional-benchmark/benchmark_summary.md) for the recorded measurements and limitations.
