@@ -181,3 +181,57 @@ float64 verification agreed with direct KL to \(1.11\times10^{-15}\). Training
 helpers and precision were unchanged; saved results and the affected checkpoint
 were resumed, with no seed replacement. One timing is missing and retained as
 null. The interruption and continuation are part of the evidence record.\par}
+
+
+\subsection{Phase 2 bounded unconditional generation and stop decision}
+The benchmark recorded in \code{reports/unconditional-benchmark/benchmark\_results.json}
+compares unconditional 512-byte outputs using the strictly restored seed-0 codec.
+All neural priors start from fresh weights and receive 100 updates.
+Table~\ref{tab:unconditional-pilot} reports the archived CPU measurements.
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{lrrrr}
+\hline
+Candidate & BPB / bound & Bigram JSD & ms/sequence & Rounds / draws\\
+\hline
+Raw Byte AR & 4.93 & 0.555 & 3.99 & 512\\
+Reversible XOR AR & 6.38 & 1.000 & 3.91 & 512\\
+RVQ Level-Parallel & 7.23 & 0.280 & 5.63 & 3 levels\\
+RVQ Chow--Liu & 9.92 & 0.308 & 0.33 & diagnostic\\
+RVQ Full-AR & 7.60 & 0.253 & 6.87 & 896 codes\\
+\hline
+\end{tabular}
+\caption{Recorded bounded unconditional pilot. Times are batch-amortized CPU
+measurements; compilation and warm-up are recorded separately. Chow--Liu's
+three code levels must not be interpreted as its tree dependency depth.}
+\label{tab:unconditional-pilot}
+\end{table}
+
+For a deterministic encoder $z=E(x)$, the RVQ bound is
+\[
+-\log_2 p(x)\;\leq\;-\log_2 p(z)-\log_2 p(x\mid z).
+\]
+Dividing by 512 gives the reported bits-per-byte upper bound. The decoder
+cross-entropy charges reconstruction error alongside prior error. Raw and XOR
+controls report their fitted autoregressive model NLL, with lossless inverses.
+The codec reaches 83.90\% byte accuracy but zero exact reconstructions among
+66 held-out windows. This is a substantial fidelity bottleneck; the lower
+surface bigram JSD of RVQ (0.253--0.308) does not establish better sequence
+likelihood. These measurements do not isolate reconstruction as the sole
+cause, and comparing upper bounds does not prove ordering of exact marginal
+likelihoods. The Chow--Liu held-out gain over independent marginals is
+$-2.3187$ bits/byte; it omits earlier-level conditioning and does not estimate
+conditional total correlation or the conditioning-summary gap.
+
+There is one distinct Gutenberg book per train, validation and test split.
+The 66 test windows are non-overlapping and independent of the training book;
+window standard errors are descriptive within one book, not evidence of
+between-document generalization. Equal updates, batch size and transformer
+dimensions do not equalize parameter counts or FLOPs. The recorded stop rule is
+\code{halt\_quantizer\_expansion\_and\_pivot}: no RVQ candidate strictly improves
+all three recorded coordinates over both lossless controls. This is a local
+stop decision, not a proof that lossless controls dominate every RVQ point;
+RVQ improves bigram fit, and Chow--Liu has lower recorded latency. Further
+scaling requires a compute-normalized comparison across more documents and
+validation of timing and dependency accounting.

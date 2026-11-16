@@ -48,3 +48,5 @@ cargo run --bin ncm-run -- summarize-domain-validation --from-reports
 Model checkpoints stay under ignored `runs/`; source laws and compressed public inputs support independent re-evaluation. The old text fixture logs remain in `reports/text-experiments` and show overfitting, not a successful held-out language result. Native Rust report generators are the supported path; historical extraction scripts are retained only where no native replacement exists.
 
 See [consistency audit](consistency_audit.md). No archival DOI is assigned.
+
+The editable manuscripts now include the Phase 2 unconditional benchmark table and stop decision through `shared_recent_findings.tex`. The checked-in PDFs predate this documentation update and have not been rebuilt. See the [benchmark summary](../reports/unconditional-benchmark/benchmark_summary.md) for the recorded measurements and limitations.
