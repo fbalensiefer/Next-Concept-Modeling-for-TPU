@@ -213,6 +213,8 @@ pub struct ForwardResponse {
 pub struct ReconstructionMetricsPayload {
     pub ber: f64,
     pub exact_match: f64,
+    pub valid_bytes: u64,
+    pub codebook_counts: Vec<Vec<u64>>,
     pub codebook_perplexity: Vec<f64>,
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -315,6 +317,67 @@ pub struct GenerateRaggedRequest {
 pub struct GenerateResponse {
     pub tokens: Vec<Vec<i32>>,
     pub probabilities: Vec<Vec<Vec<f32>>>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+pub struct GenerationConfig {
+    pub max_length: usize,
+    pub temperature: f32,
+    pub top_k: usize,
+    pub top_p: f32,
+    pub seed: u32,
+}
+impl GenerationConfig {
+    pub fn validate(&self) -> Result<(), &'static str> {
+        if self.max_length == 0 {
+            return Err("max_length must be positive");
+        }
+        if !self.temperature.is_finite() || self.temperature <= 0.0 {
+            return Err("temperature must be finite and positive");
+        }
+        if self.top_k > 256 {
+            return Err("top_k must be in 0..=256");
+        }
+        if !self.top_p.is_finite() || !(0.0 < self.top_p && self.top_p <= 1.0) {
+            return Err("top_p must be in (0,1]");
+        }
+        Ok(())
+    }
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct GenerateSequenceRequest {
+    pub engine_id: String,
+    pub prompts: Vec<Vec<i32>>,
+    pub config: GenerationConfig,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct RvqPriorGenerationRequest {
+    pub model_config: Value,
+    pub codec_checkpoint: String,
+    pub prior_checkpoint: String,
+    pub prompt: Vec<i32>,
+    pub config: GenerationConfig,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct GenerateSequenceResponse {
+    pub tokens: Vec<Vec<i32>>,
+    pub log_probabilities: Vec<Vec<f64>>,
+    pub metrics: GenerationMetrics,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct GenerationMetrics {
+    pub sequence_count: usize,
+    pub token_count: usize,
+    pub mean_log_probability: f64,
+    pub mean_entropy_nats: f64,
+    pub generation_seconds: f64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub prior_generation_seconds: Option<f64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub codec_decode_seconds: Option<f64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub prompt_bytes: Option<usize>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub generated_bytes: Option<usize>,
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CausalArEvaluateRequest {
@@ -547,6 +610,26 @@ impl EngineClient {
     }
     pub fn generate(&mut self, request: &GenerateRequest) -> Result<GenerateResponse, String> {
         self.call("generate", request)
+    }
+    pub fn generate_sequence(
+        &mut self,
+        request: &GenerateSequenceRequest,
+    ) -> Result<GenerateSequenceResponse, String> {
+        request.config.validate().map_err(str::to_owned)?;
+        if request.prompts.is_empty() || request.prompts.iter().any(Vec::is_empty) {
+            return Err("prompts must be nonempty".into());
+        }
+        self.call("generate_sequence", request)
+    }
+    pub fn generate_rvq_prior(
+        &mut self,
+        request: &RvqPriorGenerationRequest,
+    ) -> Result<GenerateSequenceResponse, String> {
+        request.config.validate().map_err(str::to_owned)?;
+        if request.codec_checkpoint.is_empty() || request.prior_checkpoint.is_empty() {
+            return Err("codec and prior checkpoint paths must be nonempty".into());
+        }
+        self.call("generate_rvq_prior", request)
     }
     pub fn generate_tokens(
         &mut self,

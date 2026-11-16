@@ -11,27 +11,35 @@ _models = {}
 
 
 def robust_load_checkpoint(template, checkpoint_path):
-    """Restore compatible checkpoint leaves, retaining initialized values elsewhere."""
+    """Restore a complete compatible tree; reject missing or shape-mismatched leaves."""
     from flax import serialization
     import numpy as np
 
     restored = serialization.msgpack_restore(Path(checkpoint_path).read_bytes())
+    return _strict_restore(template, restored, serialization, np)
+
+
+def _strict_restore(template, restored, serialization, np):
     template_state = serialization.to_state_dict(template)
-    def merge(dst, src):
+    def merge(dst, src, path="checkpoint"):
         if isinstance(dst, dict) and isinstance(src, dict):
-            return {k: merge(v, src[k]) if k in src else v for k, v in dst.items()}
+            if set(dst) != set(src):
+                raise ValueError(f"{path} keys do not match model template")
+            return {k: merge(v, src[k], f"{path}.{k}") for k, v in dst.items()}
+        if isinstance(dst, dict) or isinstance(src, dict):
+            raise ValueError(f"{path} structure does not match model template")
         try:
             candidate = np.asarray(src)
             if tuple(candidate.shape) == tuple(np.shape(dst)):
                 return src
         except (TypeError, ValueError):
             pass
-        return dst
+        raise ValueError(f"{path} shape does not match model template")
     return serialization.from_state_dict(template, merge(template_state, restored))
 
 
 def compute_reconstruction_metrics(target_tokens, decoded_tokens, rvq_indices_list,
-                                   codebook_size=256):
+                                   codebook_size=256, mask=None):
     """Compute batch reconstruction and per-stage RVQ utilization metrics."""
     import jax.numpy as jnp
 
@@ -39,18 +47,26 @@ def compute_reconstruction_metrics(target_tokens, decoded_tokens, rvq_indices_li
     decoded = jnp.asarray(decoded_tokens)
     if target.shape != decoded.shape or target.ndim != 2:
         raise ValueError("reconstruction tokens must have matching [batch, length] shapes")
-    ber = jnp.mean((target != decoded).astype(jnp.float32))
-    exact = jnp.mean(jnp.all(target == decoded, axis=-1).astype(jnp.float32))
+    valid = jnp.ones(target.shape, dtype=bool) if mask is None else jnp.asarray(mask, dtype=bool)
+    if valid.shape != target.shape:
+        raise ValueError("reconstruction mask must match [batch, length]")
+    valid_counts = valid.sum()
+    ber = jnp.sum((target != decoded) & valid) / jnp.maximum(valid_counts, 1)
+    exact = jnp.mean(jnp.all((target == decoded) | ~valid, axis=-1).astype(jnp.float32))
     perplexities = []
+    assignment_counts = []
     for indices in rvq_indices_list:
         flat = jnp.asarray(indices).reshape(-1)
         flat = flat[flat >= 0]
         counts = jnp.bincount(flat, length=codebook_size)
+        assignment_counts.append(counts)
         probabilities = counts / jnp.maximum(counts.sum(), 1)
         entropy = -jnp.sum(jnp.where(probabilities > 0,
                                      probabilities * jnp.log(probabilities), 0.0))
         perplexities.append(jnp.exp(entropy))
     return {"ber": ber, "exact_match": exact,
+            "valid_bytes": valid_counts,
+            "codebook_counts": jnp.stack(assignment_counts) if assignment_counts else jnp.zeros((0, codebook_size), jnp.int32),
             "codebook_perplexity": jnp.stack(perplexities) if perplexities else jnp.zeros((0,))}
 
 
@@ -681,9 +697,262 @@ def _generate_ar_tokens(entry, prompts, max_new_tokens, temperature, top_k, seed
     return {"tokens": _json_value(tokens)}
 
 
+def _generate_sequence(params):
+    """Deterministic cached AR generation with nucleus filtering and log scores."""
+    import math
+    import time
+    import jax
+    import jax.numpy as jnp
+    import numpy as np
+
+    try:
+        entry = _models[params["engine_id"]]
+    except KeyError as error:
+        raise ValueError("unknown engine_id") from error
+    if entry.get("kind") != "causal_ar":
+        raise ValueError("generate_sequence currently requires a causal AR model")
+    prompts = np.asarray(params["prompts"], dtype=np.int32)
+    max_length = int(params["max_length"])
+    temperature = float(params["temperature"])
+    top_k = int(params["top_k"])
+    top_p = float(params["top_p"])
+    seed = int(params["seed"])
+    if prompts.ndim != 2 or prompts.shape[0] < 1 or prompts.shape[1] < 1:
+        raise ValueError("prompts must be a nonempty [batch, prompt_length] array")
+    if max_length < 1 or prompts.shape[1] + max_length > entry["model"].max_length:
+        raise ValueError("prompt plus max_length must fit the initialized model")
+    if not math.isfinite(temperature) or temperature <= 0:
+        raise ValueError("temperature must be finite and positive")
+    if not 0 <= top_k <= 256 or not math.isfinite(top_p) or not 0 < top_p <= 1:
+        raise ValueError("top_k must be in 0..=256 and top_p in (0,1]")
+    if np.any(prompts < 0) or np.any(prompts > 255):
+        raise ValueError("prompt tokens must be byte IDs in 0..255")
+
+    model = entry["model"]
+    batch, prompt_len = prompts.shape
+    shape = (batch, model.max_length, model.config.heads,
+             model.config.width // model.config.heads)
+    cache = tuple((jnp.zeros(shape), jnp.zeros(shape)) for _ in range(model.config.layers))
+    inputs = jnp.concatenate([jnp.full((batch, 1), 256, jnp.int32),
+                              jnp.asarray(prompts)], axis=1)
+    def prefill(cache, index):
+        _, cache = model.apply({"params": entry["params"]}, inputs[:, index], index,
+                               cache, method=model.decode_step)
+        return cache, None
+    cache, _ = jax.lax.scan(prefill, cache, jnp.arange(prompt_len))
+    rng = jax.random.PRNGKey(seed)
+
+    def step(carry, index):
+        previous, cache = carry
+        logits, cache = model.apply({"params": entry["params"]}, previous,
+                                    prompt_len + index, cache, method=model.decode_step)
+        logits = logits / temperature
+        if top_k:
+            cutoff = jax.lax.top_k(logits, min(top_k, logits.shape[-1]))[0][..., -1:]
+            logits = jnp.where(logits >= cutoff, logits, -jnp.inf)
+        sorted_logits = jnp.sort(logits, axis=-1)[..., ::-1]
+        sorted_probs = jax.nn.softmax(sorted_logits, axis=-1)
+        remove = jnp.cumsum(sorted_probs, axis=-1) - sorted_probs >= top_p
+        threshold = jnp.min(jnp.where(remove, sorted_logits, jnp.inf), axis=-1, keepdims=True)
+        threshold = jnp.where(jnp.any(remove, axis=-1, keepdims=True), threshold, -jnp.inf)
+        logits = jnp.where(logits < threshold, -jnp.inf, logits)
+        log_probs = jax.nn.log_softmax(logits, axis=-1)
+        token = jax.random.categorical(jax.random.fold_in(rng, index), logits).astype(jnp.int32)
+        selected_log_prob = jnp.take_along_axis(log_probs, token[:, None], axis=-1)[:, 0]
+        return (token, cache), (token, selected_log_prob, -jnp.sum(jnp.where(
+            jnp.isfinite(log_probs), jnp.exp(log_probs) * log_probs, 0.0), axis=-1))
+    started = time.perf_counter()
+    _, (tokens, log_probs, entropies) = jax.lax.scan(step, (inputs[:, -1], cache),
+                                                       jnp.arange(max_length))
+    jax.block_until_ready(tokens)
+    elapsed = time.perf_counter() - started
+    tokens = np.asarray(tokens.T, dtype=np.int32)
+    log_probs = np.asarray(log_probs.T, dtype=np.float64)
+    entropies = np.asarray(entropies.T, dtype=np.float64)
+    return {"tokens": tokens.tolist(), "log_probabilities": log_probs.tolist(),
+            "metrics": {"sequence_count": int(batch), "token_count": int(batch * max_length),
+                        "mean_log_probability": float(log_probs.mean()),
+                        "mean_entropy_nats": float(entropies.mean()),
+                        "generation_seconds": elapsed}}
+
+
+def _generate_rvq_prior(params):
+    """Sample level-major RVQ codes and decode them with a strict Phase 1 codec."""
+    import math
+    import time
+    import jax
+    import jax.numpy as jnp
+    import numpy as np
+    import optax
+    from flax import serialization
+
+    from ncm.autoregressive import AutoregressiveCategorical
+    from ncm.config import LossConfig, TransformerConfig, experiment_rvq_config
+    from ncm.grids import grid_matrices
+    from ncm.prior_training import PriorTrainState, flatten_rvq_codes
+    from ncm.training import Batch, NCM, initialize
+    from ncm.tokenizer import MultiscaleTokenizer
+
+    cfg = params.get("model_config")
+    if not isinstance(cfg, dict):
+        raise ValueError("model_config must be an object")
+    rvq_config = experiment_rvq_config(cfg)
+    transformer_config = TransformerConfig(cfg["width"], cfg["heads"], cfg["layers"])
+    model = NCM(rvq_config, transformer_config, 256,
+                LossConfig(prior=0., entropy=cfg.get("entropy", .01)))
+    optimizer = optax.adam(float(cfg["learning_rate"]))
+    zeros = jnp.zeros((1, rvq_config.max_length), jnp.int32)
+    batch = Batch(zeros, jnp.ones_like(zeros, bool), jnp.zeros_like(zeros),
+                  jnp.zeros_like(zeros, bool))
+    codec_template = initialize(model, optimizer,
+                                jax.random.key(int(params.get("seed", 0))), batch,
+                                initialize_codebooks=False)
+    codec_state = robust_load_checkpoint(codec_template, params["codec_checkpoint"])
+
+    prior = AutoregressiveCategorical(transformer_config,
+                                      sum(rvq_config.lengths),
+                                      rvq_config.codebook_size)
+    prior_inputs = jnp.full((1, prior.max_length), prior.vocab_size, jnp.int32)
+    prior_mask = jnp.ones_like(prior_inputs, bool)
+    prior_params = prior.init(jax.random.key(int(params.get("seed", 0)) + 1),
+                              prior_inputs, prior_mask)["params"]
+    prior_optimizer = optax.adam(float(cfg["learning_rate"]))
+    prior_template = PriorTrainState(
+        prior_params, prior_optimizer.init(prior_params), jnp.asarray(0, jnp.int32))
+    prior_state = robust_load_checkpoint(prior_template, params["prior_checkpoint"])
+
+    prompt = np.asarray(params.get("prompt", []), dtype=np.int32)
+    if prompt.ndim != 1 or np.any(prompt < 0) or np.any(prompt > 255):
+        raise ValueError("prompt must contain byte IDs in 0..255")
+    if len(prompt) > rvq_config.max_length:
+        raise ValueError("prompt exceeds the codec byte window")
+    requested = int(params["max_length"])
+    temperature, top_k, top_p = (float(params["temperature"]), int(params["top_k"]),
+                                 float(params["top_p"]))
+    seed = int(params["seed"])
+    if requested < 1 or len(prompt) + requested > rvq_config.max_length:
+        raise ValueError("prompt plus max_length must fit the codec byte window")
+    if not math.isfinite(temperature) or temperature <= 0:
+        raise ValueError("temperature must be finite and positive")
+    if not 0 <= top_k <= 256 or not math.isfinite(top_p) or not 0 < top_p <= 1:
+        raise ValueError("top_k must be in 0..=256 and top_p in (0,1]")
+
+    prompt_bytes = jnp.zeros((1, rvq_config.max_length), jnp.int32)
+    prompt_mask = jnp.zeros_like(prompt_bytes, bool)
+    if len(prompt):
+        prompt_bytes = prompt_bytes.at[0, :len(prompt)].set(jnp.asarray(prompt))
+        prompt_mask = prompt_mask.at[0, :len(prompt)].set(True)
+    tokenized = MultiscaleTokenizer(rvq_config, 256).apply(
+        {"params": codec_state.params["MultiscaleTokenizer_0"]},
+        prompt_bytes, prompt_mask, jnp.zeros_like(prompt_bytes),
+        jnp.zeros_like(prompt_mask), codec_state.codebooks)
+    conditioned, conditioned_mask = flatten_rvq_codes(
+        tokenized.rvq.indices, tokenized.rvq.mask, rvq_config.lengths)
+    forced_codes, forced_mask = conditioned[0], conditioned_mask[0]
+
+    def sample(params_tree, forced, forced_valid, key):
+        cache = tuple((jnp.zeros((1, prior.max_length, transformer_config.heads,
+                                  transformer_config.width // transformer_config.heads), jnp.float32),
+                       jnp.zeros((1, prior.max_length, transformer_config.heads,
+                                  transformer_config.width // transformer_config.heads), jnp.float32))
+                      for _ in range(transformer_config.layers))
+
+        def step(carry, position):
+            previous, cache_state = carry
+            logits, cache_state = prior.apply(
+                {"params": params_tree}, previous, position, cache_state,
+                method=prior.decode_step)
+            raw_log_probs = jax.nn.log_softmax(logits, axis=-1)
+            filtered = logits / temperature
+            order = jnp.argsort(filtered, axis=-1)[:, ::-1]
+            sorted_logits = jnp.take_along_axis(filtered, order, axis=-1)
+            if top_k:
+                keep_k = jnp.arange(sorted_logits.shape[-1])[None, :] < min(top_k, prior.vocab_size)
+                sorted_logits = jnp.where(keep_k, sorted_logits, -jnp.inf)
+            sorted_probs = jax.nn.softmax(sorted_logits, axis=-1)
+            remove = jnp.cumsum(sorted_probs, axis=-1) - sorted_probs >= top_p
+            sorted_logits = jnp.where(remove, -jnp.inf, sorted_logits)
+            filtered_logits = jnp.full_like(filtered, -jnp.inf).at[
+                jnp.arange(filtered.shape[0])[:, None], order].set(sorted_logits)
+            sampling_log_probs = jax.nn.log_softmax(filtered_logits, axis=-1)
+            sampled = jax.random.categorical(jax.random.fold_in(key, position),
+                                             filtered_logits, axis=-1).astype(jnp.int32)
+            known = forced_valid[position]
+            token = jnp.where(known, forced[position], sampled)
+            chosen_log_prob = jnp.take_along_axis(raw_log_probs, token[:, None], axis=-1)[:, 0]
+            entropy = -jnp.sum(jnp.where(jnp.isfinite(sampling_log_probs),
+                                         jnp.exp(sampling_log_probs) * sampling_log_probs, 0.), axis=-1)
+            return (token, cache_state), (token, chosen_log_prob, entropy)
+
+        return jax.lax.scan(step, (jnp.full((1,), prior.vocab_size, jnp.int32), cache),
+                            jnp.arange(prior.max_length))[1]
+
+    prior_started = time.perf_counter()
+    sampled_codes, code_log_probs, code_entropies = jax.jit(sample)(
+        prior_state.params, forced_codes, forced_mask,
+        jax.random.PRNGKey(seed & 0xffffffff))
+    jax.block_until_ready(sampled_codes)
+    prior_seconds = time.perf_counter() - prior_started
+    sampled_codes = sampled_codes[:, 0]
+
+    decode_started = time.perf_counter()
+    _, up = grid_matrices(rvq_config)
+    representation = jnp.zeros((1, rvq_config.max_length, rvq_config.dim), jnp.float32)
+    offset = 0
+    for level, length in enumerate(rvq_config.lengths):
+        indices = sampled_codes[offset:offset + length]
+        vectors = codec_state.codebooks.embeddings[level, indices][None, ...]
+        representation = representation + jnp.einsum(
+            "ln,bnd->bld", up[level, :, :length], vectors)
+        offset += length
+    decoded_logits = MultiscaleTokenizer(rvq_config, 256).apply(
+        {"params": codec_state.params["MultiscaleTokenizer_0"]}, representation,
+        jnp.ones((1, rvq_config.max_length), bool), method=MultiscaleTokenizer.decode)
+    byte_count = min(rvq_config.max_length, len(prompt) + requested)
+    decoded_bytes = jnp.argmax(decoded_logits, axis=-1)[0, :byte_count].astype(jnp.int32)
+    if len(prompt):
+        # The lossy codec supplies generated content; retain literal prompt bytes.
+        decoded_bytes = decoded_bytes.at[:len(prompt)].set(jnp.asarray(prompt))
+    jax.block_until_ready(decoded_bytes)
+    decode_seconds = time.perf_counter() - decode_started
+    log_probs = np.asarray(code_log_probs[:, 0], dtype=np.float64)
+    entropies = np.asarray(code_entropies[:, 0], dtype=np.float64)
+    if not np.isfinite(log_probs).all() or not np.isfinite(entropies).all():
+        raise ValueError("generation produced non-finite code probabilities or entropy")
+    return {
+        "tokens": [np.asarray(decoded_bytes, dtype=np.int32).tolist()],
+        "log_probabilities": [log_probs.tolist()],
+        "metrics": {
+            "sequence_count": 1,
+            "token_count": int(len(sampled_codes)),
+            "mean_log_probability": float(log_probs.mean()),
+            "mean_entropy_nats": float(entropies.mean()),
+            "generation_seconds": float(prior_seconds + decode_seconds),
+            "prior_generation_seconds": float(prior_seconds),
+            "codec_decode_seconds": float(decode_seconds),
+            "prompt_bytes": int(len(prompt)),
+            "generated_bytes": int(max(0, byte_count - len(prompt))),
+        },
+    }
+
+
 def dispatch(method, params):
     if method == "engine.ping":
         return {"status": "ready"}
+    if method == "generate_sequence":
+        request = dict(params)
+        config = request.pop("config", {})
+        if not isinstance(config, dict):
+            raise ValueError("config must be an object")
+        request.update(config)
+        return _generate_sequence(request)
+    if method == "generate_rvq_prior":
+        request = dict(params)
+        config = request.pop("config", {})
+        if not isinstance(config, dict):
+            raise ValueError("config must be an object")
+        request.update(config)
+        return _generate_rvq_prior(request)
     if method == "engine.describe":
         import platform
         import flax
@@ -712,6 +981,7 @@ def dispatch(method, params):
                 "probe.train",
                 "causal_ar_init",
                 "causal_ar_train_step",
+                "generate_rvq_prior",
                 "generate",
                 "generate_tokens",
                 "generate_and_verify_atomic",
@@ -1157,6 +1427,7 @@ def dispatch(method, params):
                 metrics = compute_reconstruction_metrics(
                     batch.tokens, decoded, reconstruction.rvq.indices,
                     codebook_size=entry["model"].rvq.codebook_size,
+                    mask=batch.mask,
                 )
                 return {key: _json_value(value) for key, value in metrics.items()}
             return {
@@ -1216,11 +1487,20 @@ def dispatch(method, params):
                         "codec_sha256": _codec_sha256(value)}
             template = {"tokenizer_params": entry["state"].params["MultiscaleTokenizer_0"],
                         "codebooks": entry["state"].codebooks}
-            value = robust_load_checkpoint(template, codec_path)
-            if "tokenizer_params" not in value and isinstance(value.get("params"), dict):
-                value = {"tokenizer_params": value["params"].get(
-                    "MultiscaleTokenizer_0", template["tokenizer_params"]),
-                    "codebooks": value.get("codebooks", template["codebooks"])}
+            restored = serialization.msgpack_restore(codec_path.read_bytes())
+            if isinstance(restored, dict) and set(restored) == {"tokenizer_params", "codebooks"}:
+                value = robust_load_checkpoint(template, codec_path)
+            elif isinstance(restored, dict) and isinstance(restored.get("params"), dict):
+                params = restored["params"]
+                if "MultiscaleTokenizer_0" not in params or "codebooks" not in restored:
+                    raise ValueError("full checkpoint is missing tokenizer parameters or codebooks")
+                value = {"tokenizer_params": params["MultiscaleTokenizer_0"],
+                         "codebooks": restored["codebooks"]}
+                # Validate the extracted full-state leaves against the initialized model.
+                value = _strict_restore(template, serialization.to_state_dict(value),
+                                        serialization, __import__("numpy"))
+            else:
+                raise ValueError("unsupported codec checkpoint schema")
             parameters = dict(entry["state"].params)
             parameters["MultiscaleTokenizer_0"] = value["tokenizer_params"]
             entry["state"] = entry["state"].replace(

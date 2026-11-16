@@ -158,6 +158,76 @@ fn update_manifests(root: &Path, args: &[OsString]) -> Result<(), String> {
     println!("Implementation and document manifests refreshed; verify with shasum -a 256 -c.");
     Ok(())
 }
+fn generate_pilot(root: &Path, args: &[OsString]) -> Result<(), String> {
+    use ncm::rpc::GenerationConfig;
+    let (mut model, mut checkpoint, mut codec_checkpoint, mut prior_checkpoint, mut prompt) =
+        (None, None, None, None, None);
+    let (mut mode, mut output) = (None, PathBuf::from("reports/generation-pilot"));
+    let mut config = GenerationConfig {
+        max_length: 32,
+        temperature: 1.0,
+        top_k: 0,
+        top_p: 1.0,
+        seed: 0,
+    };
+    let mut i = 0;
+    while i < args.len() {
+        if i + 1 >= args.len() {
+            return Err(format!("missing value for {}", args[i].to_string_lossy()));
+        }
+        let key = args[i].to_str().unwrap_or("");
+        let value = args[i + 1].to_str().ok_or("arguments must be UTF-8")?;
+        match key {
+            "--model-config" | "--config" => model = Some(PathBuf::from(value)),
+            "--checkpoint" => checkpoint = Some(PathBuf::from(value)),
+            "--codec-checkpoint" => codec_checkpoint = Some(PathBuf::from(value)),
+            "--prior-checkpoint" => prior_checkpoint = Some(PathBuf::from(value)),
+            "--prompt" => prompt = Some(value.to_owned()),
+            "--mode" => mode = Some(value.to_owned()),
+            "--output" => output = PathBuf::from(value),
+            "--max-length" => config.max_length = parse_usize_arg(&args[i + 1], key)?,
+            "--top-k" => config.top_k = parse_usize_arg(&args[i + 1], key)?,
+            "--temperature" => {
+                config.temperature = value.parse().map_err(|_| "temperature must be numeric")?
+            }
+            "--top-p" => config.top_p = value.parse().map_err(|_| "top-p must be numeric")?,
+            "--seed" => {
+                config.seed = parse_usize_arg(&args[i + 1], key)?
+                    .try_into()
+                    .map_err(|_| "seed must fit uint32")?
+            }
+            _ => return Err(format!("unknown generate-pilot option: {key}")),
+        }
+        i += 2;
+    }
+    if mode.as_deref() == Some("rvq-prior")
+        || codec_checkpoint.is_some()
+        || prior_checkpoint.is_some()
+    {
+        if mode.as_deref().is_some_and(|value| value != "rvq-prior") {
+            return Err("RVQ checkpoint arguments require --mode rvq-prior".into());
+        }
+        return ncm::generation::run_rvq_prior_generation_pilot(
+            root,
+            &model.ok_or("--config/--model-config is required")?,
+            &codec_checkpoint.ok_or("--codec-checkpoint is required for RVQ prior mode")?,
+            &prior_checkpoint.ok_or("--prior-checkpoint is required for RVQ prior mode")?,
+            &prompt.ok_or("--prompt is required")?,
+            config,
+            &output,
+        );
+    }
+    if mode.as_deref().is_some_and(|value| value != "byte-ar") {
+        return Err("--mode must be byte-ar or rvq-prior".into());
+    }
+    ncm::generation::run_generation_pilot(
+        root,
+        &model.ok_or("--model-config is required")?,
+        &checkpoint.ok_or("--checkpoint is required")?,
+        &prompt.ok_or("--prompt is required")?,
+        config,
+    )
+}
 fn parse_usize_arg(value: &std::ffi::OsStr, name: &str) -> Result<usize, String> {
     value
         .to_str()
@@ -389,7 +459,7 @@ fn main() -> ExitCode {
     let args: Vec<_> = env::args_os().skip(1).collect();
     if args.is_empty() || args[0] == "--help" || args[0] == "--list" {
         println!(
-            "ncm-run <command> [arguments]\n\nCommands:\n  engine-info\n  build-papers\n  train\n  train-sweep --config PATH --output DIR\n  quality-eval --sweep DIR\n  checkpoint-audit --sweep DIR\n  benchmark-drafters --sweep DIR\n  validate-benchmark-suite --sweep DIR\n  reconstruct-pilot [--output DIR] [--length 32|128|512]\n  real-text-reconstruction\n  run-tc-probe\n  run-decisive-benchmark\n  run-drafter-comparison\n  summarize-maintenance\n  summarize-domain-validation\n  summarize-dependency-results\n  domain-source-baselines\n  alignment-diagnosis\n  summarize-reconstruction-capacity\n  generate-results\n  generate-recent-results\n  generate-bibliographies\n  update-manifests\n  audit-papers"
+            "ncm-run <command> [arguments]\n\nCommands:\n  engine-info\n  build-papers\n  train\n  train-sweep --config PATH --output DIR\n  quality-eval --sweep DIR\n  checkpoint-audit --sweep DIR\n  benchmark-drafters --sweep DIR\n  validate-benchmark-suite --sweep DIR\n  reconstruct-pilot [--output DIR] [--length 32|128|512]\n  generate-pilot [--mode byte-ar|rvq-prior] [--model-config|--config PATH] [--checkpoint PATH | --codec-checkpoint PATH --prior-checkpoint PATH] --prompt TEXT [--max-length N] [--temperature F] [--top-k N] [--top-p F] [--seed N] [--output DIR]\n  real-text-reconstruction\n  run-tc-probe\n  run-decisive-benchmark\n  run-drafter-comparison\n  summarize-maintenance\n  summarize-domain-validation\n  summarize-dependency-results\n  domain-source-baselines\n  alignment-diagnosis\n  summarize-reconstruction-capacity\n  generate-results\n  generate-recent-results\n  generate-bibliographies\n  update-manifests\n  audit-papers"
         );
         return ExitCode::SUCCESS;
     }
@@ -448,6 +518,8 @@ fn main() -> ExitCode {
             i += 1;
         }
         ncm::sweep::run_reconstruction_pilot(&output, length).map_err(|e| e.to_string())
+    } else if name == "generate-pilot" {
+        generate_pilot(&root, &args[1..])
     } else if name == "real-text-reconstruction" {
         let mut output = None;
         let mut steps = 100usize;

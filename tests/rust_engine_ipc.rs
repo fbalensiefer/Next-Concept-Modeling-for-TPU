@@ -324,6 +324,55 @@ fn rust_drives_model_training_and_checkpoint_round_trip_over_stdio() {
 }
 
 #[test]
+fn generate_sequence_rpc_is_seeded_and_returns_typed_scores() {
+    use ncm::rpc::{
+        CausalArConfig, CausalArInitRequest, GenerateSequenceRequest, GenerationConfig,
+    };
+    let root = repository_root();
+    let mut engine = EngineClient::start(&root).unwrap();
+    let config: CausalArConfig = serde_json::from_value(json!({
+        "transformer":{"width":8,"heads":2,"layers":1,"mlp_ratio":2},
+        "max_length":12
+    }))
+    .unwrap();
+    let model = engine
+        .causal_ar_init(&CausalArInitRequest {
+            config,
+            seed: 7,
+            tokens: vec![vec![0]],
+            mask: None,
+        })
+        .unwrap();
+    let request = GenerateSequenceRequest {
+        engine_id: model.engine_id,
+        prompts: vec![vec![65, 66]],
+        config: GenerationConfig {
+            max_length: 4,
+            temperature: 0.8,
+            top_k: 12,
+            top_p: 0.9,
+            seed: 42,
+        },
+    };
+    let first = engine.generate_sequence(&request).unwrap();
+    let second = engine.generate_sequence(&request).unwrap();
+    assert_eq!(first.tokens, second.tokens);
+    assert_eq!(first.log_probabilities, second.log_probabilities);
+    assert_eq!(first.tokens[0].len(), 4);
+    assert_eq!(first.log_probabilities[0].len(), 4);
+    assert_eq!(first.metrics.token_count, 4);
+    assert!(first.metrics.mean_log_probability.is_finite());
+    let mut full_support = request.clone();
+    full_support.config.top_p = 1.0;
+    let unfiltered = engine.generate_sequence(&full_support).unwrap();
+    assert!(
+        unfiltered.log_probabilities[0]
+            .iter()
+            .all(|x| x.is_finite())
+    );
+}
+
+#[test]
 fn codec_rpc_and_prior_training_keep_the_codec_frozen() {
     let root = repository_root();
     let dir = env::temp_dir().join(format!("ncm codec rpc {}", std::process::id()));
